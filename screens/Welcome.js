@@ -5,9 +5,18 @@ import StyledButton from '../src/styles/StyledButton.jsx';
 import { HomeSimpleDoor, EmojiTalkingHappy, ChatBubble } from "iconoir-react-native";
 import theme from '../src/theme/theme.js'
 import string from '../src/string/string.js';
+import {
+  createStaticNavigation,
+  useNavigation,
+} from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Button } from '@react-navigation/elements';
 
 
-export default function WelcomePage() {
+const WelcomePage = () => {
+
+  const navigation = useNavigation()
+
   return (
     <View style={styles.container}>
       <ImageBackground source={require('../assets/background.png')} style={styles.image}>
@@ -32,7 +41,7 @@ export default function WelcomePage() {
 
       </View>
 
-        <StyledButton title={string.App.next} onPress={()=>{next()}}></StyledButton>
+        <StyledButton title={string.App.next} onPress={()=> navigation.navigate('Hello')}></StyledButton>
 
       </View>
       </ImageBackground>
@@ -71,3 +80,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+export default WelcomePage;
