@@ -25,11 +25,12 @@ const styles = StyleSheet.create({
     },
     whiteButton: {
         color : theme.colors.primary,
+        fontSize: 20,
+        paddingStart: 5
     }
 })
 
-export default function StyledText (props){
-    const {lines,red,bold,title,children,green,redBlack,whiteButton,...restOfPro} = props 
+export default function StyledText ({red,bold,title,children,green,redBlack,whiteButton}){
     const textStyles = [
         styles.text,
         red && styles.red,
@@ -40,7 +41,7 @@ export default function StyledText (props){
         whiteButton && styles.whiteButton
     ]
     return(
-        <Text style={textStyles} {...restOfPro} numberOfLines={lines}>
+        <Text style={textStyles}>
             {children}
         </Text>
     )

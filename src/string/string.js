@@ -1,40 +1,29 @@
+import { ShoppingBag } from "iconoir-react-native"
+
 const string = {
     welcome: {
         hello: '¿Hola buen día como estas?',
         welcomeHappy: 'El campo te da la bienvenida desde tu celular',
         chat: 'Puedes escribirnos y conversaremos un rato',
-        registerNewUserA: '!Regístrate hoy y recibe',
-        registerNewUserB: 'Descuentos en tus primeras órdenes¡',
-        message: '*Aplican para usuarios nuevos',
+        registerNewUserA: 'Regístrate hoy y recibe',
+        registerNewUserB: 'Descuentos en tus primeras órdenes',
+        message: 'Aplican para usuarios nuevos',
         tyc: 'Aplican T&C',
         registrate: 'Regístrate',
+        registerNewUserA: 'Ya tengo cuenta ',
     },
     Signup:{
-        hello: 'Bienvenido al campo',
+        hello: 'Bienvenidos al campo',
         name: 'Nombre y apellido',
         mail: 'Email (correo electrónico)',
         cell: 'Numero de celular',
-        password: 'Contraseña',
-        city: 'Municipio',
         require: 'Rellena los espacios para registrarte correctamente',
         message: 'Aplican para usuarios nuevos',
         tyc: 'Aplican T&C',
         registrate: 'Regístrate',
         registerNewUserA: 'Ya tengo cuenta ',
-        errors:{
-            name: "*Ingresa tu nombre completo",
-            city: "*Ingresa tu municipio",
-            password: "*Ingresa una mejor contraseña",
-            cell: "*Numero de telefono requerido",
-            mail:"*Ingresa tu correo para identificar la cuenta"
-        }
     },
-    login : {
-        next : "Ingresar",
-        require: 'Confirmemos tu identidad',
-        hello: 'Bienvenido nuevamente al campo',
-    },
-    client : {
+    home : {
         search: 'Buscar en el campo',
         near: 'Fincas mas cerca de ti',
         select: 'Selecciona tu vereda favorita',
@@ -44,13 +33,13 @@ const string = {
         tyc: 'Aplican T&C',
         registrate: 'Regístrate',
         registerNewUserA: 'Ya tengo cuenta ',
-        favorite: 'Favorito',
-        card: 'Ver Carrito',
+        favorito: 'Favorito',
+        cart: 'Ver Carrito',
         Shopping: 'Seguir Comprando',
         add: 'Agregar mas productos',
-        addCar:'Complementa tu carrito',
+        addCart:'Complementa tu carrito',
         summaey:'Resumen',
-        AddCode:'Agrega código \n promocional',
+        AddCode:'Agrega código promocional',
         codes: 'Códigos promocionales',
         apply: 'Aplicar',
         subtotal: 'Subtotal',
@@ -60,11 +49,7 @@ const string = {
         message: 'Recuerda realizar el pago en efectivo al domiciliario con billetes de baja categoría',
         pay: 'Realizar pago',
         noCartMessage: 'No tienes ningún articulo en tu carro',
-        new: 'Inicia un carrito nuevo',
-        home: "Inicio",
-        chat: "Chat",
-        profile: "Cuenta",
-        favoriteStore: "Aqui estan tus tiendas favoritas"
+        new: 'Inicia un carrito nuevo'
     },
     App : {
         next: 'Continuar',

@@ -1,6 +1,6 @@
 const theme = {
     colors: {
-        textPrimary: 'black',
+        textPrimary: '#2c2841',
         primary: '#ffff',
         greenText: '#2da10a',
         black: '#121010',
@@ -11,9 +11,7 @@ const theme = {
         greenMedium: '#98d187',
         green: '#42aa21',
         yellow: '#f9ba00',
-        grey:'#d4d4d7',
-        opacity: '#ffffffa0',
-        greenOpacity: "#e7eddf"
+        grey:'#f4f5ed'
     },
     fontSizes:{
         body:18,

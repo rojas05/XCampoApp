@@ -7,6 +7,8 @@ const styles = StyleSheet.create({
     primaryButton : {
         alignItems: 'center',
         justifyContent: 'center',
+        paddingVertical: 15,
+        paddingHorizontal: 20,
         borderRadius: 8,
         elevation: 3,
         backgroundColor: theme.colors.green, 
