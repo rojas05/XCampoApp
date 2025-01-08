@@ -1,5 +1,3 @@
-import { ShoppingBag } from "iconoir-react-native";
-
 const string = {
   welcome: {
     hello: "¿Hola buen día como estas?",
@@ -10,21 +8,33 @@ const string = {
     message: "Aplican para usuarios nuevos",
     tyc: "Aplican T&C",
     registrate: "Regístrate",
-    // eslint-disable-next-line no-dupe-keys
-    registerNewUserA: "Ya tengo cuenta ",
   },
   Signup: {
     hello: "Bienvenidos al campo",
     name: "Nombre y apellido",
     mail: "Email (correo electrónico)",
     cell: "Numero de celular",
+    password: "Contraseña",
+    city: "Municipio",
     require: "Rellena los espacios para registrarte correctamente",
     message: "Aplican para usuarios nuevos",
     tyc: "Aplican T&C",
     registrate: "Regístrate",
     registerNewUserA: "Ya tengo cuenta ",
+    errors: {
+      name: "*Ingresa tu nombre completo",
+      city: "*Ingresa tu municipio",
+      password: "*Ingresa una mejor contraseña",
+      cell: "*Numero de telefono requerido",
+      mail: "*Ingresa tu correo para identificar la cuenta",
+    },
   },
-  home: {
+  login: {
+    next: "Ingresar",
+    require: "Confirmemos tu identidad",
+    hello: "Bienvenido nuevamente al campo",
+  },
+  client: {
     search: "Buscar en el campo",
     near: "Fincas mas cerca de ti",
     select: "Selecciona tu vereda favorita",
@@ -40,19 +50,22 @@ const string = {
     add: "Agregar mas productos",
     addCart: "Complementa tu carrito",
     summaey: "Resumen",
-    AddCode: "Agrega código promocional",
+    AddCode: "Agrega código \n promocional",
     codes: "Códigos promocionales",
     apply: "Aplicar",
     subtotal: "Subtotal",
     delivery: "Domicilio",
     total: "Total",
     cash: "Pago en efectivo",
-    // eslint-disable-next-line no-dupe-keys
-    message:
+    messagePay:
       "Recuerda realizar el pago en efectivo al domiciliario con billetes de baja categoría",
     pay: "Realizar pago",
     noCartMessage: "No tienes ningún articulo en tu carro",
     new: "Inicia un carrito nuevo",
+    home: "Inicio",
+    chat: "Chat",
+    profile: "Cuenta",
+    favoriteStore: "Aqui estan tus tiendas favoritas",
   },
   homeSeller: {
     ADD_PRODUCT: "Agregar Producto",

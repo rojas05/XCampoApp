@@ -11,12 +11,12 @@ import MapViewDirections from "react-native-maps-directions";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 // eslint-disable-next-line import/no-unresolved
 import { GOOGLE_MAPS_KEY } from "@env";
-import { STYLES_HOMESELLER } from "../../utils/constants";
-import FloatingBar from "../../components/FloatingBar";
+import { STYLES_HOMESELLER } from "../../src/utils/constants";
+import FloatingBar from "../../src/components/FloatingBar";
 import {
   getLocationPermission,
   openGoogleMaps,
-} from "../../utils/LocationPermission";
+} from "../../src/utils/LocationPermission";
 
 const MapScreen = () => {
   const [origin, setOrigin] = useState(null);

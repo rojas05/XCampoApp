@@ -10,18 +10,18 @@ import {
 } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
-import { openCamera, openGallery } from "../../utils/ImagePickerHandler.js";
-import { STYLES_HOMESELLER } from "../../utils/constants.js";
-import CustomPicker from "../../components/InputSelect.jsx";
+import { openCamera, openGallery } from "../../src/utils/ImagePickerHandler.js";
+import { STYLES_HOMESELLER } from "../../src/utils/constants.js";
+import CustomPicker from "../../src/components/InputSelect.jsx";
 import {
   CustomAlert,
   AlertOk,
   handleLongPress,
-} from "../../components/CustomAlert.jsx";
-import StyledButton from "../../styles/StyledButton.jsx";
-import StyledButtonIncrement from "../../styles/StyledButtonIncrement.jsx";
-import TEXTS from "../../string/string.js";
-import Color from "../../theme/theme.js";
+} from "../../src/components/CustomAlert.jsx";
+import StyledButton from "../../src/styles/StyledButton.jsx";
+import StyledButtonIncrement from "../../src/styles/StyledButtonIncrement.jsx";
+import TEXTS from "../../src/string/string.js";
+import Color from "../../src/theme/theme.js";
 
 const validateForm = (form, imagen, setErrors) => {
   const newErrors = {};

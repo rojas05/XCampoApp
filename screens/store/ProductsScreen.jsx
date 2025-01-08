@@ -2,11 +2,11 @@ import React from "react";
 import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
-import { STYLES_HOMESELLER } from "../../utils/constants.js";
-import StyledButtonIcon from "../../styles/StyledButtonIcon.jsx";
-import StyledButton from "../../styles/StyledButton.jsx";
-import TEXTS from "../../string/string.js";
-import theme from "../../theme/theme.js";
+import { STYLES_HOMESELLER } from "../../src/utils/constants.js";
+import StyledButtonIcon from "../../src/styles/StyledButtonIcon.jsx";
+import StyledButton from "../../src/styles/StyledButton.jsx";
+import TEXTS from "../../src/string/string.js";
+import theme from "../../src/theme/theme.js";
 
 const ProductCard = ({
   image,

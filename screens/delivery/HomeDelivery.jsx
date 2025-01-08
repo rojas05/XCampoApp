@@ -1,5 +1,5 @@
 import React from "react";
-import TabNavigator from "../../components/TabNavigator.jsx";
+import TabNavigator from "../../src/components/TabNavigator.jsx";
 import Entypo from "@expo/vector-icons/Entypo";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 

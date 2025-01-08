@@ -15,9 +15,6 @@ const styles = StyleSheet.create({
   },
   yellow: {
     backgroundColor: theme.colors.yellow,
-    width: "50%",
-    borderRadius: 5,
-    alignSelf: "center",
   },
   green: {
     backgroundColor: theme.colors.green,

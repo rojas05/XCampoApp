@@ -12,6 +12,8 @@ const theme = {
     green: "#42aa21",
     yellow: "#f9ba00",
     grey: "#f4f5ed",
+    opacity: "#ffffffa0",
+    greenOpacity: "#e7eddf",
     greyMedium: "#ccc",
     white: "#fff",
   },

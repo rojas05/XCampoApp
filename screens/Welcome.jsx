@@ -1,25 +1,29 @@
+// eslint-disable-next-line no-unused-vars
 import react from "react";
 import { StyleSheet, View, Image, ImageBackground } from "react-native";
-import StyledText from "../styles/StyledText.jsx";
-import StyledButton from "../styles/StyledButton.jsx";
+import StyledText from "../src/styles/StyledText.jsx";
+import StyledButton from "../src/styles/StyledButton.jsx";
 import {
   HomeSimpleDoor,
   EmojiTalkingHappy,
   ChatBubble,
 } from "iconoir-react-native";
-import theme from "../theme/theme.js";
-import string from "../string/string.js";
+import theme from "../src/theme/theme.js";
+import string from "../src/string/string.js";
+import { useNavigation } from "@react-navigation/native";
 
-export default function WelcomePage({ navigation }) {
+const WelcomePage = () => {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require("../../assets/background.png")}
+        source={require("../assets/background.png")}
         style={styles.image}
       >
         <View style={styles.containerComponent}>
           <Image
-            source={require("../../assets/XCampo.png")}
+            source={require("../assets/XCampo.png")}
             style={{ width: 200, height: 100, borderRadius: 20, marginTop: 10 }}
           ></Image>
           <View style={styles.textContainer}>
@@ -49,13 +53,13 @@ export default function WelcomePage({ navigation }) {
 
           <StyledButton
             title={string.App.next}
-            onPress={() => navigation.navigate("MapScreen")}
+            onPress={() => navigation.navigate("Hello")}
           ></StyledButton>
         </View>
       </ImageBackground>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   containerComponent: {
@@ -85,3 +89,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
+
+export default WelcomePage;

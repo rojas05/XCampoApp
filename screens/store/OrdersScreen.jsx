@@ -9,11 +9,11 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import AntDesign from "@expo/vector-icons/AntDesign"; // Librería para iconos
 
-import { STYLES_HOMESELLER } from "../../utils/constants.js";
+import { STYLES_HOMESELLER } from "../../src/utils/constants.js";
 import { OrderListProducts } from "./GetOrderProducts.js";
-import { AlertOk } from "../../components/CustomAlert.jsx";
-import StyledButton from "../../styles/StyledButton.jsx";
-import theme from "../../theme/theme.js";
+import { AlertOk } from "../../src/components/CustomAlert.jsx";
+import StyledButton from "../../src/styles/StyledButton.jsx";
+import theme from "../../src/theme/theme.js";
 
 const OrdersScreen = ({ navigation }) => {
   // eslint-disable-next-line no-unused-vars

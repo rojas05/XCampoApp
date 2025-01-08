@@ -6,8 +6,8 @@ import {
   ProfileTemplate,
   BtnEdit,
   BtnCloseSeson,
-} from "../../components/ProfileTemplate.jsx";
-import { STYLES_HOMESELLER } from "../../utils/constants.js";
+} from "../../src/components/ProfileTemplate.jsx";
+import { STYLES_HOMESELLER } from "../../src/utils/constants.js";
 
 const renderStars = (rating) => {
   let stars = [];
