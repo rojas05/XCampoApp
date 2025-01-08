@@ -1,6 +1,6 @@
 import React from "react";
 
-import MainStack from "./navigation/MainStack";
+import MainStack from "./navigation/MainStack"; // menu
 import TypeUser from "./screens/TypeUser";
 import IndexClient from "./screens/client/IndexClient";
 import DetailStore from "./screens/client/DetailStore";
@@ -11,5 +11,5 @@ import ShoppingCar from "./screens/client/ShoppingCar";
 import Orders from "./screens/client/Orders";
 
 export default function App() {
-  return <IndexClient />;
+  return <MainStack />;
 }

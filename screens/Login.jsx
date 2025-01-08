@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { View, Image, StyleSheet } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+
 import StyledButton from "../src/styles/StyledButton";
 import string from "../src/string/string";
 import StyledImput from "../src/styles/StyledImput";
@@ -8,8 +10,9 @@ import StyledText from "../src/styles/StyledText";
 const Login = () => {
   const [password, setPassword] = useState("");
   const [mail, setMail] = useState("");
-
   const [errors, setErrors] = useState({});
+
+  const navigation = useNavigation();
 
   const validateForm = () => {
     let errors = {};
@@ -19,6 +22,10 @@ const Login = () => {
     if (!mail) errors.mail = string.Signup.errors.mail;
 
     setErrors(errors);
+
+    if (Object.keys(errors).length === 0) {
+      navigation.navigate("TypeUser");
+    }
 
     return Object.keys(errors).length === 0;
   };
