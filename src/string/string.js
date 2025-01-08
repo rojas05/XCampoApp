@@ -44,7 +44,7 @@ const string = {
     tyc: "Aplican T&C",
     registrate: "Regístrate",
     registerNewUserA: "Ya tengo cuenta ",
-    favorito: "Favorito",
+    favorite: "Favorito",
     cart: "Ver Carrito",
     Shopping: "Seguir Comprando",
     add: "Agregar mas productos",

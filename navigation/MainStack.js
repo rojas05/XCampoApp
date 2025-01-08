@@ -13,7 +13,7 @@ import RegisterProducts from "../screens/store/RegisterProducts";
 import HomeSeller from "../screens/store/HomeSeller";
 // delivery
 import HomeDelivery from "../screens/delivery/HomeDelivery";
-import MapScreen from "../screens/delivery/MapScreen";
+import MapDeliveryScreen from "../screens/delivery/MapScreen";
 // chats
 import ChatScreen from "../screens/chats/ChatScreen";
 import ChatHeader from "../screens/chats/ChatHeader";
@@ -34,18 +34,21 @@ const MainStack = () => {
 
         <Stack.Screen name="TypeUser" component={TypeUser} />
 
+        {/* -------------------------------------------- */}
+
         <Stack.Screen name="RegisterProducts" component={RegisterProducts} />
 
         <Stack.Screen name="HomeSeller" component={HomeSeller} />
 
         <Stack.Screen name="HomeDelivery" component={HomeDelivery} />
 
-        <Stack.Screen name="MapScreen" component={MapScreen} />
+        <Stack.Screen name="MapScreen" component={MapDeliveryScreen} />
 
         <Stack.Screen
           name="ChatScreen"
           component={ChatScreen}
           options={({ navigation }) => ({
+            headerShown: true,
             header: () => <ChatHeader navigation={navigation} />,
           })}
         />

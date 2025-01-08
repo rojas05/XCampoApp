@@ -1,14 +1,18 @@
 import React from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
+import { HomeAlt, CheckCircle, Delivery, User } from "iconoir-react-native";
 import Constants from "expo-constants";
+import { useNavigation } from "@react-navigation/native";
+
 import StyledImput from "../src/styles/StyledImput";
 import StyledText from "../src/styles/StyledText";
 import theme from "../src/theme/theme";
-import { HomeAlt, CheckCircle, Delivery, User } from "iconoir-react-native";
 import StyledButton from "../src/styles/StyledButton";
 import string from "../src/string/string";
 
 const TypeUser = () => {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.container}>
       <View style={styles.title}>
@@ -53,7 +57,10 @@ const TypeUser = () => {
               ></StyledImput>
             </View>
 
-            <StyledButton title={string.App.next}></StyledButton>
+            <StyledButton
+              title={string.App.next}
+              onPress={() => navigation.navigate("HomeSeller")}
+            ></StyledButton>
           </View>
 
           <View style={styles.item}>
@@ -82,7 +89,10 @@ const TypeUser = () => {
               ></StyledImput>
             </View>
 
-            <StyledButton title={string.App.next}></StyledButton>
+            <StyledButton
+              title={string.App.next}
+              onPress={() => navigation.navigate("MapScreen")}
+            ></StyledButton>
           </View>
 
           <View style={styles.item}>

@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
-import { STATUSBAR } from "../../utils/constants.js";
+import { STATUSBAR } from "../../src/utils/constants.js";
 
 const ChatHeader = ({ navigation }) => {
   return (
