@@ -26,7 +26,17 @@
       "favicon": "./assets/XCampo.png"
     },
     "plugins": [
+<<<<<<< HEAD
       "expo-secure-store"
+=======
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "La aplicación necesita acceso a tus fotos para seleccionar imágenes.",
+          "cameraPermission": "La aplicación necesita acceso a la cámara para tomar fotos."
+        }
+      ]
+>>>>>>> eb56ae6fa782673cb05f5b18082abb982f32ae4f
     ]
   }
 }
