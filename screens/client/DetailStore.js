@@ -1,3 +1,10 @@
+<<<<<<< HEAD
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, Image, Pressable, TouchableOpacity, FlatList, ActivityIndicator} from "react-native";
+import Constants from 'expo-constants'
+import StyledText from "../../src/styles/StyledText";
+import {InfoCircle, StarSolid, Xmark} from "iconoir-react-native"
+=======
 import React from "react";
 import {
   View,
@@ -10,22 +17,116 @@ import {
 import Constants from "expo-constants";
 import StyledText from "../../src/styles/StyledText";
 import { InfoCircle, StarSolid, Xmark } from "iconoir-react-native";
+>>>>>>> eb56ae6fa782673cb05f5b18082abb982f32ae4f
 import theme from "../../src/theme/theme";
 import StyledItemProductStore from "../../src/styles/StyledItemProductStore";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { fetchWithToken } from "../../tokenStorage";
+import { YellowBox } from "react-native-web";
+import { getCoordinates } from "../../funcions/getCoordinates";
 
+<<<<<<< HEAD
+const DetailStore = () =>{
+    const route = useRoute();
+
+    const { idStore } = route.params;
+    const [store, setStore] = useState({})
+
+    const [loading, setLoading] = useState(true)
+
+    const navigation = useNavigation()
+
+    useEffect(() => {
+            getStore()
+          }, []);
+
+    const items = Array.from({ length: 11 }, (_, index) => `Item ${index + 1}`);
+=======
 const DetailStore = () => {
   const items = Array.from({ length: 11 }, (_, index) => `Item ${index + 1}`);
+>>>>>>> eb56ae6fa782673cb05f5b18082abb982f32ae4f
+
+    async function getStore() {
+        try {
+            response = await fetchWithToken('http://192.168.0.121:8080/XCampo/api/v1/seller/'+idStore, {
+             method: 'GET'
+           });
+       
+           if (response.ok) {
+               const data = await response.json();
+               setStore(data);
+               setLoading(false)
+           }
+         } catch (error) {
+             console.error(error)
+         }            
+    }
 
   const renderItem = ({ item }) => (
     <StyledItemProductStore item={item}></StyledItemProductStore>
   );
 
+<<<<<<< HEAD
+    return(
+
+        <View style={styles.container}>
+
+            {store.img ? (
+                            <Image source={{ uri: store.img }} style={styles.imageStore} />
+                        ) : (
+                            <Image source={require('../../assets/store.png')} style={styles.imageStore} />
+                        )}
+
+            <View style={styles.containerInfo}>
+            {loading ? (
+                             <ActivityIndicator></ActivityIndicator>
+                        ) : (
+                            <View>
+                                <StyledText title bold>{store.name_store}</StyledText>
+                                <View style={styles.containerStar}>
+                                    <StyledText>4.0</StyledText>
+                                    <StarSolid width={20} height={20} color={"black"}/>
+                                </View>
+                            </View> 
+                        )}
+
+                <TouchableOpacity 
+                    style={styles.send} 
+                    onPress={()=>{navigation.replace("InfoStore",
+                  {
+                    idStore: store.id_seller
+                  })}} >
+                    <InfoCircle width={20} height={20} color={"black"}/>
+                </TouchableOpacity>
+            </View>
+
+            
+
+            <FlatList
+                data={items}
+                renderItem={renderItem}
+                keyExtractor={(item, index) => index.toString()}
+                numColumns={2} // Especifica el número de columnas
+                columnWrapperStyle={styles.columnWrapper} // Espaciado entre columnas
+                width="95%"
+            />
+
+
+            <TouchableOpacity style={styles.fab}>
+                    <StyledText whiteButton bold>Ver carrito ()</StyledText>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.exit} onPress={()=>{navigation.navigate("IndexClient")}}>
+                    <Xmark width={20} height={20} color={"black"}/>  
+            </TouchableOpacity>
+=======
   return (
     <View style={styles.container}>
       <Image
         source={require("../../assets/XCampo.png")}
         style={styles.imageStore}
       ></Image>
+>>>>>>> eb56ae6fa782673cb05f5b18082abb982f32ae4f
 
       <View style={styles.containerInfo}>
         <View>
@@ -65,6 +166,29 @@ const DetailStore = () => {
 };
 
 const styles = StyleSheet.create({
+<<<<<<< HEAD
+    container :{
+        backgroundColor: theme.colors.greenOpacity,
+        position:"relative" ,
+        flex:1,
+        marginTop: Constants.statusBarHeight,
+        alignItems: "center",
+    },
+    imageStore:{
+        resizeMode: "cover",
+        width:"100%",
+        height:"30%",
+        backgroundColor:theme.colors.yellow
+    },
+    containerInfo:{
+        flexDirection: "row",
+        width:"100%",
+        justifyContent:"space-between",
+        alignItems:"center",
+        padding:10,
+    },
+    scroll:{
+=======
   container: {
     backgroundColor: theme.colors.greenOpacity,
     position: "relative",
@@ -144,5 +268,6 @@ const styles = StyleSheet.create({
     marginBottom: 10, // Espaciado vertical entre filas
   },
 });
+>>>>>>> eb56ae6fa782673cb05f5b18082abb982f32ae4f
 
 export default DetailStore;

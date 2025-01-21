@@ -1,4 +1,12 @@
+<<<<<<< HEAD
+import React from 'react';
+import MainStack from "./navigation/MainStack"
+import BottomTabClient from './navigation/BottomNabClient';
+
+
+=======
 import React from "react";
+>>>>>>> eb56ae6fa782673cb05f5b18082abb982f32ae4f
 
 import MainStack from "./navigation/MainStack"; // menu
 import TypeUser from "./screens/TypeUser";
@@ -11,5 +19,18 @@ import ShoppingCar from "./screens/client/ShoppingCar";
 import Orders from "./screens/client/Orders";
 
 export default function App() {
+<<<<<<< HEAD
+   return(
+         <MainStack>
+            <BottomTabClient>
+               
+            </BottomTabClient>
+         </MainStack>
+   )
+  }
+
+
+=======
   return <MainStack />;
 }
+>>>>>>> eb56ae6fa782673cb05f5b18082abb982f32ae4f

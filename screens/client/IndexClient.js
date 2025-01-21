@@ -1,5 +1,5 @@
 import React from "react";
-import BottomTavClient from "../../navigation/BottomNavClient";
+import BottomTavClient from "../../navigation/BottomNabClient";
 import { NavigationContainer } from "@react-navigation/native";
 
 const IndexClient = () => {
