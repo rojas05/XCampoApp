@@ -1,11 +1,13 @@
-import React, {useState} from 'react';
-import {Text, TextInput, View, StyleSheet, Image} from 'react-native';
+import React from 'react';
+import {Text, TextInput, View, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import theme from '../theme/theme';
 import StyledText from './StyledText';
 import { Heart, HeartSolid } from 'iconoir-react-native';
+import {useNavigation,} from '@react-navigation/native';
 
-const StyledItemProduct = (props) => {
-    const {store} = props
+
+const StyledItemProduct = ({store, item}) => {
+    const navigation = useNavigation()
     const imageStyles = [
         styles.image,
         store && styles.imageStore
@@ -14,19 +16,28 @@ const StyledItemProduct = (props) => {
         styles.container,
         store && styles.containerStore
     ]
+
   return (
-    <View style={containerStyles}>
+    <TouchableOpacity onPress={()=>{navigation.navigate("DetailStore",
+                  {
+                    idStore: item.id_seller,
+                  })}}>
+        <View style={containerStyles}>
+            {item.img ? (
+                <Image source={{ uri: item.img }} style={imageStyles} />
+            ) : (
+                <Image source={require('../../assets/store.png')} style={imageStyles} />
+            )}
 
-        <Image source={require("../../assets/XCampo.png")} style={imageStyles}></Image>
+            <View style={styles.containerText}> 
+                <StyledText bold>{item.name_store}</StyledText>
+                <Heart width={20} height={20} color={"black"} style={styles.icon}/>
+            </View>
 
-        <View style={styles.containerText}> 
-            <StyledText bold>name finca</StyledText>
-            <Heart width={20} height={20} color={"black"} style={styles.icon}/>
+            <StyledText>{item.location}</StyledText>
+
         </View>
-
-        <StyledText>location</StyledText>
-
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -58,7 +69,8 @@ const styles = StyleSheet.create(
             width:"100%", 
             height:100, 
             borderTopLeftRadius: 10,
-            borderTopRightRadius: 10
+            borderTopRightRadius: 10,
+            backgroundColor: theme.colors.yellow
         },
         imageStore:{
             width:"100%",

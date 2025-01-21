@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, Pressable, TextInput, ScrollView, FlatList } from "react-native";
+import React, { useState,useEffect } from "react";
+import { View, Text, StyleSheet, Pressable, TextInput, FlatList, Alert, TouchableOpacity } from "react-native";
 import Constants from 'expo-constants'
 import { 
     CartAlt, 
@@ -12,21 +12,68 @@ import string from "../../src/string/string";
 import StyledText from "../../src/styles/StyledText";
 import StyledItemProduct from "../../src/styles/StyledItemProduct";
 import { Picker } from "@react-native-picker/picker";
+import { fetchWithToken } from "../../tokenStorage";
 
 
 const HomeClient = () => {
 
-    const [city, setCity] = useState("")
+    const [location, setLocation] = useState("villanueva")
 
-    const items = Array.from({ length: 11 }, (_, index) => `Item ${index + 1}`);
+    const [city, setCity] = useState("Isnos")
 
-    const renderItemP = ({ item }) => (
-        <StyledItemProduct></StyledItemProduct>
-    );
+    const [allStore, setAllstore] = useState([])
+    const [locationStore, setLocationStore] = useState([])
 
-    const renderItemS = ({ item }) => (
-        <StyledItemProduct store></StyledItemProduct>
-    );
+    useEffect(() => {
+        getAllStore()
+        getLocationStore()
+      }, []);
+
+
+
+      async function getAllStore() {
+              try {
+                 response = await fetchWithToken('http://192.168.0.121:8080/XCampo/api/v1/seller/city/'+city, {
+                  method: 'GET'
+                });
+            
+                if (response.ok) {
+                    const data = await response.json();
+                    setAllstore(data);
+
+                }
+              } catch (error) {
+                  console.error(error)
+              }
+            }
+
+            async function getLocationStore() {
+                try {
+                   response = await fetchWithToken('http://192.168.0.121:8080/XCampo/api/v1/seller/location/'+location, {
+                    method: 'GET'
+                  });
+              
+                  if (response.ok) {
+                      const data = await response.json();
+                      setLocationStore(data);
+  
+                  }
+                } catch (error) {
+                    console.error(error)
+                }
+              }
+  
+
+        const renderItem = ({ item }) => {
+            console.log('Elemento de la lista:', item);
+               return <StyledItemProduct item={item} /> // Pasa el objeto completo
+        }
+
+        const renderItemLocation = ({ item }) => {
+            console.log('Elemento de la lista:', item);
+               return <StyledItemProduct item={item} store/> // Pasa el objeto completo
+        }
+    
 
     return (
 
@@ -68,13 +115,13 @@ const HomeClient = () => {
                  </View>
                 
 
-                <Pressable>
+                <TouchableOpacity>
                     <BellNotification width={30} height={30} color={"black"} style={styles.icon} />
-                </Pressable>
+                </TouchableOpacity>
 
-                <Pressable>
+                <TouchableOpacity>
                     <CartAlt width={30} height={30} color={"black"} style={styles.icon} />
-                </Pressable>
+                </TouchableOpacity>
 
             </View>
 
@@ -89,15 +136,15 @@ const HomeClient = () => {
                 <FastArrowRight width={28} height={28} color={"black"} style={styles.icon} />
             </View>
             
-            <View style={styles.containerScrollHorizontal}>
+            <View>
                 <FlatList
-                    data={items}
-                    renderItem={renderItemP}
-                    keyExtractor={(item, index) => index.toString()}
+                    data={allStore}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.id_seller.toString()}
                     numColumns={1} // Especifica el número de columnas
                     columnWrapperStyle={styles.columnWrapper} // Espaciado entre columnas
                     width="95%"
-                    horizontal
+                    horizontal 
                 />
             </View>
 
@@ -123,13 +170,12 @@ const HomeClient = () => {
 
             </View>
 
-            <View >
+            <View style={styles.scroll}>
 
                 <FlatList
-                data={items}
-                renderItem={renderItemS}
-                keyExtractor={(item, index) => index.toString()}
-                // Especifica el número de columnas
+                data={locationStore}
+                renderItem={renderItemLocation}
+                keyExtractor={(item) => item.id_seller.toString()}
                 columnWrapperStyle={styles.columnWrapper} // Espaciado entre columnas
                 width="100%"
             />
@@ -145,6 +191,7 @@ const HomeClient = () => {
 const styles = StyleSheet.create({
     container: {
         marginTop: Constants.statusBarHeight,
+        flex: 1
     },
     header: {
         flexDirection: "row",
@@ -163,7 +210,7 @@ const styles = StyleSheet.create({
     ,
     scroll: {
         marginBottom: 10,
-        backgroundColor:"black"
+        height: "40%"
     },
     icon: {
         marginStart: 10

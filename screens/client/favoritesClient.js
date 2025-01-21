@@ -16,9 +16,7 @@ const FavoriteClient = () =>{
             </View>
 
             <View style={styles.containerScroll}>
-                <ScrollView style={styles.scroll}>
-                    <StyledItemProduct store></StyledItemProduct>
-                </ScrollView>
+                
             </View>
 
         </View>

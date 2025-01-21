@@ -6,7 +6,7 @@ const styles = StyleSheet.create({
     text : {
         fontSize: theme.fontSizes.body,
         color: theme.colors.textPrimary,
-        marginStart: 5
+        marginStart: 5,
     },
     title : {
         fontSize: 20
@@ -16,6 +16,9 @@ const styles = StyleSheet.create({
     },
     red: {
         color : theme.colors.red
+    },
+    blue:{
+        color : theme.colors.blue
     },
     redBlack: {
         color : theme.colors.redBlack
@@ -30,7 +33,7 @@ const styles = StyleSheet.create({
     }
 })
 
-export default function StyledText ({red,bold,title,children,green,redBlack,whiteButton}){
+export default function StyledText ({red,bold,title,children,green,redBlack,whiteButton,blue}){
     const textStyles = [
         styles.text,
         red && styles.red,
@@ -38,7 +41,8 @@ export default function StyledText ({red,bold,title,children,green,redBlack,whit
         title && styles.title,
         green && styles.green,
         redBlack && styles.redBlack,
-        whiteButton && styles.whiteButton
+        whiteButton && styles.whiteButton,
+        blue && styles.blue
     ]
     return(
         <Text style={textStyles}>

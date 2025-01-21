@@ -1,17 +1,46 @@
-import React from "react";
-import { View, Text, StyleSheet, Image, Pressable, TouchableOpacity, FlatList} from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, Image, Pressable, TouchableOpacity, FlatList, ActivityIndicator} from "react-native";
 import Constants from 'expo-constants'
 import StyledText from "../../src/styles/StyledText";
-import {InfoCircle, SendDiagonalSolid, StarSolid, Xmark} from "iconoir-react-native"
+import {InfoCircle, StarSolid, Xmark} from "iconoir-react-native"
 import theme from "../../src/theme/theme";
-import StyledButton from "../../src/styles/StyledButton";
-import string from "../../src/string/string";
-import StyledItemProductCart from "../../src/styles/styledItemProductCar";
 import StyledItemProductStore from "../../src/styles/StyledItemProductStore";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { fetchWithToken } from "../../tokenStorage";
+import { YellowBox } from "react-native-web";
+import { getCoordinates } from "../../funcions/getCoordinates";
 
 const DetailStore = () =>{
+    const route = useRoute();
+
+    const { idStore } = route.params;
+    const [store, setStore] = useState({})
+
+    const [loading, setLoading] = useState(true)
+
+    const navigation = useNavigation()
+
+    useEffect(() => {
+            getStore()
+          }, []);
 
     const items = Array.from({ length: 11 }, (_, index) => `Item ${index + 1}`);
+
+    async function getStore() {
+        try {
+            response = await fetchWithToken('http://192.168.0.121:8080/XCampo/api/v1/seller/'+idStore, {
+             method: 'GET'
+           });
+       
+           if (response.ok) {
+               const data = await response.json();
+               setStore(data);
+               setLoading(false)
+           }
+         } catch (error) {
+             console.error(error)
+         }            
+    }
 
   const renderItem = ({ item }) => (
     <StyledItemProductStore item={item}></StyledItemProductStore>
@@ -21,19 +50,33 @@ const DetailStore = () =>{
 
         <View style={styles.container}>
 
-            <Image source={require("../../assets/XCampo.png")} style={styles.imageStore}></Image>
+            {store.img ? (
+                            <Image source={{ uri: store.img }} style={styles.imageStore} />
+                        ) : (
+                            <Image source={require('../../assets/store.png')} style={styles.imageStore} />
+                        )}
 
             <View style={styles.containerInfo}>
-                <View>
-                    <StyledText title bold>Name finca</StyledText>
-                    <View style={styles.containerStar}>
-                        <StyledText>star</StyledText>
-                        <StarSolid width={20} height={20} color={"black"}/>
-                    </View>
-                </View>
-                <Pressable style={styles.send}>
+            {loading ? (
+                             <ActivityIndicator></ActivityIndicator>
+                        ) : (
+                            <View>
+                                <StyledText title bold>{store.name_store}</StyledText>
+                                <View style={styles.containerStar}>
+                                    <StyledText>4.0</StyledText>
+                                    <StarSolid width={20} height={20} color={"black"}/>
+                                </View>
+                            </View> 
+                        )}
+
+                <TouchableOpacity 
+                    style={styles.send} 
+                    onPress={()=>{navigation.replace("InfoStore",
+                  {
+                    idStore: store.id_seller
+                  })}} >
                     <InfoCircle width={20} height={20} color={"black"}/>
-                </Pressable>
+                </TouchableOpacity>
             </View>
 
             
@@ -52,7 +95,7 @@ const DetailStore = () =>{
                     <StyledText whiteButton bold>Ver carrito ()</StyledText>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.exit}>
+            <TouchableOpacity style={styles.exit} onPress={()=>{navigation.navigate("IndexClient")}}>
                     <Xmark width={20} height={20} color={"black"}/>  
             </TouchableOpacity>
 
@@ -73,7 +116,8 @@ const styles = StyleSheet.create({
     imageStore:{
         resizeMode: "cover",
         width:"100%",
-        height:"30%"
+        height:"30%",
+        backgroundColor:theme.colors.yellow
     },
     containerInfo:{
         flexDirection: "row",

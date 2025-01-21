@@ -7,6 +7,12 @@ import Login from "../screens/Login";
 import Signup from "../screens/Signup";
 import Hello from "../screens/Hello";
 import TypeUser from "../screens/TypeUser";
+import Splash from "../screens/Splash";
+import IndexClient from "../screens/client/IndexClient";
+import BottomTavClient from "./BottomNabClient";
+import DetailStore from "../screens/client/DetailStore"
+import DetailProduct from "../screens/client/DetailProduct"
+import InfoStore from "../screens/client/InfoStore"
 
 
 const Stack = createNativeStackNavigator()
@@ -15,7 +21,15 @@ const MainStack = () => {
     return(
         <NavigationContainer>
             <Stack.Navigator 
-            screenOptions={{headerShown:false}}>
+            screenOptions={{
+                headerShown:false,
+                detachPreviousScreen: true,
+                }}>
+
+            <Stack.Screen
+                name="Splash"
+                component={Splash}
+                />
 
             <Stack.Screen
                 name="WelcomePage"
@@ -43,6 +57,25 @@ const MainStack = () => {
                 component={TypeUser}
                 />
 
+            <Stack.Screen
+                name="IndexClient"
+                component={BottomTavClient}
+                />
+
+            <Stack.Screen
+                name="DetailProduct"
+                component={DetailProduct}
+                />
+
+            <Stack.Screen
+                name="DetailStore"
+                component={DetailStore}
+                />
+
+            <Stack.Screen
+                name="InfoStore"
+                component={InfoStore}
+                />
 
             </Stack.Navigator>
         </NavigationContainer>

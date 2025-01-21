@@ -1,5 +1,5 @@
 import React from "react"
-import { Pressable, StyleSheet, Text, Alert } from "react-native"
+import { Pressable, StyleSheet, Text, Alert, TouchableOpacity } from "react-native"
 import theme from '../theme/theme.js'
 import StyledText from "./StyledText"
 
@@ -50,8 +50,8 @@ export default function StyledButton (props){
         textBlack && styles.textBlack
     ]
     return(
-        <Pressable style={buttonStyles} onPress={onPress} {...restOfPro}>
+        <TouchableOpacity style={buttonStyles} onPress={onPress} {...restOfPro}>
             <Text style={textStyles}>{title}</Text>
-        </Pressable>
+        </TouchableOpacity>
     )
 }

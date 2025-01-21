@@ -11,7 +11,12 @@ const theme = {
         greenMedium: '#98d187',
         green: '#42aa21',
         yellow: '#f9ba00',
-        grey:'#f4f5ed'
+        grey:'#f4f5ed',
+        opacity: "#ffffffa0",
+        greenOpacity: "#e7eddf",
+        greyMedium: "#ccc",
+        white: "#fff",
+        blue: "blue"
     },
     fontSizes:{
         body:18,

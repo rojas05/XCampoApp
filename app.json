@@ -19,10 +19,14 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/XCampo.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.rojas.dev.XCampo"
     },
     "web": {
       "favicon": "./assets/XCampo.png"
-    }
+    },
+    "plugins": [
+      "expo-secure-store"
+    ]
   }
 }
