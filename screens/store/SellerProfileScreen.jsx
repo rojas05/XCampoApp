@@ -7,7 +7,7 @@ import {
   BtnEdit,
   BtnCloseSeson,
 } from "../../src/components/ProfileTemplate.jsx";
-import { STYLES_HOMESELLER } from "../../src/utils/constants.js";
+import { HOME_STYLES } from "../../src/utils/constants.js";
 
 const renderStars = (rating) => {
   let stars = [];
@@ -44,7 +44,7 @@ const SellerProfile = () => {
   };
 
   return (
-    <View style={STYLES_HOMESELLER.container}>
+    <View style={HOME_STYLES.container}>
       <ProfileTemplate
         userName={sellerData.userName}
         location={sellerData.location}

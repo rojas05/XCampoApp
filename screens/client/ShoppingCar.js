@@ -7,14 +7,15 @@ import {
   FlatList,
   TextInput,
 } from "react-native";
-import StyledText from "../../src/styles/StyledText";
-import StyledItemProductCart from "../../src/styles/styledItemProductCar";
+import Constants from "expo-constants";
 import { LabelSolid, PlusCircle, Xmark } from "iconoir-react-native";
+
 import theme from "../../src/theme/theme";
 import string from "../../src/string/string";
-import StyledItemProductStore from "../../src/styles/StyledItemProductStore";
-import Constants from "expo-constants";
+import StyledText from "../../src/styles/StyledText";
 import StyledButton from "../../src/styles/StyledButton";
+import StyledItemProductCart from "../../src/styles/styledItemProductCar";
+import StyledItemProductStore from "../../src/styles/StyledItemProductStore";
 
 const ShoppingCar = () => {
   const items = Array.from({ length: 11 }, (_, index) => `Item ${index + 1}`);
@@ -29,7 +30,7 @@ const ShoppingCar = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.statusBar}>
+      <View style={styles.STATUSBAR_HEIGHT}>
         <Xmark width={30} height={30} color={"black"} />
       </View>
 
@@ -110,7 +111,7 @@ const ShoppingCar = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: Constants.statusBarHeight,
+    marginTop: Constants.STATUSBAR_HEIGHTHeight,
   },
   buttonAdd: {
     flexDirection: "row",

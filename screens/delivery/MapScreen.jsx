@@ -1,98 +1,144 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-  Text,
-  ActivityIndicator,
-} from "react-native";
-import MapView, { Marker } from "react-native-maps";
-import MapViewDirections from "react-native-maps-directions";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { View, StyleSheet, Text, ActivityIndicator } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-// eslint-disable-next-line import/no-unresolved
-import { GOOGLE_MAPS_KEY } from "@env";
-import { STYLES_HOMESELLER } from "../../src/utils/constants";
-import FloatingBar from "../../src/components/FloatingBar";
-import {
-  getLocationPermission,
-  openGoogleMaps,
-} from "../../src/utils/LocationPermission";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
-const MapScreen = () => {
+import { HOME_STYLES, ICON_COLORS_MAP } from "../../src/utils/constants";
+import {
+  openGoogleMaps,
+  getLocationPermission,
+} from "../../src/utils/LocationPermission";
+import { stores } from "./js/GetOrderStoge";
+import strings from "../../src/string/string";
+import theme from "../../src/theme/theme";
+import OrderInfo from "./OrderInfoComponent";
+import StyledButtonIcon from "../../src/styles/StyledButtonIcon";
+import FloatingButton from "../../src/components/FloatingButton";
+import FloatingBar from "../../src/components/FloatingBar";
+import AlertGoOrder from "../../src/components/Alerts/AlertGoOrder";
+import MapComponent from "../../src/components/Map/MapComponent";
+
+const MAP_TYPES = ["standard", "hybrid", "terrain"];
+
+const FloatingActionButtons = ({ onMapTypeChange, onOpenGoogleMaps }) => (
+  <View style={styles.floatingButtons}>
+    <StyledButtonIcon
+      start
+      title={strings.FloatingActionButtons.changeMap}
+      iconLibrary={FontAwesome5}
+      nameIcon="layer-group"
+      onPress={onMapTypeChange}
+    />
+    <StyledButtonIcon
+      start
+      title={strings.FloatingActionButtons.openGoogleMaps}
+      iconLibrary={FontAwesome5}
+      nameIcon="map-marked-alt"
+      onPress={onOpenGoogleMaps}
+    />
+  </View>
+);
+
+const renderLoading = () => (
+  <View style={styles.loadingContainer}>
+    <ActivityIndicator size="large" color={theme.colors.blue} />
+    <Text>{strings.LoadingIndicator.loading}</Text>
+    <Text>{strings.LoadingIndicator.locationPermission}</Text>
+  </View>
+);
+
+const MapScreen = ({ navigation }) => {
+  const [mapTypeIndex, setMapTypeIndex] = useState(0);
+  const [colorMaker, setColorMaker] = useState(ICON_COLORS_MAP.standard);
   const [origin, setOrigin] = useState(null);
   const [destination] = useState({
     latitude: 1.8597457358731515,
     longitude: -76.04371218824772,
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedStore, setSelectedStore] = useState(null);
+  const [showAlertContain, setShowAlertContain] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
   const mapRef = useRef(null);
 
   useEffect(() => {
     getLocationPermission(setOrigin, setIsLoading);
+    setColorMaker(ICON_COLORS_MAP.standard);
   }, []);
 
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Cargando mapa...</Text>
-      </View>
-    );
+  const showInfoContain = useCallback((storeId) => {
+    const store = stores.find((s) => s.id === storeId);
+    setSelectedStore(store);
+    setShowAlertContain(true);
+  }, []);
+
+  const handleMarkerPress = useCallback((storeId) => {
+    const store = stores.find((s) => s.id === storeId);
+    setSelectedStore(store);
+    setShowAlert(true);
+  }, []);
+
+  const changeMapType = () => {
+    setMapTypeIndex((prevIndex) => {
+      const newIndex = (prevIndex + 1) % MAP_TYPES.length;
+      setColorMaker(ICON_COLORS_MAP[MAP_TYPES[newIndex]]);
+      return newIndex;
+    });
+  };
+
+  if (isLoading || origin === null) {
+    return renderLoading();
   }
 
   return (
-    <View style={STYLES_HOMESELLER.container}>
-      <MapView
-        style={styles.map}
-        ref={mapRef}
-        initialRegion={{
-          latitude: origin.latitude,
-          longitude: origin.longitude,
-          latitudeDelta: 0.05,
-          longitudeDelta: 0.05,
-        }}
-        showsUserLocation={true}
-        showsCompass={true}
-        rotateEnabled={true}
-      >
-        <Marker
-          draggable
-          coordinate={origin}
-          onDragEnd={(event) => setOrigin(event.nativeEvent.coordinate)}
-        >
-          <FontAwesome5 name="car-side" size={24} color="black" />
-        </Marker>
-
-        <Marker draggable coordinate={destination}>
-          <FontAwesome5 name="store" size={24} color="black" />
-        </Marker>
-
-        <MapViewDirections
-          origin={origin}
-          destination={destination}
-          apikey={GOOGLE_MAPS_KEY}
-          strokeColor="#34a853"
-          strokeWidth={5}
-          onError={(errorMessage) =>
-            alert("No se pudo calcular la ruta: " + errorMessage)
-          }
-        />
-      </MapView>
-
-      <View style={styles.floatingButtons}>
-        <TouchableOpacity
-          style={styles.mapButton}
-          onPress={() => openGoogleMaps(origin, destination)}
-        >
-          <FontAwesome5 name="map-marked-alt" size={20} color="#fff" />
-          <Text style={styles.buttonText}>Abrir en Google Maps</Text>
-        </TouchableOpacity>
-      </View>
-
+    <View style={HOME_STYLES.container}>
+      <MapComponent
+        mapRef={mapRef}
+        mapType={MAP_TYPES[mapTypeIndex]}
+        data={stores}
+        colorMaker={colorMaker}
+        origin={origin}
+        destination={destination}
+        onPress={handleMarkerPress}
+      />
+      <FloatingActionButtons
+        onMapTypeChange={changeMapType}
+        onOpenGoogleMaps={() => openGoogleMaps(origin, destination)}
+        navigation={navigation}
+      />
       <FloatingBar
         profileImage="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQv_oL1l60gN7zHc_fMS11OeFR-mLDi3DgjNg&s"
         userName="Armando Paredez"
       />
+
+      <FloatingButton
+        btnTop
+        iconLibrary={FontAwesome5}
+        nameIcon="bars"
+        onPress={() => navigation.openDrawer()}
+      />
+      <FloatingButton
+        btnButton
+        size={30}
+        iconLibrary={MaterialCommunityIcons}
+        nameIcon="face-agent"
+        onPress={() => showInfoContain(stores[0].id)}
+      />
+
+      {showAlertContain && (
+        <View style={styles.orderInfoContainer}>
+          <OrderInfo
+            stops={selectedStore.paradas}
+            setShowAlert={setShowAlert}
+          />
+        </View>
+      )}
+
+      {showAlert && (
+        <View style={theme.overlay}>
+          <AlertGoOrder orders={selectedStore} isVisible={setShowAlert} />
+        </View>
+      )}
     </View>
   );
 };
@@ -110,31 +156,18 @@ const styles = StyleSheet.create({
     bottom: 80,
     left: 10,
     flexDirection: "column",
-    justifyContent: "space-between",
-  },
-  mapButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#34a853",
-    padding: 10,
-    borderRadius: 10,
-    marginBottom: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 5,
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    marginLeft: 10,
-    fontWeight: "bold",
+    justifyContent: "flex-start",
   },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  orderInfoContainer: {
+    position: "absolute",
+    bottom: 83,
+    left: 10,
+    right: 10,
   },
 });
 

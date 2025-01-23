@@ -9,12 +9,12 @@ import PagerView from "react-native-pager-view";
 import { Xmark } from "iconoir-react-native";
 
 const DetailProduct = () => {
-  const img = {
-    images: [
-      require("../../assets/background.png"),
-      require("../../assets/XCampo.png"),
-    ],
-  };
+  // const img = {
+  //   images: [
+  //     require("../../assets/background.png"),
+  //     require("../../assets/XCampo.png"),
+  //   ],
+  // };
 
   return (
     <View style={styles.container}>
@@ -75,7 +75,7 @@ const DetailProduct = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: Constants.statusBarHeight,
+    marginTop: Constants.STATUSBAR_HEIGHTHeight,
     flex: 1,
     justifyContent: "space-evenly",
   },

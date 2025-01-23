@@ -1,18 +1,18 @@
 import React from "react";
 import { TouchableOpacity, StyleSheet, Text } from "react-native";
 
-import { BOTTOM_MARGIN } from "../utils/constants.js";
+import { MARGINS } from "../utils/constants.js";
 import theme from "../theme/theme.js";
 
 const styles = StyleSheet.create({
   button: {
-    flexDirection: "row",
     alignItems: "center",
     alignSelf: "center",
+    flexDirection: "row",
     justifyContent: "center",
     backgroundColor: theme.colors.green,
-    padding: 15,
     borderRadius: 8,
+    padding: 15,
     marginVertical: 10,
     elevation: 5,
     flex: 1,
@@ -26,6 +26,9 @@ const styles = StyleSheet.create({
   },
   buttonIcon: {
     marginRight: 5,
+  },
+  buttonFlexStart: {
+    alignSelf: "flex-start",
   },
   fab: {
     backgroundColor: theme.colors.green,
@@ -42,7 +45,7 @@ const styles = StyleSheet.create({
   },
   fabLocation: {
     position: "absolute",
-    bottom: BOTTOM_MARGIN,
+    bottom: MARGINS.default,
     right: 20,
   },
   logoutButton: {
@@ -71,6 +74,7 @@ export default function StyledButtonIcon(props) {
     nameIcon,
     iconLibrary: IconLibrary,
     logoutButton,
+    start,
     textBlack,
     colorIcons = theme.colors.white,
     size = 20,
@@ -79,15 +83,18 @@ export default function StyledButtonIcon(props) {
     style,
     ...restOfPro
   } = props;
+
   const buttonStyles = [
     styles.button,
-    logoutButton && styles.logoutButton,
     colorIcons,
+    logoutButton && styles.logoutButton,
     textBlack && styles.textBlack,
     btnFab && styles.fabLocation,
     fab && styles.fab,
+    start && styles.buttonFlexStart,
     style,
   ];
+
   const textStyles = [styles.buttonText];
 
   return (

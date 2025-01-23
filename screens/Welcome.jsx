@@ -1,18 +1,18 @@
-// eslint-disable-next-line no-unused-vars
-import react from "react";
+import React from "react";
 import { StyleSheet, View, Image, ImageBackground } from "react-native";
-import StyledText from "../src/styles/StyledText.jsx";
-import StyledButton from "../src/styles/StyledButton.jsx";
+import { useNavigation } from "@react-navigation/native";
 import {
   HomeSimpleDoor,
   EmojiTalkingHappy,
   ChatBubble,
 } from "iconoir-react-native";
+
 import theme from "../src/theme/theme.js";
 import string from "../src/string/string.js";
-import { useNavigation } from "@react-navigation/native";
+import StyledText from "../src/styles/StyledText.jsx";
+import StyledButton from "../src/styles/StyledButton.jsx";
 
-const WelcomePage = () => {
+export default function WelcomePage() {
   const navigation = useNavigation();
 
   return (
@@ -59,7 +59,7 @@ const WelcomePage = () => {
       </ImageBackground>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   containerComponent: {
@@ -89,5 +89,3 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
-
-export default WelcomePage;

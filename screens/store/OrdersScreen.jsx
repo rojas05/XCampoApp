@@ -7,11 +7,11 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import AntDesign from "@expo/vector-icons/AntDesign"; // Librería para iconos
+import AntDesign from "@expo/vector-icons/AntDesign";
 
-import { STYLES_HOMESELLER } from "../../src/utils/constants.js";
+import { HOME_STYLES } from "../../src/utils/constants.js";
 import { OrderListProducts } from "./GetOrderProducts.js";
-import { AlertOk } from "../../src/components/CustomAlert.jsx";
+import { AlertOk } from "../../src/components/Alerts/CustomAlert.jsx";
 import StyledButton from "../../src/styles/StyledButton.jsx";
 import theme from "../../src/theme/theme.js";
 
@@ -106,9 +106,9 @@ const OrdersScreen = ({ navigation }) => {
   );
 
   return (
-    <View style={STYLES_HOMESELLER.container}>
+    <View style={HOME_STYLES.container}>
       <Text style={styles.title}>Productos</Text>
-      <ScrollView contentContainerStyle={STYLES_HOMESELLER.scrollContainer}>
+      <ScrollView contentContainerStyle={HOME_STYLES.scrollContainer}>
         {renderOrder(orders[0], true)}
         {orders.slice(1).map((order) => renderOrder(order, false))}
       </ScrollView>

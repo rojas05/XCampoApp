@@ -1,4 +1,4 @@
-import React, { Children } from "react";
+import React from "react";
 import { Text, StyleSheet, Pressable } from "react-native";
 import theme from "../theme/theme.js";
 import { PlusCircle } from "iconoir-react-native";

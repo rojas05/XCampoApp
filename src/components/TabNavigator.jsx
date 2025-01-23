@@ -1,7 +1,7 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-import { WIDTH_SCREEN, BOTTOM_MARGIN } from "../utils/constants.js";
+import { WIDTH_SCREEN, MARGINS } from "../utils/constants.js";
 import theme from "../theme/theme.js";
 
 const Tab = createBottomTabNavigator();
@@ -12,7 +12,7 @@ const TabNavigator = ({ screens, numberOfOrders }) => {
       screenOptions={{
         tabBarStyle: {
           position: "relative",
-          bottom: BOTTOM_MARGIN,
+          bottom: MARGINS.default,
           width: WIDTH_SCREEN,
           alignSelf: "center",
           backgroundColor: "white",

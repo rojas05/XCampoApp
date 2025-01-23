@@ -53,7 +53,7 @@ const AlertOk = ({ visible, messege, onClose }) => {
         <View style={styles.alertContainer}>
           <Text style={styles.title}>{messege}</Text>
           <Image
-            source={require("../../assets/checkList.png")}
+            source={require("../../../assets/checkList.png")}
             style={styles.image}
           />
           <TouchableOpacity style={[styles.optionButton]} onPress={onClose}>
