@@ -1,10 +1,10 @@
 import React from "react";
-import TabNavigator from "../../src/components/TabNavigator.jsx";
 import Entypo from "@expo/vector-icons/Entypo";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
-import orders from "./ReservedOrdersScreen.jsx";
-import Map from "./MapScreen.jsx";
+import TabNavigator from "../../../src/components/TabNavigator.jsx";
+import orders from "../ReservedOrdersScreen.jsx";
+import Map from "../MapScreen.jsx";
 
 const HomeDelivery = () => {
   const screens = [

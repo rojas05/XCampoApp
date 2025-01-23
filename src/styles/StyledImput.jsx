@@ -31,8 +31,3 @@ const styles = StyleSheet.create({
 });
 
 export default StyledImput;
-<<<<<<< HEAD
-
-
-=======
->>>>>>> eb56ae6fa782673cb05f5b18082abb982f32ae4f

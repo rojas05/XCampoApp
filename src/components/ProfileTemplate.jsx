@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Entypo from "@expo/vector-icons/Entypo";
 
 import StyledButtonIcon from "../styles/StyledButtonIcon";
@@ -15,17 +16,35 @@ const ProfileTemplate = ({
   const getRoleBadge = (role) => {
     switch (role) {
       case "Administrador":
-        return { color: "#28a745", icon: "shield-checkmark-outline" };
+        return {
+          color: "#81c784",
+          icon: "shield-checkmark-outline",
+          iconLibrary: Entypo,
+        };
       case "Vendedor":
-        return { color: "#ffc107", icon: "shop" };
+        return { color: "#fff176", icon: "shop", iconLibrary: Entypo };
       case "Cliente":
-        return { color: "#007bff", icon: "person-outline" };
+        return {
+          color: "#64b5f6",
+          icon: "person-outline",
+          iconLibrary: Entypo,
+        };
+      case "Repartidor":
+        return {
+          color: "#ffb74d",
+          icon: "truck-delivery",
+          iconLibrary: MaterialCommunityIcons,
+        };
       default:
-        return { color: "#6c757d", icon: "help-circle-outline" };
+        return {
+          color: "#6c757d",
+          icon: "help-circle-outline",
+          iconLibrary: Entypo,
+        };
     }
   };
 
-  const { color, icon } = getRoleBadge(role);
+  const { color, icon, iconLibrary } = getRoleBadge(role);
 
   return (
     <View style={styles.container}>
@@ -53,7 +72,12 @@ const ProfileTemplate = ({
 
       {/* Role Badge */}
       <View style={[styles.roleBadge, { backgroundColor: color }]}>
-        <Entypo name={icon} size={20} color="#000 " style={styles.roleIcon} />
+        {React.createElement(iconLibrary, {
+          name: icon,
+          size: 20,
+          color: "#000",
+          style: styles.roleIcon,
+        })}
         <Text style={{ color: "#000", fontWeight: "bold" }}>{role}</Text>
       </View>
     </View>
@@ -161,7 +185,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "flex-start",
     justifyContent: "space-between",
-    marginBottom: 10,
   },
   locationIcon: {
     marginRight: 3,

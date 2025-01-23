@@ -1,53 +1,72 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView, Image } from "react-native";
+import { View, Text, StyleSheet, FlatList, Image } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
-import { STYLES_HOMESELLER } from "../../src/utils/constants.js";
+import { HOME_STYLES } from "../../src/utils/constants.js";
 import StyledButtonIcon from "../../src/styles/StyledButtonIcon.jsx";
 import StyledButton from "../../src/styles/StyledButton.jsx";
 import TEXTS from "../../src/string/string.js";
 import theme from "../../src/theme/theme.js";
+import SearchBar from "../../src/components/SearchBar.jsx";
 
-const ProductCard = ({
-  image,
-  name,
-  price,
-  unit,
-  stock,
-  description,
-  onEdit,
-  onSales,
-}) => {
-  return (
-    <View style={styles.card}>
-      <Image source={{ uri: image }} style={styles.productImage} />
-      <View style={styles.cardContent}>
-        <Text style={styles.productName}>{name}</Text>
-        <Text style={styles.productDescription}>{description}</Text>
-        <Text style={styles.productData}>
-          Unidad: <Text style={styles.productValue}>{unit}</Text>
-        </Text>
-        <Text style={styles.productData}>
-          Precio: <Text style={styles.productValue}>${price}</Text>
-        </Text>
-        <Text style={styles.productData}>
-          Inventario disponible:{" "}
-          <Text style={styles.productValue}>{stock} Und</Text>
-        </Text>
+const products = [
+  {
+    id: "1",
+    image: "https://via.placeholder.com/150",
+    name: "Manzanas",
+    price: "2.50",
+    unit: "Kg",
+    stock: "25",
+    description: "Manzanas frescas y jugosas.",
+  },
+  {
+    id: "2",
+    image: "https://via.placeholder.com/150",
+    name: "Leche",
+    price: "1.20",
+    unit: "Litro",
+    stock: "40",
+    description: "Leche fresca y pasteurizada.",
+  },
+  {
+    id: "3",
+    image: "https://via.placeholder.com/150",
+    name: "Pan",
+    price: "0.80",
+    unit: "Pieza",
+    stock: "100",
+    description: "Pan recién horneado.",
+  },
+];
 
-        <View style={styles.cardButtons}>
-          <StyledButton green title="Ventas" onPress={onSales} />
+const ProductCard = ({ product, onEdit, onSales }) => (
+  <View style={styles.card}>
+    <Image source={{ uri: product.image }} style={styles.productImage} />
+    <View style={styles.cardContent}>
+      <Text style={styles.productName}>{product.name}</Text>
+      <Text style={styles.productDescription}>{product.description}</Text>
+      <Text style={styles.productData}>
+        Unidad: <Text style={styles.productValue}>{product.unit}</Text>
+      </Text>
+      <Text style={styles.productData}>
+        Precio: <Text style={styles.productValue}>${product.price}</Text>
+      </Text>
+      <Text style={styles.productData}>
+        Inventario disponible:{" "}
+        <Text style={styles.productValue}>{product.stock} Und</Text>
+      </Text>
 
-          <StyledButtonIcon
-            nameIcon="edit"
-            iconLibrary={MaterialIcons}
-            onPress={() => onEdit(name)}
-          />
-        </View>
+      <View style={styles.cardButtons}>
+        <StyledButton green title="Ventas" onPress={onSales} />
+        <StyledButtonIcon
+          nameIcon="edit"
+          iconLibrary={MaterialIcons}
+          onPress={() => onEdit(product.name)}
+        />
       </View>
     </View>
-  );
-};
+  </View>
+);
 
 const ProductsScreen = ({ navigation }) => {
   const handleEdit = (name) => {
@@ -61,74 +80,21 @@ const ProductsScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={STYLES_HOMESELLER.container}>
+    <View style={HOME_STYLES.container}>
       <Text style={styles.title}>Productos</Text>
-
-      <ScrollView
+      <SearchBar />
+      <FlatList
+        data={products}
+        keyExtractor={(item) => item.id}
         contentContainerStyle={{ paddingHorizontal: 10, paddingBottom: 85 }}
-      >
-        <ProductCard
-          image="https://via.placeholder.com/150"
-          name="Manzanas"
-          price="2.50"
-          unit="Kg"
-          stock="25"
-          description="Manzanas frescas y jugosas."
-          onEdit={handleEdit}
-          onSales={handleSales}
-        />
-        <ProductCard
-          image="https://via.placeholder.com/150"
-          name="Leche"
-          price="1.20"
-          unit="Litro"
-          stock="40"
-          description="Leche fresca y pasteurizada."
-          onEdit={handleEdit}
-          onSales={handleSales}
-        />
-        <ProductCard
-          image="https://via.placeholder.com/150"
-          name="Pan"
-          price="0.80"
-          unit="Pieza"
-          stock="100"
-          description="Pan recién horneado."
-          onEdit={handleEdit}
-          onSales={handleSales}
-        />
-        <ProductCard
-          image="https://via.placeholder.com/150"
-          name="Pan"
-          price="0.80"
-          unit="Pieza"
-          stock="100"
-          description="Pan recién horneado."
-          onEdit={handleEdit}
-          onSales={handleSales}
-        />
-        <ProductCard
-          image="https://via.placeholder.com/150"
-          name="Pan"
-          price="0.80"
-          unit="Pieza"
-          stock="100"
-          description="Pan recién horneado."
-          onEdit={handleEdit}
-          onSales={handleSales}
-        />
-        <ProductCard
-          image="https://via.placeholder.com/150"
-          name="Pan"
-          price="0.80"
-          unit="Pieza"
-          stock="100"
-          description="Pan recién horneado."
-          onEdit={handleEdit}
-          onSales={handleSales}
-        />
-      </ScrollView>
-
+        renderItem={({ item }) => (
+          <ProductCard
+            product={item}
+            onEdit={handleEdit}
+            onSales={handleSales}
+          />
+        )}
+      />
       <StyledButtonIcon
         fab
         btnFab
@@ -151,13 +117,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
-    marginVertical: 10,
+    marginTop: 15,
   },
   card: {
     flexDirection: "row",
-    backgroundColor: "#fff",
+    backgroundColor: theme.colors.white,
     borderRadius: 8,
-    shadowColor: "#000",
+    shadowColor: theme.colors.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
@@ -182,7 +148,7 @@ const styles = StyleSheet.create({
   },
   productDescription: {
     fontSize: 14,
-    color: "#666",
+    color: theme.colors.greyBlack,
     marginVertical: 8,
   },
   productData: {

@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   StyleSheet,
   TouchableOpacity,
   Image,
@@ -10,18 +9,26 @@ import {
 } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
-import { openCamera, openGallery } from "../../src/utils/ImagePickerHandler.js";
-import { STYLES_HOMESELLER } from "../../src/utils/constants.js";
-import CustomPicker from "../../src/components/InputSelect.jsx";
+import { openCamera, openGallery } from "../../src/utils/ImagePickerHandler";
+import { HOME_STYLES } from "../../src/utils/constants";
+import CustomPicker from "../../src/components/InputSelect";
+import { CustomAlert, AlertOk } from "../../src/components/Alerts/CustomAlert";
 import {
-  CustomAlert,
-  AlertOk,
-  handleLongPress,
-} from "../../src/components/CustomAlert.jsx";
-import StyledButton from "../../src/styles/StyledButton.jsx";
-import StyledButtonIncrement from "../../src/styles/StyledButtonIncrement.jsx";
-import TEXTS from "../../src/string/string.js";
-import Color from "../../src/theme/theme.js";
+  CustomInput,
+  CustomInputPrice,
+} from "../../src/components/InputCustom";
+import StyledButton from "../../src/styles/StyledButton";
+import StyledButtonIncrement from "../../src/styles/StyledButtonIncrement";
+import TEXTS from "../../src/string/string";
+import Color from "../../src/theme/theme";
+
+const UNIDADES = [
+  { label: "Kg", value: "kg" },
+  { label: "Litro", value: "litro" },
+  { label: "Metro", value: "metro" },
+  { label: "Pieza", value: "pieza" },
+  { label: "Libra", value: "libra" },
+];
 
 const validateForm = (form, imagen, setErrors) => {
   const newErrors = {};
@@ -39,16 +46,9 @@ const validateForm = (form, imagen, setErrors) => {
   return Object.keys(newErrors).length === 0;
 };
 
-const unidades = [
-  { label: "Kg", value: "kg" },
-  { label: "Litro", value: "litro" },
-  { label: "Metro", value: "metro" },
-  { label: "Pieza", value: "pieza" },
-  { label: "Libra", value: "helloo" },
-];
-
 const RegisterProducts = ({ route }) => {
   const { title } = route.params;
+
   const [form, setForm] = useState({
     productName: "",
     productDescription: "",
@@ -57,10 +57,16 @@ const RegisterProducts = ({ route }) => {
     productPrice: "",
     stock: "",
   });
+
   const [imagen, setImagen] = useState([]);
   const [errors, setErrors] = useState({});
   const [isAlertVisible, setAlertVisible] = useState(false);
   const [isAlertOkVisible, setAlertOkVisible] = useState(false);
+
+  const handleInputChange = (field, value) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => ({ ...prev, [field]: null }));
+  };
 
   const handleSubmit = () => {
     if (validateForm(form, imagen, setErrors)) {
@@ -68,24 +74,12 @@ const RegisterProducts = ({ route }) => {
     }
   };
 
-  const incrementarStock = () =>
-    handleInputChange("stock", (parseInt(form.stock || 4) + 1).toString());
-
-  const handleInputChange = (field, value) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
-    setErrors((prev) => ({ ...prev, [field]: null }));
+  const incrementarStock = () => {
+    const currentStock = parseInt(form.stock || 4, 10);
+    handleInputChange("stock", (currentStock + 1).toString());
   };
 
-  const handleInputProps = ({ value, error, setName, field }) => ({
-    placeholder: error || TEXTS.homeSeller[field],
-    placeholderTextColor: error ? "red" : "gray",
-    value,
-    onChangeText: (text) => {
-      handleInputChange(setName, text);
-    },
-  });
-
-  const handleChangePrice = (text) => {
+  const formatPrice = (text) => {
     const numericText = text.replace(/[^0-9]/g, "");
     const formattedText = numericText.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     handleInputChange("productPrice", formattedText);
@@ -104,119 +98,22 @@ const RegisterProducts = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>{title}</Text>
-      {/* Imagen */}
-      <View style={styles.imageContainer}>
-        {imagen.length > 0 ? (
-          imagen.map((uri, index) => (
-            <TouchableOpacity
-              key={index}
-              onLongPress={() => handleLongPress(index, imagen, setImagen)}
-            >
-              <Image source={{ uri }} style={STYLES_HOMESELLER.imageTop} />
-            </TouchableOpacity>
-          ))
-        ) : (
-          <Text
-            style={{
-              color: errors.imagen ? "red" : "black",
-            }}
-          >
-            {errors.imagen || "Seleccione una imagen."}
-          </Text>
-        )}
-      </View>
+      <Text style={styles.title}>{title}</Text>
 
-      {/* Input Name y Category */}
-      <View style={styles.inputContainer}>
-        <View style={styles.inputColumn}>
-          <TextInput
-            style={[
-              STYLES_HOMESELLER.input,
-              errors.productName && styles.inputError,
-            ]}
-            {...handleInputProps({
-              value: form.productName,
-              error: errors.productName,
-              setName: "productName",
-              field: "PRODUCT_NAME",
-            })}
-          />
-          <TextInput
-            style={[
-              STYLES_HOMESELLER.input,
-              errors.categoria && styles.inputError,
-            ]}
-            {...handleInputProps({
-              value: form.categoria,
-              error: errors.categoria,
-              setName: "categoria",
-              field: "CATEGORY",
-            })}
-          />
-        </View>
-        <TouchableOpacity style={styles.iconButton} onPress={handleAddImage}>
-          <AntDesign name="picture" size={35} color="black" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Descripción */}
-      <TextInput
-        style={[
-          STYLES_HOMESELLER.inputDescription,
-          errors.categoria && styles.inputError,
-        ]}
-        {...handleInputProps({
-          value: form.productDescription,
-          error: errors.productDescription,
-          setName: "productDescription",
-          field: "DESCRIPTION",
-        })}
-        multiline={true}
-        numberOfLines={5}
-        textAlignVertical="top"
+      <ImageSelector
+        imagen={imagen}
+        errors={errors}
+        handleLongPress={setImagen}
       />
 
-      {/* Input Selection */}
-      <CustomPicker
-        value={form.unidad}
-        setValue={(value) => handleInputChange("unidad", value)}
-        items={unidades}
-        error={errors.unidad}
+      <FormInputs
+        form={form}
+        errors={errors}
+        handleInputChange={handleInputChange}
+        formatPrice={formatPrice}
+        incrementarStock={incrementarStock}
+        handleAddImage={handleAddImage}
       />
-
-      {/* Input Price y Stock */}
-      <View style={styles.rowContainer}>
-        <TextInput
-          style={[
-            STYLES_HOMESELLER.input,
-            styles.halfWidth,
-            errors.productPrice && styles.inputError,
-          ]}
-          placeholder={errors.productPrice || TEXTS.homeSeller.PRICE}
-          placeholderTextColor={errors.productPrice ? "red" : "gray"}
-          keyboardType="numeric"
-          value={form.productPrice ? `$ ${form.productPrice}` : ""}
-          onChangeText={handleChangePrice}
-        />
-        <View
-          style={[
-            STYLES_HOMESELLER.input,
-            styles.halfWidth,
-            styles.stockContainer,
-            errors.stock && styles.inputError,
-          ]}
-        >
-          <TextInput
-            placeholder={errors.stock || TEXTS.homeSeller.STOCK}
-            placeholderTextColor={errors.productPrice ? "red" : "gray"}
-            keyboardType="numeric"
-            value={form.stock}
-            onChangeText={(text) => handleInputChange("stock", text)}
-          />
-          <StyledButtonIncrement text="+" onPress={incrementarStock} />
-        </View>
-      </View>
 
       <StyledButton
         yellow
@@ -225,13 +122,13 @@ const RegisterProducts = ({ route }) => {
         title={TEXTS.homeSeller.ADD_PRODUCT}
       />
 
-      {/* Alert selection imagen */}
       <CustomAlert
         visible={isAlertVisible}
         onClose={() => setAlertVisible(false)}
         onCamera={() => openCamera(setImagen, setAlertVisible)}
         onGallery={() => openGallery(setImagen, setAlertVisible)}
       />
+
       <AlertOk
         visible={isAlertOkVisible}
         messege="¡Producto agregado con éxito!"
@@ -241,6 +138,93 @@ const RegisterProducts = ({ route }) => {
   );
 };
 
+const ImageSelector = ({ imagen, errors, handleLongPress }) => (
+  <View style={styles.imageContainer}>
+    {imagen.length > 0 ? (
+      imagen.map((uri, index) => (
+        <TouchableOpacity
+          key={index}
+          onLongPress={() => handleLongPress(index)}
+        >
+          <Image source={{ uri }} style={HOME_STYLES.imageTop} />
+        </TouchableOpacity>
+      ))
+    ) : (
+      <Text style={{ color: errors.imagen ? "red" : "black" }}>
+        {errors.imagen || "Seleccione una imagen."}
+      </Text>
+    )}
+  </View>
+);
+
+const FormInputs = ({
+  form,
+  errors,
+  handleInputChange,
+  formatPrice,
+  incrementarStock,
+  handleAddImage,
+}) => (
+  <>
+    <View style={styles.inputContainer}>
+      <View style={styles.inputColumn}>
+        <CustomInput
+          value={form.productName}
+          placeholder="Nombre del producto"
+          onChangeText={(value) => handleInputChange("productName", value)}
+          errorMessage={errors.productName}
+        />
+        <CustomInput
+          value={form.categoria}
+          placeholder="Categoría"
+          onChangeText={(value) => handleInputChange("categoria", value)}
+          errorMessage={errors.categoria}
+        />
+      </View>
+      <TouchableOpacity style={styles.iconButton} onPress={handleAddImage}>
+        <AntDesign name="picture" size={35} color="black" />
+      </TouchableOpacity>
+    </View>
+
+    <CustomInput
+      value={form.productDescription}
+      placeholder="Descripción del producto"
+      onChangeText={(value) => handleInputChange("productDescription", value)}
+      errorMessage={errors.productDescription}
+      multiline
+      numberOfLines={4}
+      style={{ height: 100 }}
+    />
+
+    <CustomPicker
+      value={form.unidad}
+      setValue={(value) => handleInputChange("unidad", value)}
+      items={UNIDADES}
+      error={errors.unidad}
+    />
+
+    <View style={styles.rowContainer}>
+      <CustomInputPrice
+        value={form.productPrice ? `$ ${form.productPrice}` : ""}
+        placeholder="Precio"
+        onChangeText={formatPrice}
+        errorMessage={errors.productPrice}
+        keyboardType="numeric"
+      />
+      <View style={[styles.halfWidth, styles.stockContainer]}>
+        <CustomInputPrice
+          value={form.stock}
+          placeholder="Stock"
+          onChangeText={(value) => handleInputChange("stock", value)}
+          errorMessage={errors.stock}
+          keyboardType="numeric"
+        />
+        <StyledButtonIncrement text="+" onPress={incrementarStock} />
+      </View>
+    </View>
+  </>
+);
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -248,7 +232,7 @@ const styles = StyleSheet.create({
     backgroundColor: Color.colors.grey,
     padding: 20,
   },
-  titulo: {
+  title: {
     fontSize: 30,
     fontWeight: "bold",
     marginBottom: 20,
@@ -267,9 +251,6 @@ const styles = StyleSheet.create({
     flex: 0.6,
     marginRight: 10,
   },
-  inputError: {
-    borderColor: "red",
-  },
   iconButton: {
     backgroundColor: Color.colors.greenMedium,
     borderRadius: 5,
@@ -281,18 +262,16 @@ const styles = StyleSheet.create({
   },
   rowContainer: {
     flexDirection: "row",
-    marginBottom: 5,
+    marginBottom: 10,
   },
   halfWidth: {
-    flex: 0.6,
-    marginRight: 10,
+    flex: 1,
   },
   stockContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    borderBottomWidth: 1,
-    borderWidth: 0,
+    alignSelf: "center",
+    justifyContent: "center",
   },
 });
 

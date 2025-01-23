@@ -2,40 +2,45 @@ import Constants from "expo-constants";
 import { Dimensions } from "react-native";
 import theme from "../theme/theme.js";
 
-const { width } = Dimensions.get("screen");
+const { width: SCREEN_WIDTH } = Dimensions.get("screen");
+const WIDTH_SCREEN = SCREEN_WIDTH * 0.9;
+const STATUSBAR_HEIGHT = Constants.statusBarHeight;
+const MARGINS = {
+  default: STATUSBAR_HEIGHT - 10,
+  basic: STATUSBAR_HEIGHT,
+};
 
-const WIDTH_SCREEN = width * 0.9;
-const BOTTOM_MARGIN = Constants.statusBarHeight - 10;
-const STATUSBAR = Constants.statusBarHeight;
+const ICON_COLORS_MAP = {
+  standard: "#000",
+  hybrid: "#fff",
+  terrain: "#ff6347",
+};
 
-export { WIDTH_SCREEN, BOTTOM_MARGIN, STATUSBAR };
+/**
+ * Formatea el precio en un formato legible con puntos como separadores de miles.
+ * @param {string | number} text - El texto o número a formatear.
+ * @returns {string} - Texto formateado.
+ */
+const formatPrice = (text) => {
+  if (!text) return "0";
+  const numericText = String(text).replace(/[^0-9]/g, "");
+  return numericText.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
 
-export const STYLES_HOMESELLER = {
+const HOME_STYLES = {
   container: {
     flex: 1,
     backgroundColor: theme.colors.grey,
-    paddingTop: STATUSBAR,
+    paddingTop: STATUSBAR_HEIGHT,
+  },
+  containerCentered: {
+    flex: 1,
+    backgroundColor: theme.colors.grey,
+    alignItems: "center",
   },
   scrollContainer: {
     paddingHorizontal: 10,
     paddingBottom: 30,
-  },
-  input: {
-    height: 50,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 10,
-    paddingLeft: 10,
-  },
-  inputDescription: {
-    height: 100,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    textAlignVertical: "top",
-    marginBottom: 10,
-    paddingLeft: 10,
   },
   imageTop: {
     width: 170,
@@ -45,11 +50,20 @@ export const STYLES_HOMESELLER = {
     elevation: 8,
   },
   button: {
-    backgroundColor: "#98d187",
+    backgroundColor: theme.colors.success || "#98d187",
     borderRadius: 5,
     padding: 10,
     height: 100,
     justifyContent: "center",
     alignItems: "center",
   },
+};
+
+export {
+  WIDTH_SCREEN,
+  MARGINS,
+  STATUSBAR_HEIGHT,
+  ICON_COLORS_MAP,
+  formatPrice,
+  HOME_STYLES,
 };

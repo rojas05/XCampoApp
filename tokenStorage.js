@@ -1,8 +1,9 @@
-import * as SecureStore from 'expo-secure-store';
+// eslint-disable-next-line import/no-unresolved
+import * as SecureStore from "expo-secure-store";
 
-const ACCESS_TOKEN_KEY = 'accessToken';
-const REFRESH_TOKEN_KEY = 'refreshToken';
-const API_URL = "http://192.168.0.121:8080/XCampo/api/v1/auth"
+const ACCESS_TOKEN_KEY = "accessToken";
+const REFRESH_TOKEN_KEY = "refreshToken";
+const API_URL = "http://192.168.0.121:8080/XCampo/api/v1/auth";
 
 /**
  * Guarda un token en SecureStore
@@ -11,10 +12,10 @@ const API_URL = "http://192.168.0.121:8080/XCampo/api/v1/auth"
  */
 export const saveToken = async (key, token) => {
   try {
-    const stringToken = await JSON.stringify(token)
+    const stringToken = await JSON.stringify(token);
     await SecureStore.setItemAsync(key, stringToken);
   } catch (error) {
-    console.error('Error al guardar el token:', error);
+    console.error("Error al guardar el token:", error);
   }
 };
 
@@ -26,9 +27,9 @@ export const saveToken = async (key, token) => {
 export const getToken = async (key) => {
   try {
     const token = await SecureStore.getItemAsync(key);
-    return token.replace(/"/g, '')
+    return token.replace(/"/g, "");
   } catch (error) {
-    console.log('Error al obtener el token:', error);
+    console.log("Error al obtener el token:", error);
     return null;
   }
 };
@@ -41,7 +42,7 @@ export const deleteToken = async (key) => {
   try {
     await SecureStore.deleteItemAsync(key);
   } catch (error) {
-    console.error('Error al eliminar el token:', error);
+    console.error("Error al eliminar el token:", error);
   }
 };
 
@@ -53,20 +54,22 @@ export const refreshAccessToken = async () => {
   const refreshToken = await getToken(REFRESH_TOKEN_KEY);
 
   if (!refreshToken) {
-    console.warn('No se encontró un refresh token para actualizar el access token.');
+    console.warn(
+      "No se encontró un refresh token para actualizar el access token.",
+    );
     return false;
   }
 
   try {
     const response = await fetch(`${API_URL}/refresh`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refreshToken }),
     });
 
     if (!response.ok) {
       console.warn(refreshToken);
-      console.warn('Error al actualizar el access token:', response.status);
+      console.warn("Error al actualizar el access token:", response.status);
       return false;
     }
 
@@ -77,22 +80,23 @@ export const refreshAccessToken = async () => {
       await saveToken(REFRESH_TOKEN_KEY, data.refreshToken);
       return data.accessToken;
     } else {
-      console.warn('Respuesta inválida al actualizar el access token:', data);
+      console.warn("Respuesta inválida al actualizar el access token:", data);
       return false;
     }
   } catch (error) {
-    console.error('Error al realizar la solicitud para actualizar el access token:', error);
+    console.error(
+      "Error al realizar la solicitud para actualizar el access token:",
+      error,
+    );
     return false;
   }
-
-  
 };
 
 // Función para hacer solicitudes con un Access Token
-export async function fetchWithToken(url, options = {},) {
+export async function fetchWithToken(url, options = {}) {
   try {
     // Obtén el Access Token
-    let accessToken = await getToken('accessToken');
+    let accessToken = await getToken("accessToken");
 
     // Agrega el token al encabezado de la solicitud
     const headers = {
@@ -100,23 +104,21 @@ export async function fetchWithToken(url, options = {},) {
       Authorization: `Bearer ${accessToken}`,
     };
 
-    let response = await fetch(url, { ...options, headers,});
+    let response = await fetch(url, { ...options, headers });
 
     // Si el token está expirado (respuesta 403), intenta renovarlo y vuelve a hacer la solicitud
     if (response.status === 403) {
-      console.log('Access token expired. Attempting to refresh...');
+      console.log("Access token expired. Attempting to refresh...");
       accessToken = await refreshAccessToken(); // Renueva el access token
 
       // Reintenta la solicitud con el nuevo token
       headers.Authorization = `Bearer ${accessToken}`;
       response = await fetch(url, { ...options, headers });
-      
     }
 
     return response; // Devuelve la respuesta de la solicitud
   } catch (error) {
-    console.error('Error in fetchWithToken:', error);
+    console.error("Error in fetchWithToken:", error);
     throw error;
   }
 }
-

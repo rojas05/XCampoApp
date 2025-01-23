@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
-import { STATUSBAR } from "../../src/utils/constants.js";
+import { STATUSBAR_HEIGHT } from "../../src/utils/constants.js";
 
 const ChatHeader = ({ navigation }) => {
   return (
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 10,
-    paddingTop: STATUSBAR + 10,
+    paddingTop: STATUSBAR_HEIGHT + 10,
     backgroundColor: "#f4f5ed",
     borderBottomWidth: 1,
     borderBottomColor: "#dddddd",

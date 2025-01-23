@@ -74,7 +74,7 @@ const DetailOrder = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: Constants.statusBarHeight,
+    marginTop: Constants.STATUSBAR_HEIGHTHeight,
   },
   header: {
     width: "100%",

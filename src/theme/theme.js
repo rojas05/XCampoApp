@@ -1,53 +1,40 @@
 const theme = {
-<<<<<<< HEAD
-    colors: {
-        textPrimary: '#2c2841',
-        primary: '#ffff',
-        greenText: '#2da10a',
-        black: '#121010',
-        red: '#f33322',
-        redLinht: '#fe857f',
-        redBlack: '#bd3124',
-        greenLiht: '#c5e5bc',
-        greenMedium: '#98d187',
-        green: '#42aa21',
-        yellow: '#f9ba00',
-        grey:'#f4f5ed',
-        opacity: "#ffffffa0",
-        greenOpacity: "#e7eddf",
-        greyMedium: "#ccc",
-        white: "#fff",
-        blue: "blue"
-    },
-    fontSizes:{
-        body:18,
-        titles:22
-    }
-}
-=======
   colors: {
     textPrimary: "#2c2841",
     primary: "#ffff",
     greenText: "#2da10a",
     black: "#121010",
+    blue: "#3498db",
+    blueLiht: "#d6eaf9",
     red: "#f33322",
     redLinht: "#fe857f",
     redBlack: "#bd3124",
     greenLiht: "#c5e5bc",
+    greenOpacity: "#e7eddf",
     greenMedium: "#98d187",
     green: "#42aa21",
     yellow: "#f9ba00",
     grey: "#f4f5ed",
-    opacity: "#ffffffa0",
-    greenOpacity: "#e7eddf",
     greyMedium: "#ccc",
+    greyBlack: "#888",
+    opacity: "#ffffffa0",
     white: "#fff",
   },
   fontSizes: {
     body: 18,
     titles: 22,
   },
+  overlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 999,
+  },
 };
->>>>>>> eb56ae6fa782673cb05f5b18082abb982f32ae4f
 
 export default theme;

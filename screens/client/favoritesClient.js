@@ -10,29 +10,9 @@ const FavoriteClient = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <StyledText bold title>
-          {" "}
-          {string.client.favoriteStore}{" "}
+          {string.client.favoriteStore}
         </StyledText>
       </View>
-
-<<<<<<< HEAD
-    return(
-
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <StyledText bold title> {string.client.favoriteStore} </StyledText>   
-            </View>
-
-            <View style={styles.containerScroll}>
-                
-            </View>
-
-        </View>
-
-    )
-
-}
-=======
       <View style={styles.containerScroll}>
         <ScrollView style={styles.scroll}>
           <StyledItemProduct store></StyledItemProduct>
@@ -41,11 +21,10 @@ const FavoriteClient = () => {
     </View>
   );
 };
->>>>>>> eb56ae6fa782673cb05f5b18082abb982f32ae4f
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: Constants.statusBarHeight,
+    marginTop: Constants.STATUSBAR_HEIGHTHeight,
   },
   header: {
     flexDirection: "row",

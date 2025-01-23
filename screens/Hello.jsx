@@ -1,4 +1,4 @@
-import react from "react";
+import React from "react";
 import { StyleSheet, View, Image, ImageBackground } from "react-native";
 import StyledText from "../src/styles/StyledText.jsx";
 import StyledButton from "../src/styles/StyledButton.jsx";

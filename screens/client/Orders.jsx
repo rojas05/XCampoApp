@@ -1,8 +1,9 @@
 import React from "react";
-import { View, StyleSheet, FlatList } from "react-native";
-import StyledText from "../../src/styles/StyledText";
 import Constants from "expo-constants";
 import { Xmark } from "iconoir-react-native";
+import { View, StyleSheet, FlatList } from "react-native";
+
+import StyledText from "../../src/styles/StyledText";
 import StyledItemOrder from "../../src/styles/StyledItemOrder";
 
 const Orders = () => {
@@ -58,7 +59,7 @@ const Orders = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: Constants.statusBarHeight,
+    marginTop: Constants.STATUSBAR_HEIGHTHeight,
     alignItems: "center",
   },
   header: {
@@ -81,8 +82,8 @@ const styles = StyleSheet.create({
     borderColor: "gray",
   },
   columnWrapper: {
-    justifyContent: "space-around", // Espaciado uniforme entre columnas
-    marginBottom: 10, // Espaciado vertical entre filas
+    justifyContent: "space-around",
+    marginBottom: 10,
   },
 });
 

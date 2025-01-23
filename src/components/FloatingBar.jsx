@@ -12,7 +12,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import theme from "../theme/theme";
 
 const FloatingBar = ({ profileImage, userName }) => {
-  const [isExpanded, setIsExpanded] = useState(false); // Maneja el estado de la expansión
+  const [isExpanded, setIsExpanded] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedCities, setSelectedCities] = useState([]);
 
@@ -25,13 +25,13 @@ const FloatingBar = ({ profileImage, userName }) => {
     "Bucaramanga",
     "Manizales",
     "Pereira",
-  ]; // Lista de ciudades disponibles
+  ];
 
   const handleCitySelect = (city) => {
     if (selectedCities.includes(city)) {
-      setSelectedCities(selectedCities.filter((c) => c !== city)); // Deseleccionar
+      setSelectedCities(selectedCities.filter((c) => c !== city));
     } else if (selectedCities.length < 3) {
-      setSelectedCities([...selectedCities, city]); // Agregar si hay espacio
+      setSelectedCities([...selectedCities, city]);
     }
   };
 
