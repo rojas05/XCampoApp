@@ -5,6 +5,7 @@ import { View, StyleSheet, FlatList } from "react-native";
 
 import StyledText from "../../src/styles/StyledText";
 import StyledItemOrder from "../../src/styles/StyledItemOrder";
+import theme from "../../src/theme/theme";
 
 const Orders = () => {
   const items = Array.from({ length: 11 }, (_, index) => `Item ${index + 1}`);
@@ -58,32 +59,32 @@ const Orders = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: Constants.STATUSBAR_HEIGHTHeight,
-    alignItems: "center",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
-  },
-  containerOrdenes: {
-    width: "95%",
-    height: "30%",
-    marginEnd: 10,
-    borderBottomWidth: 1,
-    borderColor: "gray",
-  },
-  containerOrdenesReady: {
-    width: "95%",
-    height: "70%",
-    marginEnd: 10,
-    borderBottomWidth: 1,
-    borderColor: "gray",
-  },
   columnWrapper: {
     justifyContent: "space-around",
     marginBottom: 10,
+  },
+  container: {
+    alignItems: "center",
+    marginTop: Constants.STATUSBAR_HEIGHTHeight,
+  },
+  containerOrdenes: {
+    borderBottomWidth: 1,
+    borderColor: theme.colors.greyMedium,
+    height: "30%",
+    marginEnd: 10,
+    width: "95%",
+  },
+  containerOrdenesReady: {
+    borderBottomWidth: 1,
+    borderColor: theme.colors.greyMedium,
+    height: "70%",
+    marginEnd: 10,
+    width: "95%",
+  },
+  header: {
+    alignItems: "center",
+    flexDirection: "row",
+    width: "100%",
   },
 });
 

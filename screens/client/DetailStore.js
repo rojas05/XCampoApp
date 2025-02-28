@@ -177,6 +177,7 @@ const styles = StyleSheet.create({
     padding: 10,
     width: "100%",
   },
+  // eslint-disable-next-line react-native/no-unused-styles
   containerItemInfo: {
     flexDirection: "row",
     width: "100%",
@@ -209,6 +210,7 @@ const styles = StyleSheet.create({
     right: "30%",
     width: "40%",
   },
+  // eslint-disable-next-line react-native/no-unused-styles
   gridItem: {
     backgroundColor: theme.colors.primary,
     borderRadius: 10,
@@ -216,6 +218,7 @@ const styles = StyleSheet.create({
     margin: 5,
     width: 150,
   },
+  // eslint-disable-next-line react-native/no-unused-styles
   imageItem: {
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,

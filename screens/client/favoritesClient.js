@@ -26,19 +26,19 @@ const styles = StyleSheet.create({
   container: {
     marginTop: Constants.STATUSBAR_HEIGHTHeight,
   },
+  containerScroll: {
+    alignItems: "center",
+    with: 1,
+  },
   header: {
+    alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-around",
-    alignItems: "center",
   },
   scroll: {
-    with: 300,
-    padding: "auto",
     marginTop: 20,
-  },
-  containerScroll: {
-    with: 1,
-    alignItems: "center",
+    padding: "auto",
+    with: 300,
   },
 });
 

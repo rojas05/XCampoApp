@@ -187,6 +187,7 @@ const styles = StyleSheet.create({
     marginEnd: 10,
     width: "30%",
   },
+  // eslint-disable-next-line react-native/no-unused-styles
   containerPikerDomicilio: {
     backgroundColor: theme.colors.yellow,
     borderRadius: 8,
@@ -194,6 +195,7 @@ const styles = StyleSheet.create({
     height: 30,
     width: "30%",
   },
+  // eslint-disable-next-line react-native/no-unused-styles
   containerPikerLocation: {
     backgroundColor: theme.colors.primary,
     borderColor: theme.colors.black,
@@ -204,10 +206,12 @@ const styles = StyleSheet.create({
     marginEnd: 10,
     width: "45%",
   },
+  // eslint-disable-next-line react-native/no-unused-styles
   containerScroll: {
     alignItems: "center",
     height: "40%",
   },
+  // eslint-disable-next-line react-native/no-unused-styles
   containerScrollVertical: {
     alignItems: "center",
     height: "40%",
