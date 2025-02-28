@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import MessageBubble from "./ChatMessages";
+import theme from "../../src/theme/theme";
 
 const ChatScreen = ({ userRole = "vendedor" }) => {
   const [messages, setMessages] = useState([
@@ -84,37 +85,37 @@ const ChatScreen = ({ userRole = "vendedor" }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f4f5ed",
-  },
   chatContainer: {
     padding: 10,
   },
-  sendButton: {
-    backgroundColor: "#4CAF50",
-    padding: 10,
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  inputContainer: {
-    flexDirection: "row",
-    padding: 10,
-    alignItems: "center",
+  container: {
+    backgroundColor: theme.colors.whiteMedium,
+    flex: 1,
   },
   iconButton: {
     padding: 10,
   },
-  textInput: {
-    flex: 1,
-    padding: 15,
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#ddd",
+  inputContainer: {
+    alignItems: "center",
+    flexDirection: "row",
+    padding: 10,
+  },
+  sendButton: {
+    alignItems: "center",
+    backgroundColor: theme.colors.green,
     borderRadius: 20,
-    marginHorizontal: 10,
+    justifyContent: "center",
+    padding: 10,
+  },
+  textInput: {
+    backgroundColor: theme.colors.white,
+    borderColor: theme.colors.whiteMedium,
+    borderRadius: 20,
+    borderWidth: 1,
+    flex: 1,
     fontSize: 16,
+    marginHorizontal: 10,
+    padding: 15,
   },
 });
 

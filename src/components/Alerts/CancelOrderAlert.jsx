@@ -31,24 +31,11 @@ const OrderCancelModal = ({ isVisible, onConfirm, orderId, closeModal }) => {
 };
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContainer: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 10,
-    width: 300,
-    alignItems: "center",
-  },
-  text: {
-    textAlign: "center",
+  buttonText: {
+    color: theme.colors.white,
     fontSize: 18,
-    marginBottom: 10,
-    lineHeight: 24,
+    fontWeight: "bold",
+    textAlign: "center",
   },
   buttonsContainer: {
     flexDirection: "row-reverse",
@@ -56,23 +43,36 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   cancelButton: {
-    width: "45%",
     backgroundColor: theme.colors.redLinht,
     borderRadius: 5,
-    padding: 10,
     marginRight: 10,
+    padding: 10,
+    width: "45%",
   },
   confirmButton: {
-    width: "45%",
     backgroundColor: theme.colors.redLinht,
     borderRadius: 5,
     padding: 10,
+    width: "45%",
   },
-  buttonText: {
-    color: "white",
-    textAlign: "center",
+  modalContainer: {
+    alignItems: "center",
+    backgroundColor: theme.colors.white,
+    borderRadius: 10,
+    padding: 20,
+    width: 300,
+  },
+  overlay: {
+    alignItems: "center",
+    backgroundColor: theme.colors.backgroundColor,
+    flex: 1,
+    justifyContent: "center",
+  },
+  text: {
     fontSize: 18,
-    fontWeight: "bold",
+    lineHeight: 24,
+    marginBottom: 10,
+    textAlign: "center",
   },
 });
 

@@ -32,22 +32,22 @@ const TimeAlert = ({ timeLeft, status, isStarted }) => {
 };
 
 const styles = StyleSheet.create({
+  alertText: {
+    color: theme.colors.black,
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
   alertView: {
     backgroundColor: theme.colors.yellow,
     borderRadius: 5,
-    padding: 10,
     marginTop: 10,
-  },
-  alertText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: theme.colors.black,
-    textAlign: "center",
+    padding: 10,
   },
   timeRed: {
+    color: theme.colors.red,
     fontSize: 16,
     fontWeight: "bold",
-    color: theme.colors.red,
   },
 });
 

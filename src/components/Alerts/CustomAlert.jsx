@@ -56,7 +56,7 @@ const AlertOk = ({ visible, messege, onClose }) => {
             source={require("../../../assets/checkList.png")}
             style={styles.image}
           />
-          <TouchableOpacity style={[styles.optionButton]} onPress={onClose}>
+          <TouchableOpacity style={styles.optionButton} onPress={onClose}>
             <Text style={styles.optionText}>Aceptar</Text>
           </TouchableOpacity>
         </View>
@@ -87,51 +87,51 @@ const handleLongPress = (index, imagen, setImagen) => {
 };
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
   alertContainer: {
-    width: "80%",
+    alignItems: "center",
     backgroundColor: "#fff",
     borderRadius: 10,
+    elevation: 5,
     padding: 20,
-    alignItems: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 5,
+    width: "80%",
+  },
+  cancelButton: {
+    backgroundColor: "#f1948a",
+  },
+  image: {
+    borderRadius: 10,
+    height: 120,
+    marginBottom: 10,
+    resizeMode: "cover",
+    width: 120,
+  },
+  optionButton: {
+    alignItems: "center",
+    backgroundColor: "#98d187",
+    borderRadius: 5,
+    marginBottom: 10,
+    padding: 15,
+    width: "100%",
+  },
+  optionText: {
+    color: "#000",
+    fontSize: 16,
+  },
+  overlay: {
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    flex: 1,
+    justifyContent: "center",
   },
   title: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 15,
     textAlign: "center",
-  },
-  optionButton: {
-    width: "100%",
-    padding: 15,
-    borderRadius: 5,
-    backgroundColor: "#98d187",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  cancelButton: {
-    backgroundColor: "#f1948a",
-  },
-  optionText: {
-    fontSize: 16,
-    color: "#000",
-  },
-  image: {
-    width: 120,
-    height: 120,
-    borderRadius: 10,
-    resizeMode: "cover",
-    marginBottom: 10,
   },
 });
 

@@ -4,6 +4,7 @@ import StyledText from "../src/styles/StyledText.jsx";
 import StyledButton from "../src/styles/StyledButton.jsx";
 import string from "../src/string/string.js";
 import { useNavigation } from "@react-navigation/native";
+import theme from "../src/theme/theme.js";
 
 const Hello = () => {
   const navigation = useNavigation();
@@ -53,34 +54,34 @@ const Hello = () => {
 };
 
 const styles = StyleSheet.create({
-  containerComponent: {
+  container: {
     flex: 1,
-    backgroundColor: "#ffffffa0",
+    flexDirection: "column",
+  },
+  containerComponent: {
     alignItems: "center",
+    backgroundColor: theme.colors.backgroundColorWhite,
+    flex: 1,
     justifyContent: "center",
+  },
+  image: {
+    flex: 1,
+    justifyContent: "center",
+    resizeMode: "cover",
+  },
+  text: {
+    fontSize: 18,
+    marginTop: 10,
   },
   textContainer: {
     flex: 0,
-    width: 300,
     margin: 40,
+    width: 300,
   },
   textSmall: {
     fontSize: 25,
     fontWeight: "bold",
     marginBottom: 25,
-  },
-  text: {
-    marginTop: 10,
-    fontSize: 18,
-  },
-  container: {
-    flex: 1,
-    flexDirection: "column",
-  },
-  image: {
-    flex: 1,
-    resizeMode: "cover",
-    justifyContent: "center",
   },
 });
 

@@ -13,6 +13,7 @@ import Constants from "expo-constants";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { InfoCircle, StarSolid, Xmark } from "iconoir-react-native";
 
+import API_URL from "../../fetch/ApiConfig";
 import theme from "../../src/theme/theme";
 import StyledText from "../../src/styles/StyledText";
 import StyledItemProductStore from "../../src/styles/StyledItemProductStore";
@@ -40,12 +41,9 @@ const DetailStore = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   async function getStore() {
     try {
-      response = await fetchWithToken(
-        "http://192.168.0.121:8080/XCampo/api/v1/seller/" + idStore,
-        {
-          method: "GET",
-        },
-      );
+      response = await fetchWithToken(`${API_URL}seller/${idStore}`, {
+        method: "GET",
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -161,84 +159,86 @@ const DetailStore = () => {
 };
 
 const styles = StyleSheet.create({
+  columnWrapper: {
+    justifyContent: "space-between", // Espaciado uniforme entre columnas
+    marginBottom: 10, // Espaciado vertical entre filas
+  },
   container: {
+    alignItems: "center",
     backgroundColor: theme.colors.greenOpacity,
-    position: "relative",
     flex: 1,
     marginTop: Constants.statusBarHeight,
-    alignItems: "center",
-  },
-  imageStore: {
-    resizeMode: "cover",
-    width: "100%",
-    height: "30%",
-    backgroundColor: theme.colors.yellow,
+    position: "relative",
   },
   containerInfo: {
+    alignItems: "center",
     flexDirection: "row",
-    width: "100%",
     justifyContent: "space-between",
-    alignItems: "center",
     padding: 10,
-  },
-  scroll: {},
-  fab: {
-    position: "absolute",
-    bottom: 20,
-    right: "30%",
-    backgroundColor: theme.colors.green,
-    width: "40%",
-    height: 40,
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  exit: {
-    position: "absolute",
-    top: 10,
-    left: 10,
-    backgroundColor: theme.colors.opacity,
-    width: 30,
-    height: 30,
-    borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  send: {
-    backgroundColor: theme.colors.greenLiht,
-    borderRadius: 10,
-    width: 50,
-    height: 30,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  containerStar: {
-    width: 60,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  gridItem: {
-    margin: 5,
-    backgroundColor: theme.colors.primary,
-    width: 150,
-    height: 200,
-    borderRadius: 10,
-  },
-  imageItem: {
-    resizeMode: "cover",
     width: "100%",
-    height: "50%",
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
   },
+  // eslint-disable-next-line react-native/no-unused-styles
   containerItemInfo: {
     flexDirection: "row",
     width: "100%",
   },
-  columnWrapper: {
-    justifyContent: "space-between", // Espaciado uniforme entre columnas
-    marginBottom: 10, // Espaciado vertical entre filas
+  containerStar: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    width: 60,
+  },
+  exit: {
+    alignItems: "center",
+    backgroundColor: theme.colors.opacity,
+    borderRadius: 10,
+    height: 30,
+    justifyContent: "center",
+    left: 10,
+    position: "absolute",
+    top: 10,
+    width: 30,
+  },
+  fab: {
+    alignItems: "center",
+    backgroundColor: theme.colors.green,
+    borderRadius: 10,
+    bottom: 20,
+    height: 40,
+    justifyContent: "center",
+    position: "absolute",
+    right: "30%",
+    width: "40%",
+  },
+  // eslint-disable-next-line react-native/no-unused-styles
+  gridItem: {
+    backgroundColor: theme.colors.primary,
+    borderRadius: 10,
+    height: 200,
+    margin: 5,
+    width: 150,
+  },
+  // eslint-disable-next-line react-native/no-unused-styles
+  imageItem: {
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    height: "50%",
+    resizeMode: "cover",
+    width: "100%",
+  },
+  imageStore: {
+    backgroundColor: theme.colors.yellow,
+    height: "30%",
+    resizeMode: "cover",
+    width: "100%",
+  },
+  send: {
+    alignItems: "center",
+    backgroundColor: theme.colors.greenLiht,
+    borderRadius: 10,
+    height: 30,
+    justifyContent: "center",
+    width: 50,
   },
 });
 

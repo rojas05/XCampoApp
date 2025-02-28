@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 
 import { STATUSBAR_HEIGHT } from "../../src/utils/constants.js";
+import theme from "../../src/theme/theme.js";
 
 const ChatHeader = ({ navigation }) => {
   return (
@@ -35,51 +36,51 @@ const ChatHeader = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 10,
-    paddingTop: STATUSBAR_HEIGHT + 10,
-    backgroundColor: "#f4f5ed",
-    borderBottomWidth: 1,
-    borderBottomColor: "#dddddd",
-  },
-  leftSection: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  iconButton: {
-    padding: 8,
-    borderRadius: 20,
-  },
-  profileContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginLeft: 10,
-  },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#4CAF50",
-    justifyContent: "center",
     alignItems: "center",
+    backgroundColor: theme.colors.green,
+    borderRadius: 20,
+    height: 40,
+    justifyContent: "center",
     marginRight: 10,
+    width: 40,
   },
   avatarText: {
-    color: "white",
+    color: theme.colors.white,
+    fontSize: 16,
     fontWeight: "bold",
-    fontSize: 16,
   },
-  title: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#333333",
+  header: {
+    alignItems: "center",
+    backgroundColor: theme.colors.white,
+    borderBottomColor: theme.colors.whiteMedium,
+    borderBottomWidth: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 10,
+    paddingTop: STATUSBAR_HEIGHT + 10,
+  },
+  iconButton: {
+    borderRadius: 20,
+    padding: 8,
+  },
+  leftSection: {
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  profileContainer: {
+    alignItems: "center",
+    flexDirection: "row",
+    marginLeft: 10,
   },
   status: {
+    color: theme.colors.greyBlack,
     fontSize: 14,
-    color: "#888888",
+  },
+  title: {
+    color: theme.colors.greyDark,
+    fontSize: 16,
+    fontWeight: "500",
   },
 });
 

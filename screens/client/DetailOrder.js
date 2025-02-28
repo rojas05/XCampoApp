@@ -72,64 +72,68 @@ const DetailOrder = () => {
 };
 
 const styles = StyleSheet.create({
+  //  No se usan
+  // eslint-disable-next-line react-native/no-unused-styles
+  ScrollView: {
+    marginTop: 20,
+  },
+  // eslint-disable-next-line react-native/no-unused-styles
+  buttonAdd: {
+    alignItems: "center",
+    backgroundColor: theme.colors.grey,
+    borderRadius: 5,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginStart: "10%",
+    padding: 2,
+    width: "70%",
+  },
+  // eslint-disable-next-line react-native/no-unused-styles
+  buttonPlus: {
+    alignItems: "center",
+    backgroundColor: theme.colors.grey,
+    borderRadius: 5,
+    marginStart: "35%",
+    padding: 2,
+    width: "30%",
+  },
+  color: {
+    backgroundColor: theme.colors.green,
+    borderTopColor: theme.colors.greyMedium,
+    borderTopWidth: 1,
+    height: 8,
+    width: "100%",
+  },
+  colorN: {
+    backgroundColor: theme.colors.greenOpacity,
+    borderTopColor: theme.colors.greyMedium,
+    borderTopWidth: 1,
+    height: 8,
+    width: "100%",
+  },
   container: {
     flex: 1,
     marginTop: Constants.STATUSBAR_HEIGHTHeight,
   },
-  header: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-around",
-    marginBottom: 15,
-  },
-  ScrollView: {
-    marginTop: 20,
-  },
-  buttonPlus: {
-    backgroundColor: theme.colors.grey,
-    width: "30%",
-    alignItems: "center",
-    padding: 2,
-    borderRadius: 5,
-    marginStart: "35%",
-  },
-  buttonAdd: {
-    flexDirection: "row",
-    backgroundColor: theme.colors.grey,
-    width: "70%",
-    alignItems: "center",
-    justifyContent: "space-around",
-    padding: 2,
-    borderRadius: 5,
-    marginStart: "10%",
-  },
   containerState: {
+    flexDirection: "row",
+    marginBottom: 15,
     marginStart: "15%",
     width: "70%",
+  },
+  header: {
+    alignItems: "center",
     flexDirection: "row",
+    justifyContent: "space-around",
     marginBottom: 15,
+    width: "100%",
   },
   stateItem: {
-    width: "33%",
-    height: 50,
-    borderWidth: 1,
-    borderColor: "gray",
     alignItems: "center",
-  },
-  color: {
-    width: "100%",
-    height: 8,
-    backgroundColor: "green",
-    borderTopWidth: 1,
-    borderTopColor: "gray",
-  },
-  colorN: {
-    width: "100%",
-    height: 8,
-    backgroundColor: theme.colors.greenOpacity,
-    borderTopWidth: 1,
-    borderTopColor: "gray",
+    borderColor: theme.colors.greyMedium,
+    borderWidth: 1,
+    height: 50,
+    width: "33%",
   },
 });
 

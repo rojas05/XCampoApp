@@ -1,44 +1,53 @@
 import React from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import theme from "../theme/theme.js";
 
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
-
 const styles = StyleSheet.create({
-  primaryButton: {
-    alignItems: "center",
-    borderRadius: 8,
-    backgroundColor: theme.colors.green,
-    margin: 10,
-    elevation: 3,
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    justifyContent: "center",
-  },
-  yellow: {
-    backgroundColor: theme.colors.yellow,
-  },
   green: {
     backgroundColor: theme.colors.green,
   },
+  primaryButton: {
+    alignItems: "center",
+    backgroundColor: theme.colors.green,
+    borderRadius: 8,
+    elevation: 3,
+    justifyContent: "center",
+    margin: 10,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+  },
   red: {
-    backgroundColor: theme.colors.redBlack,
+    backgroundColor: theme.colors.red,
   },
   text: {
+    color: theme.colors.primary,
     fontSize: 18,
-    lineHeight: 21,
     fontWeight: "bold",
     letterSpacing: 0.25,
-    color: theme.colors.primary,
+    lineHeight: 21,
     textAlign: "center",
   },
   textBlack: {
     color: theme.colors.black,
   },
+  yellow: {
+    backgroundColor: theme.colors.yellow,
+  },
 });
 
 export default function StyledButton(props) {
-  const { title, onPress, yellow, green, red, textBlack, style, ...restOfPro } =
-    props;
+  const {
+    title,
+    onPress,
+    yellow,
+    green,
+    red,
+    disabled,
+    textBlack,
+    style,
+    ...restOfPro
+  } = props;
+
   const buttonStyles = [
     styles.primaryButton,
     yellow && styles.yellow,
@@ -46,10 +55,18 @@ export default function StyledButton(props) {
     red && styles.red,
     style,
   ];
+
   const textStyles = [styles.text, textBlack && styles.textBlack];
+
+  const ButtonComponent = disabled ? View : TouchableOpacity;
+
   return (
-    <TouchableOpacity style={buttonStyles} onPress={onPress} {...restOfPro}>
+    <ButtonComponent
+      style={buttonStyles}
+      onPress={disabled ? null : onPress} // Evitar la acción si está deshabilitado
+      {...restOfPro}
+    >
       <Text style={textStyles}>{title}</Text>
-    </TouchableOpacity>
+    </ButtonComponent>
   );
 }

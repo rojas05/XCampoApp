@@ -1,7 +1,7 @@
 import * as Notifications from "expo-notifications";
-import Constants from "expo-constants";
+//import Constants from "expo-constants";  NO se esta usando
 import * as SecureStore from "expo-secure-store";
-import { fetchWithToken, getToken } from "../tokenStorage";
+import { fetchWithToken } from "../tokenStorage"; // No se esta usando getToken
 
 export async function registerForPushNotificationsAsync(id) {
   let token;
@@ -19,11 +19,8 @@ export async function registerForPushNotificationsAsync(id) {
     return;
   }
 
-
-  token = (await Notifications.getDevicePushTokenAsync()).data
+  token = (await Notifications.getDevicePushTokenAsync()).data;
   console.log("Token de notificación:", token);
-
- 
 
   // Guardar el token en AsyncStorage y enviarlo a la API si ha cambiado
   const storedToken = await SecureStore.getItemAsync("pushToken");

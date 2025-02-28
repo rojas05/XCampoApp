@@ -32,24 +32,24 @@ const StyledItemProductCart = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
     alignItems: "center",
     borderBottomWidth: 1,
     borderColor: theme.colors.grey,
+    flexDirection: "row",
     margin: 10,
   },
-  image: {
-    width: 80,
-    height: 80,
-    marginEnd: 10,
-  },
   containerText: {
-    width: "100%",
     flexDirection: "row",
     justifyContent: "space-between",
+    width: "100%",
   },
   icon: {
     marginEnd: 5,
+  },
+  image: {
+    height: 80,
+    marginEnd: 10,
+    width: 80,
   },
 });
 

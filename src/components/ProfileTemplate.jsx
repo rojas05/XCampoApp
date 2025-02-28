@@ -5,6 +5,8 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Entypo from "@expo/vector-icons/Entypo";
 
 import StyledButtonIcon from "../styles/StyledButtonIcon";
+import theme from "../theme/theme";
+import { MARGINS } from "../utils/constants";
 
 const ProfileTemplate = ({
   userName,
@@ -78,7 +80,9 @@ const ProfileTemplate = ({
           color: "#000",
           style: styles.roleIcon,
         })}
-        <Text style={{ color: "#000", fontWeight: "bold" }}>{role}</Text>
+        <Text style={{ color: theme.colors.black, fontWeight: "bold" }}>
+          {role}
+        </Text>
       </View>
     </View>
   );
@@ -118,51 +122,20 @@ const BtnCloseSeson = ({ onLogout }) => {
 };
 
 const styles = StyleSheet.create({
+  bannerContainer: {
+    backgroundColor: theme.colors.grey,
+    height: 180,
+    marginBottom: -70,
+    width: "100%",
+  },
+  bannerImage: {
+    height: "100%",
+    resizeMode: "cover",
+    width: "100%",
+  },
   container: {
     alignItems: "center",
     justifyContent: "flex-start",
-  },
-  bannerContainer: {
-    width: "100%",
-    height: 180,
-    backgroundColor: "#e9ecef",
-    marginBottom: -70,
-  },
-  bannerImage: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
-  },
-  profileIconContainer: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    overflow: "hidden",
-    borderWidth: 4,
-    borderColor: "#f4f5ed",
-    marginBottom: 10,
-    backgroundColor: "#e9ecef",
-  },
-  profileIcon: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
-  },
-  userName: {
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "#343a40",
-  },
-  roleBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 5,
-    paddingHorizontal: 15,
-    borderRadius: 20,
-  },
-  roleIcon: {
-    marginRight: 10,
   },
   horizontalButtonContainer: {
     alignSelf: "center",
@@ -170,25 +143,55 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     width: "90%",
   },
-  logoutButtonContainer: {
-    alignSelf: "center",
-    bottom: 20,
-    position: "absolute",
-    width: "90%",
-  },
   location: {
+    color: theme.colors.greyBlack,
     fontSize: 16,
-    color: "#6c757d",
     marginBottom: 10,
   },
   locationContainer: {
-    flexDirection: "row",
     alignItems: "flex-start",
+    flexDirection: "row",
     justifyContent: "space-between",
   },
   locationIcon: {
     marginRight: 3,
     marginTop: 1,
+  },
+  logoutButtonContainer: {
+    alignSelf: "center",
+    marginBottom: MARGINS.basic + 20,
+    width: "90%",
+  },
+  profileIcon: {
+    height: "100%",
+    resizeMode: "cover",
+    width: "100%",
+  },
+  profileIconContainer: {
+    backgroundColor: theme.colors.greyBlack,
+    borderColor: theme.colors.grey,
+    borderRadius: 60,
+    borderWidth: 4,
+    height: 120,
+    marginBottom: 10,
+    overflow: "hidden",
+    width: 120,
+  },
+  roleBadge: {
+    alignItems: "center",
+    borderRadius: 20,
+    flexDirection: "row",
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+  },
+  roleIcon: {
+    marginRight: 10,
+  },
+  userName: {
+    color: theme.colors.black,
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
 

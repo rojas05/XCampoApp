@@ -1,5 +1,6 @@
 import React from "react";
 import { Text, TextInput, View, StyleSheet } from "react-native";
+import theme from "../theme/theme";
 
 const StyledImput = (props) => {
   const { onChangeText, value, keyboardType, placeholder, textError } = props;
@@ -23,10 +24,10 @@ const styles = StyleSheet.create({
   },
   imput: {
     borderBottomWidth: 2,
-    borderColor: "gray",
+    borderColor: theme.colors.greyBlack,
   },
   textError: {
-    color: "red",
+    color: theme.colors.red,
   },
 });
 

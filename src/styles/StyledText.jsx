@@ -3,13 +3,8 @@ import { Text, StyleSheet } from "react-native";
 import theme from "../theme/theme.js";
 
 const styles = StyleSheet.create({
-  text: {
-    fontSize: theme.fontSizes.body,
-    color: theme.colors.textPrimary,
-    marginStart: 5,
-  },
-  title: {
-    fontSize: 20,
+  bold: {
+    fontWeight: "bold",
   },
   green: {
     color: theme.colors.greenText,
@@ -20,8 +15,13 @@ const styles = StyleSheet.create({
   redBlack: {
     color: theme.colors.redBlack,
   },
-  bold: {
-    fontWeight: "bold",
+  text: {
+    color: theme.colors.textPrimary,
+    fontSize: theme.fontSizes.body,
+    marginStart: 5,
+  },
+  title: {
+    fontSize: 20,
   },
   whiteButton: {
     color: theme.colors.primary,

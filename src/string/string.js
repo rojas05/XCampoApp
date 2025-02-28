@@ -101,7 +101,8 @@ const string = {
     locationPermission: "Acepta los permisos para poder tu localización",
   },
   MapBtn: {
-    arriveAtFarm: "Llegué a la finca",
+    arriveAtStore: "Llegué a la finca",
+    arriveAtClient: "Llegué al Destino",
   },
   ProductList: {
     quantityLabel: "Cantidad:",
@@ -156,6 +157,10 @@ const string = {
   TimeAlert: {
     timeLeft: "Tiempo restante: ",
     status: "Estado: ",
+  },
+  CompletedDeliveriesMessage: {
+    title: "Entregas Completadas",
+    subtitle: "¡Gracias por su esfuerzo!",
   },
 };
 

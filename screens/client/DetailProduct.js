@@ -61,9 +61,7 @@ const DetailProduct = () => {
       </View>
 
       <View style={styles.containerProduct}>
-        <StyledButton title={string.client.add} padding={10}>
-          {" "}
-        </StyledButton>
+        <StyledButton title={string.client.add} padding={10}></StyledButton>
       </View>
 
       <TouchableOpacity style={styles.exit}>
@@ -74,78 +72,78 @@ const DetailProduct = () => {
 };
 
 const styles = StyleSheet.create({
+  ImageContainer: {
+    height: 290,
+    position: "relative",
+  },
   container: {
-    marginTop: Constants.STATUSBAR_HEIGHTHeight,
     flex: 1,
     justifyContent: "space-evenly",
+    marginTop: Constants.STATUSBAR_HEIGHTHeight,
   },
   containerInfo: {
     backgroundColor: theme.colors.greenLiht,
-    margin: "2%",
     borderRadius: 10,
-    padding: 10,
     justifyContent: "center",
+    margin: "2%",
+    padding: 10,
   },
   containerProduct: {
-    flexDirection: "column-reverse",
     backgroundColor: theme.colors.greenLiht,
+    borderBottomEndRadius: 80,
+    borderTopEndRadius: 80,
+    borderTopStartRadius: 80,
+    bottom: 2,
+    flexDirection: "column-reverse",
     height: "30%",
     margin: "2%",
-    bottom: 2,
-    borderTopStartRadius: 80,
-    borderTopEndRadius: 80,
-    borderBottomEndRadius: 80,
     padding: 40,
   },
-  image: {
-    resizeMode: "cover",
-    width: "96%",
-    height: "100%",
-    margin: "2%",
-    borderRadius: 10,
-  },
-  pager: {
-    width: "100%",
-    height: 300,
-  },
-  ImageContainer: {
-    position: "relative",
-    height: 290,
-  },
-  imageIndexContainer: {
-    width: 40,
-    height: 20,
-    backgroundColor: theme.colors.opacity,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-around",
-    position: "absolute",
-    bottom: 10,
-    right: "45%",
-    borderRadius: 20,
-  },
-  imageIndexA: {
-    width: 10,
-    height: 10,
-    backgroundColor: theme.colors.green,
-    borderRadius: 5,
-  },
-  imageIndexB: {
-    width: 10,
-    height: 10,
-    backgroundColor: theme.colors.greenMedium,
-    borderRadius: 5,
-  },
   exit: {
+    alignItems: "center",
+    backgroundColor: theme.colors.green,
+    borderRadius: 10,
     flexDirection: "row",
+    justifyContent: "center",
+    left: 5,
+    padding: 5,
     position: "absolute",
     top: 10,
-    left: 5,
-    backgroundColor: theme.colors.green,
+  },
+  image: {
     borderRadius: 10,
-    justifyContent: "center",
+    height: "100%",
+    margin: "2%",
+    resizeMode: "cover",
+    width: "96%",
+  },
+  imageIndexA: {
+    backgroundColor: theme.colors.green,
+    borderRadius: 5,
+    height: 10,
+    width: 10,
+  },
+  imageIndexB: {
+    backgroundColor: theme.colors.greenMedium,
+    borderRadius: 5,
+    height: 10,
+    width: 10,
+  },
+  imageIndexContainer: {
     alignItems: "center",
-    padding: 5,
+    backgroundColor: theme.colors.opacity,
+    borderRadius: 20,
+    bottom: 10,
+    flexDirection: "row",
+    height: 20,
+    justifyContent: "space-around",
+    position: "absolute",
+    right: "45%",
+    width: 40,
+  },
+  pager: {
+    height: 300,
+    width: "100%",
   },
 });
 

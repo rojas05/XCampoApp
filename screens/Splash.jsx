@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   StyleSheet,
   View,
@@ -10,28 +10,29 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
+import API_URL from "../fetch/ApiConfig.js";
 import theme from "../src/theme/theme.js";
 import StyledText from "../src/styles/StyledText.jsx";
 import StyledButton from "../src/styles/StyledButton.jsx";
 import { getToken, fetchWithToken } from "../tokenStorage.js";
+import { registerForPushNotificationsAsync } from "../funcions/registerForPushNotificationsAsync.js";
 
 const Splash = () => {
   const navigation = useNavigation();
 
   const [roles, setRoles] = useState([]);
   const [idUser, setIdUser] = useState("");
-  let response;
 
   useEffect(() => {
     getTokenMain();
   }, [getTokenMain]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  async function getTokenMain() {
+  const getTokenMain = useCallback(async () => {
     try {
-      const idStorage = await getToken("id"); // Espera a que se resuelva el token
+      const idStorage = getToken("id"); // Espera a que se resuelva el token
       if (idStorage != null) {
         getUserData(idStorage);
+        registerForPushNotificationsAsync(idStorage);
       } else {
         navigation.navigate("WelcomePage");
       }
@@ -39,23 +40,21 @@ const Splash = () => {
       console.error("Error al obtener el token:", error);
       Alert.alert("Error", "Hubo un problema al obtener el token");
     }
-  }
+  }, [getUserData, navigation]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   async function getUserData(id_user) {
     setIdUser(id_user);
     try {
-      response = await fetchWithToken(
-        "http://192.168.0.121:8080/XCampo/api/v1/rol/" + id_user,
-        {
-          method: "GET",
-        },
-      );
+      const response = await fetchWithToken(`${API_URL}rol/${id_user}`, {
+        method: "GET",
+      });
 
       if (response.ok) {
         const data = await response.json();
         if (JSON.stringify(data) === "[]") {
           navigation.navigate("TypeUser", {
-            idUser: idUser,
+            idUser: id_user,
             roles: roles,
           });
         } else {
@@ -64,17 +63,9 @@ const Splash = () => {
           console.log(valuesList);
           setRoles(valuesList);
         }
-      } else {
-        console.error("Failed to fetch user data:", response.status);
-        response = await fetchWithToken(
-          "http://192.168.0.121:8080/XCampo/api/v1/rol/" + id_user,
-          {
-            method: "GET",
-          },
-        );
       }
-      // eslint-disable-next-line no-unused-vars
     } catch (error) {
+      console.error("Error al obtener el token:", error);
       navigation.navigate("Hello");
     }
   }
@@ -93,10 +84,10 @@ const Splash = () => {
 
   function rolNavigate(rol) {
     if (rol === "DELIVERYMAN") {
-      navigation.navigate("IndexClient");
+      navigation.navigate("HomeDelivery", { idUser });
     }
     if (rol === "SELLER") {
-      Alert.alert(rol);
+      navigation.navigate("HomeSeller", { idUser });
     }
     if (rol === "CLIENT") {
       navigation.navigate("IndexClient");
@@ -147,37 +138,33 @@ const Splash = () => {
 };
 
 const styles = StyleSheet.create({
-  containerComponent: {
-    flex: 1,
-    backgroundColor: "#ffffffa0",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  imageIc: {
-    width: 250,
-    height: 150,
-    borderRadius: 20,
-    marginBottom: 20,
-    marginTop: 20,
-  },
   List: {
     backgroundColor: theme.colors.opacity,
-    width: 250,
     borderRadius: 20,
     marginBottom: 20,
-  },
-  item: {
-    marginTop: 10,
-    fontSize: 18,
+    width: 250,
   },
   container: {
     flex: 1,
     flexDirection: "column",
   },
+  containerComponent: {
+    alignItems: "center",
+    backgroundColor: theme.colors.opacity,
+    flex: 1,
+    justifyContent: "center",
+  },
   image: {
     flex: 1,
-    resizeMode: "cover",
     justifyContent: "center",
+    resizeMode: "cover",
+  },
+  imageIc: {
+    borderRadius: 20,
+    height: 150,
+    marginBottom: 20,
+    marginTop: 20,
+    width: 250,
   },
 });
 

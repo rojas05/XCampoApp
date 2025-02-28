@@ -17,8 +17,13 @@ const theme = {
     grey: "#f4f5ed",
     greyMedium: "#ccc",
     greyBlack: "#888",
+    greyDark: "#333333",
     opacity: "#ffffffa0",
     white: "#fff",
+    whiteMedium: "#f5f5f5",
+    backgroundColor: "rgba(0, 0, 0, 0.2)",
+    backgroundColorWhite: "#ffffffa0",
+    backgroundColorBlack: "rgba(0, 0, 0, 0.5)",
   },
   fontSizes: {
     body: 18,

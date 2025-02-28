@@ -1,49 +1,126 @@
-import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  Alert,
+  Text,
+  BackHandler,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import Header from "../../src/components/HeaderCustomer";
-import OrderInfo from "../../src/components/OrderInfo";
-import OrderTotals from "../../src/components/OrderTotals";
+import OrderInfo from "../../src/components/OrderComponents/OrderInfo";
+import OrderTotals from "../../src/components/OrderComponents/OrderTotals";
 import PaymentSwitch from "../../src/components/PaymentSwitch";
+
 import StyledButton from "../../src/styles/StyledButton";
-import { MARGINS } from "../../src/utils/constants";
+import theme from "../../src/theme/theme";
 
 const OrderDetailScreen = ({ route }) => {
   const navigation = useNavigation();
+  const { order, context } = route.params || {};
   const [isPaid, setIsPaid] = useState(false);
-  const { order } = route.params || {};
+  const ordersList = order || [];
 
-  const calculateTotalCost = () =>
-    order.products.reduce(
-      (total, product) => total + product.price * product.quantity,
-      0,
+  useEffect(() => {
+    const handleBackPress = () => {
+      Alert.alert(
+        "Acción no permitida",
+        "No se puede regresar, ya que esto comprometería los datos.",
+        [{ text: "OK" }],
+      );
+      return true;
+    };
+
+    BackHandler.addEventListener("hardwareBackPress", handleBackPress);
+
+    return () =>
+      BackHandler.removeEventListener("hardwareBackPress", handleBackPress);
+  }, []);
+
+  const { totalCostOrder, totalCost, totalProducts, totalDeliveryCost } =
+    ordersList.reduce(
+      (acc, order) => {
+        const orderTotal = order.products.reduce(
+          (sum, product) => sum + product.unitPrice,
+          0,
+        );
+        acc.totalCostOrder.push(orderTotal);
+        acc.totalCost += orderTotal;
+        acc.totalProducts += order.products.length;
+        acc.totalDeliveryCost += order.deliveryCost;
+        return acc;
+      },
+      {
+        totalCostOrder: [],
+        totalCost: 0,
+        totalProducts: 0,
+        totalDeliveryCost: 0,
+      },
     );
 
-  const totalCost = calculateTotalCost();
-  const totalToPay = totalCost + order.shippingCost;
-
   const handleBackPress = () => {
-    navigation.navigate("MapOrderDeliveryScreen", { activateAlert: true });
+    if (context === "MapOrderDeliveryScreen") {
+      Alert.alert(
+        "Acción no permitida",
+        "No se puede regresar, ya que esto comprometería los datos.",
+        [{ text: "OK" }],
+      );
+      return;
+    }
+    navigation.goBack();
+  };
+
+  const handleAcceptOrder = () => {
+    if (!isPaid) {
+      Alert.alert("Pago pendiente", "No se ha pagado la orden.", [
+        { text: "OK" },
+      ]);
+      return;
+    }
+    const destinyClientsStack = [];
+
+    ordersList.forEach((element) => {
+      if (element.destinyClient)
+        destinyClientsStack.push(element.destinyClient);
+    });
+
+    navigation.navigate("MapOrderDeliveryScreen", {
+      destinyClients: destinyClientsStack,
+      context: "client",
+      orders: ordersList,
+    });
   };
 
   return (
     <View style={styles.container}>
       <Header
-        title={order.fincaName || "Detalle del pedido"}
+        title={order.sellerName || "Detalle del pedido"}
         onBackPress={handleBackPress}
       />
-
-      <OrderInfo order={order} totalCost={totalCost} />
-
+      <FlatList
+        data={ordersList}
+        keyExtractor={(item) => item.idOrder.toString()}
+        renderItem={({ item, index }) => (
+          <OrderInfo order={item} totalCost={totalCostOrder[index]} />
+        )}
+      />
       <View style={styles.footerContainer}>
         <OrderTotals
-          order={order}
+          totalProducts={totalProducts}
           totalCost={totalCost}
-          totalToPay={totalToPay}
+          totalToPay={totalCost + totalDeliveryCost}
         />
+        {!isPaid && (
+          <Text style={styles.warningText}>No se ha pagado la orden</Text>
+        )}
         <PaymentSwitch isPaid={isPaid} setIsPaid={setIsPaid} />
-        <StyledButton green title="Aceptar pedido" onPress={handleBackPress} />
+        <StyledButton
+          green
+          title="Aceptar pedido"
+          onPress={handleAcceptOrder}
+        />
       </View>
     </View>
   );
@@ -51,15 +128,23 @@ const OrderDetailScreen = ({ route }) => {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: theme.colors.whiteMedium,
     flex: 1,
-    backgroundColor: "#f5f5f5",
-    padding: 20,
+    padding: 15,
   },
   footerContainer: {
-    position: "absolute",
-    bottom: MARGINS.default,
-    left: 5,
-    right: 5,
+    backgroundColor: theme.colors.white,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    elevation: 5,
+    paddingHorizontal: 5,
+    paddingVertical: 5,
+  },
+  warningText: {
+    color: theme.colors.red,
+    fontWeight: "bold",
+    marginVertical: 5,
+    textAlign: "center",
   },
 });
 

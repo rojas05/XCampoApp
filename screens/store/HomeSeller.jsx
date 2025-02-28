@@ -3,16 +3,16 @@ import Entypo from "@expo/vector-icons/Entypo";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 import TabNavigator from "../../src/components/TabNavigator.jsx";
-import { OrderListProducts } from "./GetOrderProducts.js";
+import { OrderListLength } from "./js/GetOrderProducts.js";
 
 // Screens
 import Products from "./ProductsScreen.jsx";
 import Profile from "./SellerProfileScreen.jsx";
 import Pedidos from "./OrdersScreen.jsx";
 
-const nummberOfOrders = OrderListProducts.length;
-
-const HomeSeller = () => {
+const HomeSeller = ({ route }) => {
+  const { idUser } = route.params;
+  const nummberOfOrders = OrderListLength(idUser);
   const screens = [
     {
       name: "Pedidos",
@@ -24,6 +24,7 @@ const HomeSeller = () => {
           <Entypo name="shopping-cart" size={size} color={color} />
         ),
       },
+      initialParams: { idUser },
     },
     {
       name: "Products",
@@ -35,6 +36,7 @@ const HomeSeller = () => {
           <MaterialIcons name="add-shopping-cart" size={size} color={color} />
         ),
       },
+      initialParams: { idUser },
     },
     {
       name: "Profile",
@@ -46,6 +48,7 @@ const HomeSeller = () => {
           <Entypo name="shop" size={size} color={color} />
         ),
       },
+      initialParams: { idUser },
     },
   ];
 

@@ -21,9 +21,8 @@ import InfoStore from "../screens/client/InfoStore";
 import RegisterProducts from "../screens/store/RegisterProducts";
 import HomeSeller from "../screens/store/HomeSeller";
 // delivery
-import HomeDelivery from "../screens/delivery/js/HomeDelivery";
-import MapDeliveryScreen from "../screens/delivery/MapScreen";
-import MapOrderDeliveryScreen from "../screens/delivery/MapDeliveryScreen.jsx";
+import MapDeliveryScreen from "../screens/delivery/MapScreenHome.jsx";
+import MapOrderDeliveryScreen from "../screens/delivery/MapOrderDeliveryScreen.jsx";
 import ReservedOrdersScreen from "../screens/delivery/ReservedOrdersScreen.jsx";
 import OrderAvailableScreen from "../screens/delivery/OrderAvailableScreen.jsx";
 import OrderDetail from "../screens/delivery/OrderDetailScreen.jsx";
@@ -106,8 +105,6 @@ const MainStack = () => {
 
         <Stack.Screen name="HomeSeller" component={HomeSeller} />
 
-        <Stack.Screen name="HomeDelivery" component={HomeDelivery} />
-
         <Stack.Screen
           name="MapOrderDeliveryScreen"
           component={MapOrderDeliveryScreen}
@@ -120,7 +117,7 @@ const MainStack = () => {
 
         <Stack.Screen name="OrderDetail" component={OrderDetail} />
 
-        <Stack.Screen name="MainDrawer" component={MainDrawer} />
+        <Stack.Screen name="HomeDelivery" component={MainDrawer} />
 
         <Stack.Screen
           name="ChatScreen"

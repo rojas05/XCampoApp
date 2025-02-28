@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import Color from "../theme/theme";
+import theme from "../theme/theme";
 
 const CustomPicker = ({ value, setValue, items, error }) => {
   const [showPlaceholder, setShowPlaceholder] = useState(true);
@@ -21,6 +22,7 @@ const CustomPicker = ({ value, setValue, items, error }) => {
           <Picker.Item
             label={error || "Seleccionar Unidad"}
             value=" "
+            // eslint-disable-next-line react-native/no-color-literals, react-native/no-inline-styles
             style={{ color: error ? "red" : "gray" }}
           />
         )}
@@ -33,18 +35,18 @@ const CustomPicker = ({ value, setValue, items, error }) => {
 };
 
 const styles = StyleSheet.create({
-  pickerContainer: {
-    borderColor: Color.colors.greyMedium,
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 10,
-  },
   picker: {
     height: 50,
     width: "100%",
   },
+  pickerContainer: {
+    borderColor: Color.colors.greyMedium,
+    borderRadius: 5,
+    borderWidth: 1,
+    marginBottom: 10,
+  },
   pickerError: {
-    borderColor: "red",
+    borderColor: theme.colors.red,
     borderWidth: 1,
   },
 });

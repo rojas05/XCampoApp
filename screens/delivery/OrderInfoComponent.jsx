@@ -9,17 +9,23 @@ import {
 import StyledButton from "../../src/styles/StyledButton";
 import theme from "../../src/theme/theme";
 
-const StopInfo = ({ stop, index, onPress }) => (
-  <TouchableOpacity onPress={() => onPress(stop, index)}>
-    <Text style={styles.stopInfo}>
-      <Text style={styles.boldText}>Parada {index + 1}: </Text>
-      {stop.tienda + "\n"}
-      <Text style={styles.boldText}>Pagas: </Text>
-      {"$ " + stop.total + " / "}
-      {stop.productos.length + " productos"}
-    </Text>
-  </TouchableOpacity>
-);
+const StopInfo = ({ stop, index, onPress }) => {
+  let costTotal = stop
+    .map((item) => item.unitPrice)
+    .reduce((acc, price) => acc + price, 0);
+
+  return (
+    <TouchableOpacity onPress={() => onPress(stop, index)}>
+      <Text style={styles.stopInfo}>
+        <Text style={styles.boldText}>Parada {index + 1}: </Text>
+        {stop.sellerName + "\n"}
+        <Text style={styles.boldText}>Pagas: </Text>
+        {"$ " + costTotal + " / "}
+        {stop.products.length + " productos"}
+      </Text>
+    </TouchableOpacity>
+  );
+};
 
 const Button = ({ title, onPress, style }) => (
   <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
@@ -41,7 +47,7 @@ const OrderInfo = ({ stops, setShowAlert }) => {
     setTimerActive(true);
     setIsTaken(false);
     setShowCounter(true); // Reinicia la visibilidad del contador al cambiar las paradas
-  }, [stops]);
+  }, []);
 
   useEffect(() => {
     let timer;
@@ -95,7 +101,8 @@ const OrderInfo = ({ stops, setShowAlert }) => {
 
       <View style={styles.orderInfo}>
         <Text style={styles.summaryText}>
-          {stops.nombre} Tiene {stops.length} pedidos ({stops.length} paradas)
+          {stops.sellerName} Tiene {stops.totalOrders} pedidos (
+          {stops.totalOrders} paradas)
         </Text>
         <Text style={styles.summaryText}>
           <Text style={styles.boldText}>$10.000 </Text>. 10,4 Km
@@ -134,89 +141,89 @@ const OrderInfo = ({ stops, setShowAlert }) => {
 };
 
 const styles = StyleSheet.create({
+  boldText: {
+    fontWeight: "bold",
+  },
+  button: {
+    alignItems: "center",
+    backgroundColor: theme.colors.green,
+    borderRadius: 5,
+    flex: 1,
+    marginHorizontal: 5,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  buttonText: {
+    color: theme.colors.white,
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  buttonsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 20,
+    width: "100%",
+  },
   container: {
     flex: 1,
     justifyContent: "flex-start",
   },
-  topContainer: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "flex-end",
-    padding: 10,
-    position: "absolute",
-    zIndex: 1,
-    top: 0,
-  },
   countdownButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
     alignItems: "center",
+    borderRadius: 10,
     flexDirection: "row",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
   },
   countdownButtonText: {
     color: theme.colors.red,
     fontSize: 16,
     fontWeight: "bold",
   },
+  orderInfo: {
+    backgroundColor: theme.colors.white,
+    borderColor: theme.colors.greyMedium,
+    borderTopEndRadius: 30,
+    borderTopStartRadius: 30,
+    borderWidth: 0.5,
+    marginTop: 60,
+    paddingTop: 20,
+    padding: 10,
+    width: "100%",
+  },
   reservationText: {
     color: theme.colors.black,
     fontWeight: "bold",
     marginLeft: 5,
   },
-  orderInfo: {
-    width: "100%",
-    backgroundColor: theme.colors.white,
-    borderTopStartRadius: 30,
-    borderTopEndRadius: 30,
-    paddingTop: 20,
-    padding: 10,
-    marginTop: 60,
-    borderColor: theme.colors.greyMedium,
-    borderWidth: 0.5,
-  },
-  summaryText: {
-    fontSize: 24,
-    alignSelf: "center",
-    color: theme.colors.textPrimary,
-    marginBottom: 3,
-  },
-  boldText: {
-    fontWeight: "bold",
-  },
   scrollableStopsContainer: {
-    maxHeight: 220,
     marginBottom: 10,
+    maxHeight: 220,
+  },
+  stopInfo: {
+    color: theme.colors.textPrimary,
+    fontSize: 18,
+    lineHeight: 24,
+    paddingTop: 5,
   },
   stopsContainer: {
     alignSelf: "flex-start",
     marginHorizontal: 10,
   },
-  stopInfo: {
-    fontSize: 18,
-    lineHeight: 24,
+  summaryText: {
+    alignSelf: "center",
     color: theme.colors.textPrimary,
-    paddingTop: 5,
+    fontSize: 24,
+    marginBottom: 3,
   },
-  buttonsContainer: {
+  topContainer: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "flex-end",
+    padding: 10,
+    position: "absolute",
+    top: 0,
     width: "100%",
-    marginTop: 20,
-  },
-  button: {
-    backgroundColor: theme.colors.green,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    alignItems: "center",
-    flex: 1,
-    marginHorizontal: 5,
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
+    zIndex: 1,
   },
 });
 

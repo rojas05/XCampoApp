@@ -75,30 +75,12 @@ const DeliveyProfile = () => {
 };
 
 const styles = StyleSheet.create({
-  sellerInfo: {
-    width: "100%",
-    alignItems: "center",
-    padding: 10,
-  },
-  storeName: {
-    fontSize: 15,
-    paddingStart: 30,
-    paddingEnd: 30,
-    textAlign: "justify",
-    marginBottom: 5,
-  },
-  salesTotal: {
-    fontSize: 20,
-    paddingStart: 30,
-    fontWeight: "bold",
-    alignSelf: "flex-start",
-  },
   paymentMethod: {
     fontSize: 16,
   },
   ratingContainer: {
-    flexDirection: "row",
     alignItems: "center",
+    flexDirection: "row",
     justifyContent: "center",
     marginVertical: 10,
   },
@@ -106,10 +88,28 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginRight: 10,
   },
+  salesTotal: {
+    alignSelf: "flex-start",
+    fontSize: 20,
+    fontWeight: "bold",
+    paddingStart: 30,
+  },
+  sellerInfo: {
+    alignItems: "center",
+    padding: 10,
+    width: "100%",
+  },
   starsContainer: {
     flexDirection: "row",
     justifyContent: "center",
     marginRight: 10,
+  },
+  storeName: {
+    fontSize: 15,
+    marginBottom: 5,
+    paddingEnd: 30,
+    paddingStart: 30,
+    textAlign: "justify",
   },
 });
 

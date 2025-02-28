@@ -14,7 +14,7 @@ import StyledButton from "../src/styles/StyledButton";
 import StyledText from "../src/styles/StyledText";
 import { saveToken } from "../tokenStorage";
 import { CustomInputIcon } from "../src/components/InputCustom";
-import postData from "../fetch/UseFetch";
+import { postData } from "../fetch/UseFetch";
 import theme from "../src/theme/theme";
 
 const Login = () => {
@@ -34,6 +34,7 @@ const Login = () => {
     setErrors(errors);
 
     if (Object.keys(errors).length === 0) {
+      const endpoint = "auth/login";
       const requestBody = {
         mail: mail,
         password: password,
@@ -41,10 +42,7 @@ const Login = () => {
 
       setLoading(true); // Activar el estado de carga
 
-      const { data, error } = await postData(
-        "http://192.168.101.29:8080/XCampo/api/v1/auth/login",
-        requestBody,
-      );
+      const { data, error } = await postData(endpoint, requestBody);
 
       setLoading(false); // Desactivar el estado de carga
 
@@ -53,9 +51,9 @@ const Login = () => {
           Alert.alert("Upss", "credenciales incorrectas");
           errors.mail = string.Signup.errors.mail;
         }
+
         if (data.statusCode === "OK") {
           try {
-            console.log(data);
             await saveToken("id", data.body.id_user);
             await saveToken("accessToken", data.body.token);
             await saveToken("refreshToken", data.body.refreshToken);
@@ -97,10 +95,11 @@ const Login = () => {
           placeholder={string.Signup.mail}
           onChangeText={(newText) => setMail(newText)}
           errorMessage={errors.mail}
+          keyboardType="email-address"
           iconLibrary={Mail}
         />
         <CustomInputIcon
-          value={mail}
+          value={password}
           placeholder={string.Signup.password}
           onChangeText={(newText) => setPassword(newText)}
           errorMessage={errors.password}
@@ -126,43 +125,34 @@ const Login = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  inputContainer: {
-    alignItems: "center",
-    paddingHorizontal: 65,
-    marginVertical: 8,
-    width: "100%",
-  },
-  containerIcon: {
-    borderRadius: 20,
-    backgroundColor: "gray",
-    height: 35,
-    width: 30,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 12,
-  },
-  image: {
-    width: 200,
-    height: 100,
-    borderRadius: 30,
-  },
   Button: {
-    marginTop: 30,
     marginBottom: 30,
-    width: 250,
-  },
-  text: {
-    marginTop: 20,
-    fontSize: 15,
+    marginTop: 30,
     width: 250,
   },
   btnRegister: {
     marginTop: 20,
+  },
+  container: {
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "center",
+  },
+  image: {
+    borderRadius: 30,
+    height: 100,
+    width: 200,
+  },
+  inputContainer: {
+    alignItems: "center",
+    marginVertical: 8,
+    paddingHorizontal: 65,
+    width: "100%",
+  },
+  text: {
+    fontSize: 15,
+    marginTop: 20,
+    width: 250,
   },
 });
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Image, ImageBackground } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import {
@@ -11,9 +11,34 @@ import theme from "../src/theme/theme.js";
 import string from "../src/string/string.js";
 import StyledText from "../src/styles/StyledText.jsx";
 import StyledButton from "../src/styles/StyledButton.jsx";
+import {
+  getLocationPermission,
+  getSavedLocation,
+} from "../funcions/getCoordinates.js";
 
 export default function WelcomePage() {
   const navigation = useNavigation();
+  const [setOrigin] = useState(null);
+  const [setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLocation = async () => {
+      const savedLocation = await getSavedLocation();
+
+      if (savedLocation) {
+        console.log("Usando ubicación guardada:", savedLocation);
+        setOrigin(savedLocation);
+        setIsLoading(false);
+      } else {
+        console.log("No hay ubicación guardada, obteniendo nueva...");
+        await getLocationPermission(setOrigin, setIsLoading);
+      }
+
+      setIsLoading(false);
+    };
+
+    fetchLocation();
+  }, [setIsLoading, setOrigin]);
 
   return (
     <View style={styles.container}>
@@ -62,30 +87,30 @@ export default function WelcomePage() {
 }
 
 const styles = StyleSheet.create({
-  containerComponent: {
-    flex: 1,
-    backgroundColor: "#ffffffa0",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  textContainer: {
-    flex: 0,
-    backgroundColor: "#ffffffa0",
-    padding: 20,
-    margin: 40,
-    borderRadius: 20,
-  },
-  itemContainer: {
-    marginTop: 20,
-    flexDirection: "row",
-  },
   container: {
     flex: 1,
     flexDirection: "column",
   },
+  containerComponent: {
+    alignItems: "center",
+    backgroundColor: theme.colors.opacity,
+    flex: 1,
+    justifyContent: "center",
+  },
   image: {
     flex: 1,
-    resizeMode: "cover",
     justifyContent: "center",
+    resizeMode: "cover",
+  },
+  itemContainer: {
+    flexDirection: "row",
+    marginTop: 20,
+  },
+  textContainer: {
+    backgroundColor: theme.colors.opacity,
+    borderRadius: 20,
+    flex: 0,
+    margin: 40,
+    padding: 20,
   },
 });

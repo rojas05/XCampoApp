@@ -11,14 +11,17 @@ const stores = [
           { id: 1, nombre: "Producto 1" },
           { id: 2, nombre: "Producto 2" },
         ],
-        coordinate: { latitude: 1.855476, longitude: -76.042788 },
+        coordinate: {
+          latitude: 1.8597457358731515, // "1.8597457358731515, -76.04371218824772"
+          longitude: -76.04371218824772,
+        },
       },
       {
         id: 2,
         tienda: "Tienda A",
         total: 2500,
         productos: [{ id: 3, nombre: "Producto 3" }],
-        coordinate: { latitude: 1.856276, longitude: -76.043788 },
+        coordinate: { latitude: 1.856276, longitude: -76.043788 }, // "1.856276, -76.043788"
       },
       {
         id: 3,
@@ -38,7 +41,7 @@ const stores = [
         tienda: "Tienda B",
         total: 45000,
         productos: [{ id: 5, nombre: "Producto 5" }],
-        coordinate: { latitude: 1.858745, longitude: -76.045712 },
+        coordinate: { latitude: 1.858745, longitude: -76.045712 }, //  "1.858745, -76.045712"
       },
       {
         id: 5,
@@ -166,7 +169,7 @@ const stores = [
   },
 ];
 
-const orders = [
+const order = [
   {
     id: "ORD-1",
     fincaName: "Finca villa nueva",
@@ -263,4 +266,4 @@ const orders = [
   },
 ];
 
-export { stores, orders };
+export { stores, order };
