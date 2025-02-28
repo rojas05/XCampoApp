@@ -19,18 +19,19 @@ const PaymentSwitch = ({ isPaid, setIsPaid }) => (
 
 const styles = StyleSheet.create({
   checkboxContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center",
-    marginHorizontal: 20,
-    padding: 15,
-    backgroundColor: "#fff",
+    backgroundColor: theme.colors.whiteMedium,
     borderRadius: 8,
     elevation: 3,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginHorizontal: 20,
+    marginTop: 10,
+    padding: 15,
   },
   checkboxLabel: {
+    color: theme.colors.black,
     fontSize: 16,
-    color: "#555",
   },
 });
 

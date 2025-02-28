@@ -1,9 +1,12 @@
 import React, { useState, useCallback } from "react";
 import { View, Text, Modal, StyleSheet } from "react-native";
-import { CustomInput } from "../../components/InputCustom";
-import StyledButton from "../../styles/StyledButton";
+
 import theme from "../../theme/theme";
-import { orders } from "../../../screens/delivery/js/GetOrderStoge";
+import StyledButton from "../../styles/StyledButton";
+import { CustomInput } from "../../components/InputCustom";
+
+import { deCodeGenerateDelivery } from "../../../funcions/KeyOrder";
+import { getDeliveryOrderById } from "../../../services/DeliveryProduct";
 
 const useForm = (initialState) => {
   const [form, setForm] = useState(initialState);
@@ -16,9 +19,10 @@ const useForm = (initialState) => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!form.code) {
+    if (!form.code.trim()) {
       newErrors.code = "El campo de verificación está vacío";
     }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -28,28 +32,83 @@ const useForm = (initialState) => {
     errors,
     handleInputChange,
     validateForm,
+    setErrors,
+    setForm,
   };
 };
 
-const AlertInputCodeOrder = ({ navegation, isVisible, closeModal }) => {
-  const { form, errors, handleInputChange, validateForm } = useForm({
-    code: "",
-  });
+const AlertInputCodeOrder = ({ navigation, isVisible, closeModal }) => {
+  const [deliveryOrder, setDeliveryOrder] = useState([]);
+  const [okMessage, setOkMessage] = useState("");
+  const { form, errors, handleInputChange, validateForm, setErrors, setForm } =
+    useForm({
+      code: "",
+    });
 
-  const handleSubmit = useCallback(() => {
-    if (validateForm()) {
-      navegation.navigate("OrderDetail", {
-        order: orders[0],
-        activateAlert: true,
+  const getOrder = useCallback(
+    async (id) => {
+      const existingOrder = deliveryOrder.find(
+        (order) => Number(order.idOrder) === Number(id),
+      );
+
+      if (existingOrder) {
+        console.log("Orden ya existe, no se añadirá.");
+        setOkMessage("La orden ya está en la lista");
+        return existingOrder;
+      }
+
+      try {
+        const order = await getDeliveryOrderById(id);
+
+        setDeliveryOrder((prevOrders) => [...prevOrders, order]);
+        setOkMessage("Se agregó correctamente");
+
+        return order;
+      } catch (error) {
+        setErrors((prev) => ({ ...prev, code: "Error al obtener la orden" }));
+        console.error("Error al obtener la orden: " + error);
+        return null;
+      }
+    },
+    [deliveryOrder, setErrors],
+  );
+
+  const handleNavigation = () => {
+    if (deliveryOrder.length > 0) {
+      navigation.navigate("OrderDetail", {
+        order: deliveryOrder,
+        context: "MapOrderDeliveryScreen",
       });
       closeModal();
+    } else {
+      setErrors((prev) => ({
+        ...prev,
+        code: "Debe ingresar un código válido",
+      }));
     }
-  }, [validateForm, navegation, closeModal]);
+  };
+
+  const handleConfirm = useCallback(async () => {
+    if (!form.code.trim()) {
+      setErrors((prev) => ({ ...prev, code: "El campo no puede estar vacío" }));
+      return;
+    }
+
+    if (!validateForm()) return;
+
+    const getIdOrder = deCodeGenerateDelivery(form.code, setErrors);
+    if (!getIdOrder) return;
+
+    const order = await getOrder(getIdOrder);
+    if (!order) return;
+
+    setForm({ code: "" });
+  }, [form.code, getOrder, setErrors, validateForm, setForm]);
 
   return (
     <Modal
       visible={isVisible}
-      transparent={true}
+      transparent
       animationType="fade"
       onRequestClose={closeModal}
     >
@@ -57,16 +116,27 @@ const AlertInputCodeOrder = ({ navegation, isVisible, closeModal }) => {
         <View style={styles.modalContainer}>
           <Text style={styles.text}>Introduce el código de la finca</Text>
           <CustomInput
-            value={form.code}
+            value={form.code.toUpperCase()}
             placeholder="Ingresa código de verificación"
             onChangeText={(value) => handleInputChange("code", value)}
             errorMessage={errors.code}
             style={styles.input}
           />
+          {errors.code && <Text style={styles.errorText}>{errors.code}</Text>}
+          {okMessage && <Text style={styles.okText}>{okMessage}</Text>}
+
           <StyledButton
+            yellow
+            textBlack
             style={styles.buttonsContainer}
-            title="Confirmar"
-            onPress={handleSubmit}
+            title={
+              form.code.trim()
+                ? "Guardar"
+                : deliveryOrder.length > 0
+                  ? "Confirmar"
+                  : "Confirmar"
+            }
+            onPress={form.code.trim() ? handleConfirm : handleNavigation}
           />
         </View>
       </View>
@@ -75,25 +145,33 @@ const AlertInputCodeOrder = ({ navegation, isVisible, closeModal }) => {
 };
 
 const styles = StyleSheet.create({
-  modalContainer: {
-    backgroundColor: theme.colors.white,
-    padding: 20,
-    borderRadius: 10,
-    width: 300,
-    alignItems: "center",
+  buttonsContainer: {
+    marginBottom: 0,
+    width: "100%",
   },
-  text: {
-    textAlign: "center",
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 10,
+  errorText: {
+    color: theme.colors.red,
+    marginTop: 5,
   },
   input: {
     width: "100%",
   },
-  buttonsContainer: {
-    width: "100%",
-    marginBottom: 0,
+  modalContainer: {
+    alignItems: "center",
+    backgroundColor: theme.colors.white,
+    borderRadius: 10,
+    padding: 20,
+    width: 300,
+  },
+  okText: {
+    color: theme.colors.greenText,
+    marginTop: 5,
+  },
+  text: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 10,
+    textAlign: "center",
   },
 });
 

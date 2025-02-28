@@ -5,6 +5,7 @@ import Constants from "expo-constants";
 import StyledText from "../../src/styles/StyledText";
 import { FastArrowLeft, Home, Map, MapPin } from "iconoir-react-native";
 
+import API_URL from "../../fetch/ApiConfig";
 import theme from "../../src/theme/theme";
 import MapView, { Marker } from "react-native-maps";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -33,12 +34,9 @@ const InfoStore = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   async function getStore() {
     try {
-      response = await fetchWithToken(
-        "http://192.168.0.121:8080/XCampo/api/v1/seller/" + idStore,
-        {
-          method: "GET",
-        },
-      );
+      response = await fetchWithToken(`${API_URL}seller/${idStore}`, {
+        method: "GET",
+      });
 
       if (response.ok) {
         const data = await response.json();
@@ -113,57 +111,43 @@ const InfoStore = () => {
 };
 
 const styles = StyleSheet.create({
+  cell: {
+    alignItems: "center",
+    flexDirection: "row",
+    marginBottom: 25,
+    width: "90%",
+  },
   container: {
-    flex: 1,
     alignItems: "center",
     backgroundColor: theme.colors.greenOpacity,
-  },
-  statusBar: {
-    marginTop: Constants.statusBarHeight,
-    flexDirection: "row",
-    padding: 10,
-    width: "100%",
-  },
-  mapa: {
-    width: "100%",
-    height: "40%",
-  },
-  info: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "90%",
-    justifyContent: "space-between",
-    marginBottom: 25,
-  },
-  cell: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 25,
-    width: "90%",
-  },
-  indications: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "50%",
-    justifyContent: "space-between",
-  },
-  button: {
-    backgroundColor: theme.colors.grey,
-    padding: 8,
-    borderRadius: 5,
-    marginTop: 5,
-    marginBottom: 8,
+    flex: 1,
   },
   containerInfo: {
-    width: "100%",
-    height: "50%",
-    borderTopRightRadius: 5,
-    borderTopLeftRadius: 5,
-    paddingTop: 30,
+    alignItems: "center",
     backgroundColor: theme.colors.white,
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+    height: "50%",
+    paddingTop: 30,
     position: "absolute",
     top: "50%",
+    width: "100%",
+  },
+  indications: {
     alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "50%",
+  },
+  mapa: {
+    height: "40%",
+    width: "100%",
+  },
+  statusBar: {
+    flexDirection: "row",
+    marginTop: Constants.statusBarHeight,
+    padding: 10,
+    width: "100%",
   },
 });
 

@@ -5,11 +5,11 @@ import { PlusCircle } from "iconoir-react-native";
 
 const styles = StyleSheet.create({
   button: {
+    borderBottomLeftRadius: 25,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
     flexDirection: "row",
     padding: 10,
-    borderTopRightRadius: 25,
-    borderTopLeftRadius: 25,
-    borderBottomLeftRadius: 25,
   },
   text: {
     color: theme.colors.primary,

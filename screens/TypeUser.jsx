@@ -1,39 +1,59 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   ActivityIndicator,
   StyleSheet,
   ScrollView,
   Text,
+  TouchableOpacity,
+  Alert,
 } from "react-native";
 import Constants from "expo-constants";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  HomeAlt,
+  CheckCircle,
+  Delivery,
+  User,
+  Pin,
+} from "iconoir-react-native";
+import { Ionicons } from "@expo/vector-icons";
+
+import { fetchWithToken } from "../tokenStorage";
+import { responseHeader } from "../fetch/UseFetch";
+import API_URL from "../fetch/ApiConfig";
+
 import StyledImput from "../src/styles/StyledImput";
 import StyledText from "../src/styles/StyledText";
 import theme from "../src/theme/theme";
-import { HomeAlt, CheckCircle, Delivery, User } from "iconoir-react-native";
 import StyledButton from "../src/styles/StyledButton";
 import string from "../src/string/string";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { fetchWithToken } from "../tokenStorage";
+import { getLocationPermission } from "../src/utils/LocationPermission";
+import { CustomAlert } from "../src/components/Alerts/CustomAlert";
+import { openCamera, openGallery } from "../src/utils/ImagePickerHandler";
+import {
+  getSellerID,
+  postImageFirebaseSeller,
+  updateSellerImage,
+} from "../services/SellerService";
 
 const TypeUser = () => {
   const route = useRoute();
-  const { idUser } = route.params;
-  const { roles } = route.params;
+  const { idUser, roles } = route.params;
 
   const [errors, setErrors] = useState({});
 
   const [loading, setLoading] = useState(false);
+  const [photos, setPhotos] = useState([]);
+  const [isAlertVisible, setAlertVisible] = useState(false);
   const [store, setStore] = useState("");
   const [indications, setIndications] = useState("");
-  const [coordinates, setCoordinates] = useState("");
+  const [coordinates, setCoordinates] = useState(null);
   const [location, setlocation] = useState("");
 
   const [routeDelivery, setRouteDelivery] = useState("");
 
-  // eslint-disable-next-line no-unused-vars
   const [nameClient, setNameClient] = useState("");
-  // eslint-disable-next-line no-unused-vars
   const [indicationsClient, setIndicationsClient] = useState("");
 
   const [seller, setSeller] = useState(true);
@@ -43,11 +63,29 @@ const TypeUser = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
+    getLocationPermission(setCoordinates);
     validateRol();
   }, [validateRol]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  function validateRol() {
+  const handleLocationPress = () => {
+    getLocationPermission(setCoordinates);
+    Alert.alert("Ubicacion agregada", "Se agrego su ubicaion");
+  };
+
+  const addPhoto = () => {
+    if (photos.length >= 2) {
+      Alert.alert("Límite alcanzado", "El límite es dos fotos.");
+      return;
+    } else {
+      setAlertVisible(true);
+    }
+  };
+
+  const removePhoto = (index) => {
+    setPhotos((prevPhotos) => prevPhotos.filter((_, i) => i !== index));
+  };
+
+  const validateRol = useCallback(() => {
     // Itera sobre la lista de roles
     roles.forEach((role) => {
       switch (role) {
@@ -65,79 +103,66 @@ const TypeUser = () => {
           break;
       }
     });
-  }
+  }, [roles]);
 
-  const validateForm = async (rol) => {
-    if (rol === "SELLER") {
+  const roleValidations = {
+    SELLER: () => {
       let errors = {};
       if (!store) errors.store = string.App.require;
       if (!indications) errors.indications = string.App.require;
       if (!coordinates) errors.coordinates = string.App.require;
       if (!location) errors.location = string.App.require;
-      setErrors(errors);
-    }
-
-    if (rol === "DELIVERYMAN") {
+      return errors;
+    },
+    DELIVERYMAN: () => {
       let errors = {};
       if (!routeDelivery) errors.routeDelivery = string.App.require;
-      setErrors(errors);
-    }
-
-    if (rol === "CLIENT") {
+      return errors;
+    },
+    CLIENT: () => {
       let errors = {};
       if (!nameClient) errors.nameClient = string.App.require;
       if (!indicationsClient) errors.indicationsClient = string.App.require;
-      setErrors(errors);
-    }
-
-    errorsFuncion(rol);
+      return errors;
+    },
   };
 
-  function errorsFuncion(rol) {
-    if (rol === "SELLER") {
-      if (Object.keys(errors).length === 0) {
-        setLoading(true);
+  const validateForm = async (rol) => {
+    const errors = roleValidations[rol]();
+    setErrors(errors);
 
-        const data = {
-          id_seller: null,
-          name_store: store,
-          coordinates: coordinates,
-          location: location,
-          location_description: indications,
-          img: null,
-        };
+    if (Object.keys(errors).length === 0) {
+      setLoading(true);
+      let data = {};
 
-        setRol(rol, data);
+      switch (rol) {
+        case "SELLER":
+          data = {
+            id_seller: null,
+            name_store: store,
+            coordinates: JSON.stringify(coordinates),
+            location: location,
+            location_description: indications,
+            img: null,
+          };
+          break;
+        case "DELIVERYMAN":
+          data = { id_seller: null, rute: routeDelivery };
+          break;
+        case "CLIENT":
+          data = {
+            id_seller: null,
+            name: nameClient,
+            location_description: indicationsClient,
+          };
+          break;
+        default:
+          console.error("Rol no válido.");
+          return;
       }
+      setRol(rol, data);
     }
-
-    if (rol === "DELIVERYMAN") {
-      if (Object.keys(errors).length === 0) {
-        setLoading(true);
-
-        const data = {
-          id_seller: null,
-          rute: routeDelivery,
-        };
-
-        setRol(rol, data);
-      }
-    }
-
-    if (rol === "CLIENT") {
-      if (Object.keys(errors).length === 0) {
-        setLoading(true);
-
-        const data = {
-          id_seller: null,
-          name: nameClient,
-          location_description: indicationsClient,
-        };
-
-        setRol(rol, data);
-      }
-    }
-  }
+  };
 
   async function setRol(rol, data) {
     const requestBody = {
@@ -147,24 +172,19 @@ const TypeUser = () => {
 
     try {
       const response = await fetchWithToken(
-        "http://192.168.0.121:8080/XCampo/api/v1/rol/" + idUser,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json", // Asegúrate de enviar el Content-Type
-          },
-          body: JSON.stringify(requestBody),
-        },
+        `${API_URL}rol/${idUser}`,
+        responseHeader(requestBody, "POST"),
       );
+
+      const dataRequest = await response.json();
       if (response.ok) {
-        const dataRequest = await response.json();
         setRolData(
           rol.toLowerCase(),
           JSON.stringify(dataRequest.roles_id),
           data,
         );
       } else {
-        console.error(response);
+        console.error(dataRequest);
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
@@ -174,18 +194,21 @@ const TypeUser = () => {
   async function setRolData(rol, idRoles, data) {
     try {
       const response = await fetchWithToken(
-        "http://192.168.0.121:8080/XCampo/api/v1/" + rol + "/" + idRoles,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        },
+        `${API_URL}${rol}/${idRoles}`,
+        responseHeader(data, "POST"),
       );
+
       if (response.ok) {
         setLoading(false);
         navigation.navigate("Splash");
+
+        if (rol === "seller") {
+          const idSeller = await getSellerID(idUser);
+          const imageUrl = await postImageFirebaseSeller(photos, idSeller);
+          if (imageUrl) {
+            await updateSellerImage(imageUrl, idSeller);
+          }
+        }
       } else {
         console.error("User data:", JSON.stringify(response));
         navigation.navigate("Splash");
@@ -223,13 +246,7 @@ const TypeUser = () => {
                 <StyledText bold> Vendedor </StyledText>
               </View>
 
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginTop: 15,
-                }}
-              >
+              <View style={styles.centerItem}>
                 <CheckCircle color={"grey"} width={30} height={30} />
 
                 <StyledImput
@@ -239,7 +256,7 @@ const TypeUser = () => {
                 ></StyledImput>
               </View>
 
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View style={styles.center}>
                 <CheckCircle color={"grey"} width={30} height={30} />
 
                 <StyledImput
@@ -249,7 +266,7 @@ const TypeUser = () => {
                 ></StyledImput>
               </View>
 
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View style={styles.center}>
                 <CheckCircle color={"grey"} width={30} height={30} />
 
                 <StyledImput
@@ -259,15 +276,54 @@ const TypeUser = () => {
                 ></StyledImput>
               </View>
 
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <View style={styles.center}>
                 <CheckCircle color={"grey"} width={30} height={30} />
 
-                <StyledImput
-                  placeholder={"Cordenadas de maps"}
-                  onChangeText={(newText) => setCoordinates(newText)}
-                  textError={errors.coordinates}
-                ></StyledImput>
+                <TouchableOpacity
+                  title="Agregar mi localización"
+                  onPress={handleLocationPress}
+                  style={styles.btnCordenadas}
+                >
+                  <Pin width={25} height={25} color="black" />
+                  <Text style={styles.photoName}>Agregar mi localización</Text>
+                </TouchableOpacity>
+                {errors.coordinates && (
+                  <StyledText style={{ color: theme.colors.red }}>
+                    {errors.coordinates}
+                  </StyledText>
+                )}
               </View>
+
+              {/* Campo para agregar las fotos */}
+              <TouchableOpacity onPress={addPhoto} style={styles.btnAddPhoto}>
+                <Text
+                  // eslint-disable-next-line react-native/no-inline-styles
+                  style={{
+                    color: theme.colors.white,
+                    fontSize: 18,
+                    fontWeight: "bold",
+                  }}
+                >
+                  Agregar Foto
+                </Text>
+              </TouchableOpacity>
+
+              <ScrollView style={styles.photosContainer}>
+                {photos.map((photo, index) => (
+                  <View key={index} style={styles.photoItem}>
+                    <View style={styles.photoIcon}>
+                      <Ionicons name="image-outline" size={24} color="black" />
+                      <Text style={styles.photoName}>Imagen {index + 1}</Text>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => removePhoto(index)}
+                      style={styles.removeButton}
+                    >
+                      <Ionicons name="close-circle" size={24} color="black" />
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </ScrollView>
 
               {loading ? (
                 <ActivityIndicator size="large" color={theme.colors.yellow} />
@@ -296,13 +352,7 @@ const TypeUser = () => {
                 <StyledText bold> Repartidor </StyledText>
               </View>
 
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginTop: 15,
-                }}
-              >
+              <View style={styles.centerItem}>
                 <CheckCircle color={"grey"} width={30} height={30} />
 
                 <StyledImput
@@ -339,34 +389,22 @@ const TypeUser = () => {
                 <StyledText bold>Cliente </StyledText>
               </View>
 
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginTop: 15,
-                }}
-              >
+              <View style={styles.centerItem}>
                 <CheckCircle color={"grey"} width={30} height={30} />
 
                 <StyledImput
                   placeholder={"Nombre de cliente"}
-                  onChangeText={(newText) => setRouteDelivery(newText)}
+                  onChangeText={(newText) => setNameClient(newText)}
                   textError={errors.routeDelivery}
                 ></StyledImput>
               </View>
 
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  marginTop: 15,
-                }}
-              >
+              <View style={styles.centerItem}>
                 <CheckCircle color={"grey"} width={30} height={30} />
 
                 <StyledImput
                   placeholder={"Indicaciones"}
-                  onChangeText={(newText) => setRouteDelivery(newText)}
+                  onChangeText={(newText) => setIndicationsClient(newText)}
                   textError={errors.routeDelivery}
                 ></StyledImput>
               </View>
@@ -379,6 +417,7 @@ const TypeUser = () => {
                   onPress={() => {
                     validateForm("CLIENT");
                   }}
+                  disabled={loading}
                 ></StyledButton>
               )}
             </View>
@@ -386,46 +425,101 @@ const TypeUser = () => {
             <View></View>
           )}
         </View>
+        <CustomAlert
+          visible={isAlertVisible}
+          onClose={() => setAlertVisible(false)}
+          onCamera={() => openCamera(setPhotos, setAlertVisible)}
+          onGallery={() => openGallery(setPhotos, setAlertVisible)}
+        />
       </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: Constants.statusBarHeight,
-    flex: 1,
-    backgroundColor: theme.colors.yellow,
-  },
-  item: {
-    backgroundColor: theme.colors.opacity,
-    width: 300,
-    borderRadius: 20,
-    marginTop: 10,
+  btnAddPhoto: {
     alignItems: "center",
+    backgroundColor: theme.colors.green,
+    borderRadius: 8,
+    marginTop: 15,
+    paddingVertical: 5,
+    textAlign: "center",
+    width: "80%",
+  },
+  btnCordenadas: {
+    alignContent: "center",
+    alignItems: "center",
+    borderBottomWidth: 2,
+    borderColor: theme.colors.greyBlack,
+    flexDirection: "row",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    width: "84%",
+  },
+  center: {
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  centerItem: {
+    alignItems: "center",
+    flexDirection: "row",
+    marginTop: 15,
+  },
+  container: {
+    backgroundColor: theme.colors.yellow,
+    flex: 1,
+    marginTop: Constants.statusBarHeight,
   },
   header: {
     backgroundColor: theme.colors.green,
-    height: 40,
-    width: 300,
-    borderTopStartRadius: 20,
     borderTopEndRadius: 20,
+    borderTopStartRadius: 20,
     flexDirection: "row",
-    padding: 5,
+    height: 40,
     justifyContent: "center",
+    padding: 5,
+    width: 300,
+  },
+  item: {
+    alignItems: "center",
+    backgroundColor: theme.colors.opacity,
+    borderRadius: 20,
+    marginTop: 10,
+    width: 300,
+  },
+  photoIcon: {
+    alignItems: "center",
+    flexDirection: "row",
+    marginRight: 10,
+  },
+  photoItem: {
+    alignSelf: "center",
+    backgroundColor: theme.colors.greenLiht,
+    borderRadius: 10,
+    flexDirection: "row",
+    marginBottom: 10,
+    padding: 8,
+  },
+  photoName: {
+    color: theme.colors.black,
+    fontSize: 14,
+    marginLeft: 10,
+  },
+  photosContainer: {
+    marginVertical: 10,
+  },
+  removeButton: {
+    marginLeft: 15,
   },
   scroll: {
     backgroundColor: theme.colors.opacity,
   },
-  background: {
-    flex: 1,
-  },
   title: {
-    backgroundColor: theme.colors.opacity,
     alignItems: "center",
+    backgroundColor: theme.colors.opacity,
+    justifyContent: "center",
     marginBottom: 20,
     padding: 10,
-    justifyContent: "center",
   },
 });
 

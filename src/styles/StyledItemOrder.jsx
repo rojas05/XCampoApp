@@ -42,49 +42,49 @@ const StyledItemOrder = () => {
 };
 
 const styles = StyleSheet.create({
-  item: {
+  circle: {
+    backgroundColor: theme.colors.red,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: "gray",
-    width: 150,
-    height: 180,
-    alignItems: "center",
-    padding: 15,
-    borderRadius: 10,
-    margin: 5,
+    height: 15,
+    position: "absolute",
+    right: 2,
+    top: 2,
+    width: 15,
+  },
+  color: {
+    backgroundColor: theme.colors.green,
+    borderTopColor: theme.colors.greyMedium,
+    borderTopWidth: 1,
+    height: 8,
+    width: 38,
+  },
+  colorN: {
+    backgroundColor: theme.colors.greenOpacity,
+    borderTopColor: theme.colors.grey,
+    borderTopWidth: 1,
+    height: 8,
+    width: 38,
   },
   containerState: {
     flexDirection: "row",
   },
-  stateItem: {
-    width: 40,
-    height: 40,
-    borderWidth: 1,
-    borderColor: "gray",
+  item: {
     alignItems: "center",
-  },
-  color: {
-    width: 38,
-    height: 8,
-    backgroundColor: "green",
-    borderTopWidth: 1,
-    borderTopColor: "gray",
-  },
-  colorN: {
-    width: 38,
-    height: 8,
-    backgroundColor: theme.colors.greenOpacity,
-    borderTopWidth: 1,
-    borderTopColor: "gray",
-  },
-  circle: {
-    width: 15,
-    height: 15,
+    borderColor: theme.colors.greyMedium,
+    borderRadius: 10,
     borderWidth: 1,
-    borderRadius: 8,
-    position: "absolute",
-    top: 2,
-    right: 2,
-    backgroundColor: theme.colors.red,
+    height: 180,
+    margin: 5,
+    padding: 15,
+    width: 150,
+  },
+  stateItem: {
+    alignItems: "center",
+    borderColor: theme.colors.greyMedium,
+    borderWidth: 1,
+    height: 40,
+    width: 40,
   },
 });
 

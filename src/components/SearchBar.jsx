@@ -33,22 +33,17 @@ const SearchBar = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
     alignItems: "center",
+    flexDirection: "row",
     marginVertical: 10,
     paddingHorizontal: 10,
   },
-  searchSection: {
-    flex: 1,
-    flexDirection: "row",
+  filterButton: {
     alignItems: "center",
-    backgroundColor: theme.colors.greenOpacity,
+    backgroundColor: theme.colors.green,
     borderRadius: 8,
-    borderWidth: 0.5,
-    borderColor: theme.colors.black,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    marginRight: 10,
+    justifyContent: "center",
+    padding: 10,
   },
   icon: {
     marginRight: 5,
@@ -57,12 +52,17 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
   },
-  filterButton: {
-    backgroundColor: theme.colors.green,
-    padding: 10,
-    borderRadius: 8,
-    justifyContent: "center",
+  searchSection: {
     alignItems: "center",
+    backgroundColor: theme.colors.greenOpacity,
+    borderColor: theme.colors.black,
+    borderRadius: 8,
+    borderWidth: 0.5,
+    flex: 1,
+    flexDirection: "row",
+    marginRight: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
   },
 });
 

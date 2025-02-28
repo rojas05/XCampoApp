@@ -1,205 +1,262 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
   TouchableOpacity,
+  FlatList,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import AntDesign from "@expo/vector-icons/AntDesign";
 
-import { HOME_STYLES } from "../../src/utils/constants.js";
-import { OrderListProducts } from "./GetOrderProducts.js";
-import { AlertOk } from "../../src/components/Alerts/CustomAlert.jsx";
-import StyledButton from "../../src/styles/StyledButton.jsx";
 import theme from "../../src/theme/theme.js";
+import { HOME_STYLES } from "../../src/utils/constants.js";
+import useOrders from "./js/useOrders.js";
+/* Services */
+import { updateStateOrderID } from "../../services/OrdersService.js";
+import { updateProductStock } from "../../services/productService.js";
+/* Components */
+import LoadingView from "../../src/components/loading.jsx";
+import NoDataView from "../../src/components/NotDataView.jsx";
+import TabBar from "../../src/components/TabBar/TabBarOrder.jsx";
+import OrderItem from "../../src/components/OrderComponents/OrderItem.jsx";
+import OrderAlert from "../../src/components/Alerts/OrderAlert.jsx";
+import FilterPopup from "../../src/components/Alerts/OrderAlertFilterPop.jsx";
+import OrderAlertNotStock from "../../src/components/Alerts/OrderAlertNotStock.jsx";
+import OrderAlertCodeDelivey from "../../src/components/Alerts/OrderAlertCodeDelivey.jsx";
 
-const OrdersScreen = ({ navigation }) => {
-  // eslint-disable-next-line no-unused-vars
-  const [orders, setOrders] = useState(OrderListProducts);
-  const [isAlertOkVisible, setAlertOkVisible] = useState(false);
+const OrdersScreen = ({ route, navigation }) => {
+  const { idUser } = route.params || {};
+  const [showFilter, setShowFilter] = useState(false);
+  const [activeTab, setActiveTab] = useState("EN_ESPERA");
 
-  const [expandedOrderId, setExpandedOrderId] = useState(null);
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [deliveryCode, setDeliveryCode] = useState("");
 
-  const toggleExpand = (id) => {
-    setExpandedOrderId((prevId) => (prevId === id ? null : id));
+  const [state, setState] = useState({
+    orderAccepted: false,
+    alertNotStock: { visible: false, title: "", message: "" },
+    alertConfig: { visible: false, type: "", message: "" },
+  });
+
+  const { idSeller, orders, setOrders, loading, error, productDetails } =
+    useOrders(idUser, activeTab, setState);
+
+  const handleActionOrder = async (orderId, type, message, newState) => {
+    await updateStateOrderID(orderId, newState);
+    setState((prev) => ({
+      ...prev,
+      alertConfig: { visible: true, type, message },
+      orderAccepted: true,
+    }));
+
+    setOrders((prevOrders) =>
+      prevOrders.map((order) =>
+        order.idOrder === orderId ? { ...order, state: newState } : order,
+      ),
+    );
   };
 
-  const handleSubmit = () => {
-    setAlertOkVisible(true);
+  const handleUpdateStock = async (productsData) => {
+    try {
+      const results = await Promise.all(
+        productsData.map((data) =>
+          updateProductStock(data.quantity, data.productId, idSeller),
+        ),
+      );
+      return results.every((result) => result === true);
+    } catch {
+      setState((prev) => ({
+        ...prev,
+        alertNotStock: {
+          visible: true,
+          title: "Cantidad no disponible",
+          message:
+            "No se puede aceptar el pedido porque no tiene esa cantidad disponible. \n \n Cancela la orden o habla con el comprador.",
+        },
+      }));
+      return false;
+    }
   };
 
-  const renderProduct = (product) => (
-    <Text style={styles.productText} key={product.name}>
-      {`- ${product.name} x ${product.unit} a $${product.price} (${product.quantity} ${product.unit}) \n Total = $${(product.price * product.quantity).toFixed(2)}`}
-    </Text>
-  );
+  const { alertConfig, alertNotStock } = state;
 
-  const renderOrder = (order, isLast) => (
-    <View
-      style={[styles.orderContainer, isLast && styles.lastOrderContainer]}
-      key={order.id}
-    >
-      <View style={styles.chatButtonContainer}>
-        <View style={{ flexDirection: "column", flex: 1 }}>
-          <Text style={styles.orderId}>Pedido No.{order.id}</Text>
-          <Text style={styles.orderTotal}>
-            Total de artículos: {order.totalItems}
-          </Text>
-          <Text style={styles.orderTotal}>Precio total: ${order.total}</Text>
-        </View>
-
-        <TouchableOpacity
-          style={styles.chatButton}
-          onPress={() => navigation.navigate("ChatScreen")}
-        >
-          <Ionicons
-            name="chatbubble-outline"
-            size={20}
-            color={theme.colors.black}
+  if (error) return <Text>{error}</Text>;
+  if (loading) return <LoadingView />;
+  if (!orders?.length)
+    return (
+      <View style={HOME_STYLES.container}>
+        <TabBar
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          acceptedFilter={activeTab}
+        />
+        {activeTab !== "EN_ESPERA" && (
+          <FilterButtons
+            setShowFilter={setShowFilter}
+            showFilter={showFilter}
+            acceptedFilter={activeTab}
+            setAcceptedFilter={setActiveTab}
           />
-          <Text style={styles.buttonText}> Chat</Text>
-        </TouchableOpacity>
+        )}
+        <NoDataView dataText="órdenes" />
       </View>
-
-      {isLast || expandedOrderId === order.id ? (
-        <>
-          <Text style={styles.sectionTitle}>Productos</Text>
-          <View style={styles.productsList}>
-            {order.products.map((product) => renderProduct(product))}
-          </View>
-          <View style={styles.buttonsContainer}>
-            <StyledButton
-              yellow
-              textBlack
-              onPress={handleSubmit}
-              title="Entregar Pedido"
-            />
-            <StyledButton
-              green
-              textBlack
-              //onPress={handleSubmit}
-              title="Total a Cobrar"
-            />
-          </View>
-          {!isLast && (
-            <TouchableOpacity
-              style={styles.toggleButton}
-              onPress={() => toggleExpand(order.id)}
-            >
-              <AntDesign name="caretup" size={15} color="black" />
-              <Text style={styles.toggleButtonText}>Mostrar Menos</Text>
-            </TouchableOpacity>
-          )}
-        </>
-      ) : (
-        <TouchableOpacity
-          style={styles.toggleButton}
-          onPress={() => toggleExpand(order.id)}
-        >
-          <AntDesign name="caretdown" size={15} color="black" />
-          <Text style={styles.toggleButtonText}>Ver Más</Text>
-        </TouchableOpacity>
-      )}
-    </View>
-  );
+    );
 
   return (
     <View style={HOME_STYLES.container}>
-      <Text style={styles.title}>Productos</Text>
-      <ScrollView contentContainerStyle={HOME_STYLES.scrollContainer}>
-        {renderOrder(orders[0], true)}
-        {orders.slice(1).map((order) => renderOrder(order, false))}
-      </ScrollView>
-      {/* Alert */}
-      <AlertOk
-        visible={isAlertOkVisible}
-        messege="¡Pedido entregado exitosamenete!"
-        onClose={() => setAlertOkVisible(false)}
+      <TabBar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        acceptedFilter={activeTab}
+      />
+
+      {activeTab === "EN_ESPERA" ? (
+        <OrderList
+          orders={orders.filter((o) => o.state === activeTab)}
+          navigation={navigation}
+          handleAcceptOrder={(idOrder) =>
+            handleActionOrder(
+              idOrder,
+              "success",
+              "Pedido aceptado exitosamente",
+              "ACEPTADA",
+            )
+          }
+          handleCancelOrder={(idOrder) =>
+            handleActionOrder(
+              idOrder,
+              "error",
+              "Pedido cancelado exitosamente",
+              "CANCELADA",
+            )
+          }
+          handleUpdateStock={(productsData) => handleUpdateStock(productsData)}
+          productDetails={productDetails}
+        />
+      ) : (
+        <>
+          <FilterButtons
+            setShowFilter={setShowFilter}
+            showFilter={showFilter}
+            acceptedFilter={activeTab}
+            setAcceptedFilter={setActiveTab}
+          />
+
+          <OrderList
+            orders={orders.filter((o) => o.state === activeTab)}
+            navigation={navigation}
+            productDetails={productDetails}
+            setAlertVisible={setAlertVisible}
+            setDeliveryCode={setDeliveryCode}
+          />
+        </>
+      )}
+
+      <OrderAlert
+        visible={alertConfig.visible}
+        type={alertConfig.type}
+        message={alertConfig.message}
+        onClose={() =>
+          setState((prev) => ({
+            ...prev,
+            alertConfig: { ...prev.alertConfig, visible: false },
+          }))
+        }
+      />
+
+      <OrderAlertNotStock
+        visible={alertNotStock.visible}
+        title={alertNotStock.title}
+        message={alertNotStock.message}
+        onAccept={() =>
+          setState((prev) => ({
+            ...prev,
+            alertNotStock: { ...prev.alertNotStock, visible: false },
+          }))
+        }
+      />
+
+      <OrderAlertCodeDelivey
+        visible={alertVisible}
+        code={deliveryCode}
+        onClose={() => setAlertVisible(false)}
       />
     </View>
   );
 };
 
+const OrderList = ({ orders, setAlertVisible, setDeliveryCode, ...props }) =>
+  orders.length === 0 ? (
+    <NoDataView dataText="órdenes" />
+  ) : (
+    <FlatList
+      data={orders}
+      keyExtractor={(order) => order.idOrder.toString()}
+      renderItem={({ item }) => (
+        <OrderItem
+          order={item}
+          {...props}
+          setAlertVisible={setAlertVisible}
+          setDeliveryCode={setDeliveryCode}
+        />
+      )}
+    />
+  );
+
+const FilterButtons = ({
+  setShowFilter,
+  showFilter,
+  acceptedFilter,
+  setAcceptedFilter,
+}) => (
+  <View style={styles.filterContainer}>
+    <TouchableOpacity
+      style={styles.filterButton}
+      onPress={() => setShowFilter(true)}
+    >
+      <Ionicons name="options-outline" size={20} color={theme.colors.black} />
+      <Ionicons
+        name="chevron-down-outline"
+        size={16}
+        color={theme.colors.black}
+      />
+    </TouchableOpacity>
+
+    <FilterPopup
+      visible={showFilter}
+      currentFilter={acceptedFilter}
+      onSelect={(id) => setAcceptedFilter(id)}
+      onClose={() => setShowFilter(false)}
+    />
+  </View>
+);
+
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginVertical: 10,
-  },
-  orderContainer: {
-    backgroundColor: "#C8E6C9",
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 10,
-    elevation: 3,
-  },
-  lastOrderContainer: {
-    borderColor: "#4CAF50",
-    borderWidth: 2,
-  },
-  orderId: {
-    color: theme.colors.red,
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  orderTotal: {
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginTop: 10,
-    marginBottom: 5,
-  },
-  productsList: {
-    marginTop: 5,
-  },
-  productText: {
-    fontSize: 14,
-    marginBottom: 5,
-  },
-  buttonsContainer: {
-    flexDirection: "row",
-    alignSelf: "center",
-    marginTop: 10,
-  },
-  chatButtonContainer: {
-    flexDirection: "row",
+  filterButton: {
     alignItems: "center",
-  },
-  buttonText: {
-    color: theme.colors.black,
-    fontWeight: "bold",
-  },
-  chatButton: {
-    borderBlockColor: "#000",
+    backgroundColor: theme.colors.grey,
+    borderColor: theme.colors.lightGray,
+    borderRadius: 25,
     borderWidth: 1,
+    elevation: 1,
     flexDirection: "row",
-    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 16,
     paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
+    shadowColor: theme.colors.black,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
   },
-  toggleButton: {
-    borderBlockColor: "#000",
-    borderRadius: 5,
-    borderWidth: 1,
-    marginTop: 10,
-    padding: 10,
+  filterContainer: {
     flexDirection: "row",
-    alignSelf: "center",
-    justifyContent: "center",
-    width: "100%",
-  },
-  toggleButtonText: {
-    color: "#000",
-    fontWeight: "bold",
-    marginStart: 8,
+    justifyContent: "flex-end",
+    marginBottom: 8,
+    marginHorizontal: 16,
+    padding: 0,
   },
 });
 

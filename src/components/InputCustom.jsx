@@ -96,42 +96,37 @@ const CustomInputPrice = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
     marginBottom: 10,
+    width: "100%",
   },
   containerIcon: {
-    flexDirection: "row",
     alignItems: "center",
-    borderWidth: 1,
+    borderColor: theme.colors.border || "#ccc",
     borderRadius: 5,
+    borderWidth: 1,
+    flexDirection: "row",
     marginBottom: 10,
-    borderColor: theme.colors.border || "#ccc",
-  },
-  icon: {
-    marginRight: 10,
-  },
-  inputIcon: {
-    flex: 1,
-    borderWidth: 0,
-  },
-  input: {
-    height: 50,
-    borderColor: theme.colors.border || "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-  },
-  inputError: {
-    borderColor: "red",
-  },
-  errorText: {
-    color: "red",
-    fontSize: 12,
-    marginTop: 5,
   },
   halfWidth: {
     flex: 1,
     marginRight: 10,
+  },
+  icon: {
+    marginRight: 10,
+  },
+  input: {
+    borderColor: theme.colors.border || "#ccc",
+    borderRadius: 5,
+    borderWidth: 1,
+    height: 50,
+    paddingHorizontal: 10,
+  },
+  inputError: {
+    borderColor: theme.colors.red,
+  },
+  inputIcon: {
+    borderWidth: 0,
+    flex: 1,
   },
 });
 

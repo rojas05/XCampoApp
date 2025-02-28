@@ -49,6 +49,7 @@ const OrderItemTimes = (orders, shouldCount = false) => {
 
           const handleOrderExpiration = () => {
             updatedTimeLefts[orderId].status = "expired";
+
             Alert.alert(
               "¡Aviso!",
               `El pedido ${orderId} ha vencido y está cancelado.`,

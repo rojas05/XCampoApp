@@ -11,10 +11,7 @@ const getLocationPermission = async (setOrigin, setIsLoading) => {
       return;
     }
     let location = await Location.getCurrentPositionAsync({});
-    setOrigin({
-      latitude: location.coords.latitude,
-      longitude: location.coords.longitude,
-    });
+    setOrigin(`${location.coords.latitude},${location.coords.longitude}`);
   } catch (error) {
     alert("Hubo un problema al obtener tu ubicación.");
     console.log(error);

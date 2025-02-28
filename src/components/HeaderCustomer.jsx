@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons"; // Asegúrate de tener MaterialIcons instalado
+import theme from "../theme/theme";
 
 const handleSupportPress = () => {
   Alert.alert("Soporte", "¿Cómo podemos ayudarte?");
@@ -25,20 +26,20 @@ const Header = ({ title, onBackPress }) => {
 const styles = StyleSheet.create({
   headerContainer: {
     alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    backgroundColor: "#fff",
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    backgroundColor: theme.colors.white,
     borderRadius: 10,
     elevation: 5,
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginVertical: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
   },
   headerTitle: {
+    color: theme.colors.black,
+    flex: 1,
     fontSize: 20,
     fontWeight: "bold",
-    color: "#000",
-    flex: 1,
     textAlign: "center",
   },
 });

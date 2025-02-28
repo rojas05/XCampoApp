@@ -3,26 +3,26 @@ import { TouchableOpacity, StyleSheet, Text } from "react-native";
 import theme from "../theme/theme.js";
 
 const styles = StyleSheet.create({
-  floatingButton: {
-    position: "absolute",
-    backgroundColor: theme.colors.green,
-    padding: 15,
-    borderRadius: 100,
-    elevation: 5,
-  },
-  positionLet: {
-    top: 40,
-    left: 20,
-  },
-  positionBottom: {
-    bottom: 90,
-    right: 10,
-  },
   buttonText: {
     color: theme.colors.white,
     fontSize: 16,
     fontWeight: "bold",
     marginLeft: 5,
+  },
+  floatingButton: {
+    backgroundColor: theme.colors.green,
+    borderRadius: 100,
+    elevation: 5,
+    padding: 15,
+    position: "absolute",
+  },
+  positionBottom: {
+    bottom: 90,
+    right: 10,
+  },
+  positionLet: {
+    left: 20,
+    top: 40,
   },
 });
 

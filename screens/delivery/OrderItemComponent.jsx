@@ -17,12 +17,15 @@ const OrderItem = ({
   const shouldDisplay = (mode) =>
     !displayMode || displayMode === "both" || displayMode === mode;
 
-  const totalProducts = item.products.reduce(
-    (total, product) => total + product.quantity * product.price,
+  const totalToPay = item.products.reduce(
+    (total, product) => total + product.unitPrice,
     0,
   );
 
-  const totalToPay = totalProducts + item.shippingCost;
+  const totalProducts = item.products.reduce(
+    (total, product) => total + product.quantity,
+    0,
+  );
 
   return (
     <View style={styles.orderView}>
@@ -60,17 +63,21 @@ const OrderItem = ({
 const OrderDetails = ({ item, totalToPay, totalProducts }) => (
   <>
     <Text style={styles.infoText}>
-      Órdenes: <Text style={styles.boldText}>{item.orders}</Text> | Paradas:{" "}
-      <Text style={styles.boldText}>{item.stops}</Text> | Distancia:{" "}
-      <Text style={styles.boldText}>{item.distance} Km</Text>
+      Órdenes: <Text style={styles.boldText}>{item.products.length}</Text> |
+      Paradas: <Text style={styles.boldText}>{item.stops}</Text>
     </Text>
     <Text style={styles.infoText}>
-      Total a pagar:{" "}
-      <Text style={styles.boldText}>${formatPrice(totalToPay)}</Text>
+      Catidad de productos: <Text style={styles.boldText}>{totalProducts}</Text>
     </Text>
     <Text style={styles.infoText}>
-      Total de productos:{" "}
-      <Text style={styles.boldText}>${formatPrice(totalProducts)}</Text>
+      Costo del envio:{" "}
+      <Text style={styles.boldText}>${formatPrice(item.shippingCost)}</Text>
+    </Text>
+    <Text style={styles.infoText}>
+      <Text style={styles.boldTextRed}>- Subtotal: </Text>
+      <Text style={styles.boldText}>
+        ${formatPrice(totalToPay + item.shippingCost)}
+      </Text>
     </Text>
   </>
 );
@@ -82,58 +89,62 @@ const OrderButton = ({ title, onPress, style }) => (
 );
 
 const styles = StyleSheet.create({
-  orderView: {
-    alignSelf: "center",
-    backgroundColor: theme.colors.white,
-    borderColor: theme.colors.red,
-    borderRadius: 5,
-    borderWidth: 1,
-    padding: 10,
-    width: "95%",
-    marginVertical: 10,
-  },
-  titleText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-    color: theme.colors.textPrimary,
-  },
-  infoText: {
-    fontSize: 16,
-    color: theme.colors.textSecondary,
-    marginVertical: 2,
-  },
   boldText: {
-    fontWeight: "bold",
     color: theme.colors.textPrimary,
+    fontWeight: "bold",
+  },
+  boldTextRed: {
+    color: theme.colors.red,
+    fontWeight: "bold",
   },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     marginTop: 15,
   },
-  viewOrderButton: {
-    backgroundColor: theme.colors.green,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    flex: 1,
-    marginRight: 5,
-    alignItems: "center",
-  },
-  cancelOrderButton: {
-    backgroundColor: theme.colors.red,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-    flex: 1,
-    marginLeft: 5,
-    alignItems: "center",
-  },
   buttonText: {
     color: theme.colors.white,
     fontSize: 16,
     fontWeight: "bold",
+  },
+  cancelOrderButton: {
+    alignItems: "center",
+    backgroundColor: theme.colors.red,
+    borderRadius: 5,
+    flex: 1,
+    marginLeft: 5,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  infoText: {
+    color: theme.colors.textSecondary,
+    fontSize: 16,
+    marginVertical: 2,
+  },
+  orderView: {
+    alignSelf: "center",
+    backgroundColor: theme.colors.white,
+    borderColor: theme.colors.red,
+    borderRadius: 5,
+    borderWidth: 1,
+    marginVertical: 10,
+    padding: 10,
+    width: "95%",
+  },
+  titleText: {
+    color: theme.colors.textPrimary,
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  viewOrderButton: {
+    alignItems: "center",
+    backgroundColor: theme.colors.green,
+    borderRadius: 5,
+    flex: 1,
+    marginRight: 5,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
   },
 });
 

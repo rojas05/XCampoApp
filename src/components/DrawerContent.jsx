@@ -1,13 +1,14 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { STATUSBAR_HEIGHT } from "../../src/utils/constants.js";
-import { orders } from "../../screens/delivery/js/GetOrderStoge.js";
 import StyledButtonIcon from "../styles/StyledButtonIcon.jsx";
 import theme from "../theme/theme.js";
+import { getCountDeliveryAvailable } from "../../services/DeliveryProduct.js";
 
 const DrawerContent = ({ navigation, state }) => {
   const activeRouteName = state?.routeNames[state?.index];
+  const [orderCount, setOrderCount] = useState(null);
 
   const menuItems = [
     { icon: "map-marked-alt", label: "Inicio", navigation: "MapScreen" },
@@ -15,7 +16,7 @@ const DrawerContent = ({ navigation, state }) => {
       icon: "box",
       label: "Pedidos disponibles",
       navigation: "OrderAvailableScreen",
-      badge: orders.length,
+      badge: orderCount, // obtner nuevos pedidos
     },
     {
       icon: "box-open",
@@ -34,6 +35,15 @@ const DrawerContent = ({ navigation, state }) => {
     },
     { icon: "exchange-alt", label: "Cambiar rol", navigation: "" },
   ];
+
+  useEffect(() => {
+    const fetchOrderList = async () => {
+      const totalDeliveryAvailable = await getCountDeliveryAvailable();
+
+      setOrderCount(totalDeliveryAvailable);
+    };
+    fetchOrderList();
+  }, []);
 
   return (
     <View style={styles.drawerContent}>
@@ -112,90 +122,90 @@ const MenuItem = ({ item, isActive, onPress }) => (
 const Divider = () => <View style={styles.divider} />;
 
 const styles = StyleSheet.create({
-  drawerContent: {
-    flex: 1,
-    paddingStart: 15,
-    paddingEnd: 10,
-    paddingTop: STATUSBAR_HEIGHT + 5,
-    backgroundColor: theme.colors.white,
+  activeMenuItem: {
+    backgroundColor: theme.colors.blue,
   },
-  profileSection: {
-    flexDirection: "row",
+  activeMenuText: {
+    color: theme.colors.white,
+  },
+  badge: {
     alignItems: "center",
-    marginLeft: 10,
-    marginBottom: 15,
+    backgroundColor: theme.colors.red,
+    borderRadius: 10,
+    height: 20,
+    justifyContent: "center",
+    position: "absolute",
+    right: -10,
+    top: -5,
+    width: 20,
   },
-  profileImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    borderColor: theme.colors.black,
-    borderWidth: 0.5,
-  },
-  profileTextContainer: {
-    marginLeft: 10,
-  },
-  greeting: {
-    fontSize: 18,
+  badgeText: {
+    color: theme.colors.white,
+    fontSize: 12,
     fontWeight: "bold",
-    color: theme.colors.black,
-  },
-  subText: {
-    fontSize: 14,
-    paddingTop: 5,
-    color: theme.colors.textPrimary,
   },
   divider: {
-    height: 2,
     backgroundColor: theme.colors.blue,
+    height: 2,
     marginVertical: 10,
+  },
+  drawerContent: {
+    backgroundColor: theme.colors.white,
+    flex: 1,
+    paddingEnd: 10,
+    paddingStart: 15,
+    paddingTop: STATUSBAR_HEIGHT + 5,
+  },
+  greeting: {
+    color: theme.colors.black,
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  iconContainer: {
+    position: "relative",
+  },
+  menuItem: {
+    alignItems: "center",
+    borderRadius: 5,
+    flexDirection: "row",
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 15,
   },
   menuItems: {
     flex: 1,
     marginTop: 10,
   },
-  menuItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 15,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-    marginBottom: 10,
-  },
-  activeMenuItem: {
-    backgroundColor: theme.colors.blue,
-  },
   menuText: {
+    color: theme.colors.greyBlack,
     fontSize: 16,
-    color: "grey",
+    fontWeight: "bold",
     marginLeft: 15,
-    fontWeight: "bold",
   },
-  activeMenuText: {
-    color: theme.colors.white,
+  profileImage: {
+    borderColor: theme.colors.black,
+    borderRadius: 30,
+    borderWidth: 0.5,
+    height: 60,
+    width: 60,
   },
-  iconContainer: {
-    position: "relative",
-  },
-  badge: {
-    position: "absolute",
-    top: -5,
-    right: -10,
-    backgroundColor: "red",
-    borderRadius: 10,
-    width: 20,
-    height: 20,
+  profileSection: {
     alignItems: "center",
-    justifyContent: "center",
+    flexDirection: "row",
+    marginBottom: 15,
+    marginLeft: 10,
   },
-  badgeText: {
-    color: "white",
-    fontSize: 12,
-    fontWeight: "bold",
+  profileTextContainer: {
+    marginLeft: 10,
   },
   signOutSection: {
-    marginBottom: 20,
     height: 70,
+    marginBottom: 20,
+  },
+  subText: {
+    color: theme.colors.textPrimary,
+    fontSize: 14,
+    paddingTop: 5,
   },
 });
 

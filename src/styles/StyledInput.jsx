@@ -1,5 +1,6 @@
 import React from "react";
 import { Text, TextInput, View, StyleSheet } from "react-native";
+import theme from "../theme/theme";
 
 const StyledInput = (props) => {
   const { onChangeText, value, keyboardType, placeholder, textError } = props;
@@ -23,10 +24,10 @@ const styles = StyleSheet.create({
   },
   input: {
     borderBottomWidth: 2,
-    borderColor: "gray",
+    borderColor: theme.colors.greenMedium,
   },
   textError: {
-    color: "red",
+    color: theme.colors.red,
   },
 });
 

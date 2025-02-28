@@ -33,6 +33,13 @@
           "photosPermission": "La aplicación necesita acceso a tus fotos para seleccionar imágenes.",
           "cameraPermission": "La aplicación necesita acceso a la cámara para tomar fotos."
         }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Permitir que esta aplicación acceda a tu ubicación incluso cuando no esté en uso.",
+          "locationWhenInUsePermission": "Permitir que esta aplicación acceda a tu ubicación mientras está en uso."
+        }
       ]
     ]
   }

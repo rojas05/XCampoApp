@@ -37,7 +37,7 @@ const TabNavigator = ({ screens, numberOfOrders }) => {
         tabBarActiveTintColor: theme.colors.green,
       }}
     >
-      {screens.map(({ name, component, options }) => (
+      {screens.map(({ name, component, options, initialParams }) => (
         <Tab.Screen
           key={name}
           name={name}
@@ -46,6 +46,7 @@ const TabNavigator = ({ screens, numberOfOrders }) => {
             ...options,
             tabBarBadge: name === "Pedidos" ? numberOfOrders : undefined,
           }}
+          initialParams={initialParams}
         />
       ))}
     </Tab.Navigator>

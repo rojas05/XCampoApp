@@ -1,9 +1,10 @@
 // eslint-disable-next-line import/no-unresolved
 import * as SecureStore from "expo-secure-store";
+import URL_API from "./fetch/ApiConfig";
 
 const ACCESS_TOKEN_KEY = "accessToken";
 const REFRESH_TOKEN_KEY = "refreshToken";
-const API_URL = "http://192.168.0.121:8080/XCampo/api/v1/auth";
+const API_URL = `${URL_API}auth/`;
 
 /**
  * Guarda un token en SecureStore

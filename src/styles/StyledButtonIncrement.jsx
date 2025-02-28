@@ -3,17 +3,17 @@ import { TouchableOpacity, StyleSheet, Text } from "react-native";
 import theme from "../theme/theme.js";
 
 const styles = StyleSheet.create({
-  primaryButton: {
-    backgroundColor: theme.colors.greenMedium,
-    borderRadius: 5,
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-  },
   plusText: {
     color: theme.black,
     fontSize: 18,
+  },
+  primaryButton: {
+    alignItems: "center",
+    backgroundColor: theme.colors.greenMedium,
+    borderRadius: 5,
+    height: 40,
+    justifyContent: "center",
+    width: 40,
   },
 });
 

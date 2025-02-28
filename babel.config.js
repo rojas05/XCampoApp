@@ -1,5 +1,5 @@
 module.exports = function (api) {
-  api.cache(true);
+  api.cache(false); // Acelerar los tiempos de compilación
   return {
     presets: ["babel-preset-expo"],
     plugins: [
@@ -8,13 +8,10 @@ module.exports = function (api) {
         {
           moduleName: "@env",
           path: ".env",
-          blacklist: null,
-          whitelist: null,
-          safe: false,
           allowUndefined: true,
         },
-        "react-native-reanimated/plugin",
       ],
+      "react-native-reanimated/plugin",
     ],
   };
 };

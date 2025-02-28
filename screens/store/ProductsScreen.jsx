@@ -1,77 +1,80 @@
-import React from "react";
-import { View, Text, StyleSheet, FlatList, Image } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Image,
+  ActivityIndicator,
+} from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-
-import { HOME_STYLES } from "../../src/utils/constants.js";
+/* Styles */
 import StyledButtonIcon from "../../src/styles/StyledButtonIcon.jsx";
 import StyledButton from "../../src/styles/StyledButton.jsx";
+/* Componentes */
 import TEXTS from "../../src/string/string.js";
 import theme from "../../src/theme/theme.js";
 import SearchBar from "../../src/components/SearchBar.jsx";
+import NoDataView from "../../src/components/NotDataView.jsx";
+import OrderAlert from "../../src/components/Alerts/OrderAlert.jsx";
+import { formatPrice, HOME_STYLES } from "../../src/utils/constants.js";
+/* Service */
+import {
+  listAllProductBySeller,
+  deleteProductId,
+} from "../../services/productService.js";
+import { getSellerID } from "../../services/SellerService.js";
+import { getFirstURLFromString } from "../../fetch/UseFetch.js";
 
-const products = [
-  {
-    id: "1",
-    image: "https://via.placeholder.com/150",
-    name: "Manzanas",
-    price: "2.50",
-    unit: "Kg",
-    stock: "25",
-    description: "Manzanas frescas y jugosas.",
-  },
-  {
-    id: "2",
-    image: "https://via.placeholder.com/150",
-    name: "Leche",
-    price: "1.20",
-    unit: "Litro",
-    stock: "40",
-    description: "Leche fresca y pasteurizada.",
-  },
-  {
-    id: "3",
-    image: "https://via.placeholder.com/150",
-    name: "Pan",
-    price: "0.80",
-    unit: "Pieza",
-    stock: "100",
-    description: "Pan recién horneado.",
-  },
-];
+const ProductsScreen = ({ route, navigation }) => {
+  const { idUser } = route.params || {};
+  const [products, setProducts] = useState([]);
+  const [state, setState] = useState({
+    alertConfig: { visible: false, type: "", message: "" },
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [idSeller, setIdSeller] = useState(null);
 
-const ProductCard = ({ product, onEdit, onSales }) => (
-  <View style={styles.card}>
-    <Image source={{ uri: product.image }} style={styles.productImage} />
-    <View style={styles.cardContent}>
-      <Text style={styles.productName}>{product.name}</Text>
-      <Text style={styles.productDescription}>{product.description}</Text>
-      <Text style={styles.productData}>
-        Unidad: <Text style={styles.productValue}>{product.unit}</Text>
-      </Text>
-      <Text style={styles.productData}>
-        Precio: <Text style={styles.productValue}>${product.price}</Text>
-      </Text>
-      <Text style={styles.productData}>
-        Inventario disponible:{" "}
-        <Text style={styles.productValue}>{product.stock} Und</Text>
-      </Text>
+  useEffect(() => {
+    const fetchSellerID = async () => {
+      const sellerID = await getSellerID(idUser);
+      setIdSeller(sellerID);
+    };
+    fetchSellerID();
+  }, [idUser]);
 
-      <View style={styles.cardButtons}>
-        <StyledButton green title="Ventas" onPress={onSales} />
-        <StyledButtonIcon
-          nameIcon="edit"
-          iconLibrary={MaterialIcons}
-          onPress={() => onEdit(product.name)}
-        />
-      </View>
-    </View>
-  </View>
-);
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts, idSeller]);
 
-const ProductsScreen = ({ navigation }) => {
-  const handleEdit = (name) => {
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      if (idSeller) fetchProducts();
+    });
+
+    return unsubscribe;
+  }, [navigation, idSeller, fetchProducts]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchProducts = async () => {
+    if (!idSeller) return;
+
+    try {
+      const listProduct = await listAllProductBySeller(idSeller);
+      setProducts(listProduct);
+      setLoading(false);
+    } catch (error) {
+      setError("Error al obtener los productos: " + error);
+      setLoading(false);
+    }
+  };
+
+  const handleEdit = (product) => {
     navigation.navigate("RegisterProducts", {
-      title: `Editar Producto ${name}`,
+      title: `Editar Producto ${product.name}`,
+      idSeller: idSeller,
+      product: product,
     });
   };
 
@@ -79,22 +82,62 @@ const ProductsScreen = ({ navigation }) => {
     alert("Ver ventas del producto");
   };
 
+  const handleDelete = async (productId) => {
+    try {
+      await deleteProductId(productId, idSeller);
+      /* Show Alert */
+      setState((prev) => ({
+        ...prev,
+        alertConfig: {
+          visible: true,
+          type: "error",
+          message: `Se elimino un producto correctamente`,
+        },
+      }));
+      /* List Product */
+      setProducts((prevProducts) =>
+        prevProducts.filter((product) => product.idProduct !== productId),
+      );
+    } catch (error) {
+      setError("Error al eliminar el producto: " + error);
+    }
+  };
+
   return (
     <View style={HOME_STYLES.container}>
-      <Text style={styles.title}>Productos</Text>
-      <SearchBar />
-      <FlatList
-        data={products}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingHorizontal: 10, paddingBottom: 85 }}
-        renderItem={({ item }) => (
-          <ProductCard
-            product={item}
-            onEdit={handleEdit}
-            onSales={handleSales}
-          />
-        )}
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color={theme.colors.greenMedium} />
+      ) : error ? (
+        <Text style={styles.errorText}>{error}</Text>
+      ) : (
+        <>
+          <Text style={styles.title}>Productos</Text>
+          <SearchBar />
+          {products.length < 1 ? (
+            <NoDataView dataText="productos" />
+          ) : (
+            <FlatList
+              data={products}
+              keyExtractor={(item, index) =>
+                item?.idProduct?.toString() || index.toString()
+              }
+              // eslint-disable-next-line react-native/no-inline-styles
+              contentContainerStyle={{
+                paddingHorizontal: 10,
+                paddingBottom: 85,
+              }}
+              renderItem={({ item }) => (
+                <ProductCard
+                  product={item}
+                  onEdit={handleEdit}
+                  onSales={handleSales}
+                  onDelete={handleDelete}
+                />
+              )}
+            />
+          )}
+        </>
+      )}
       <StyledButtonIcon
         fab
         btnFab
@@ -105,63 +148,123 @@ const ProductsScreen = ({ navigation }) => {
         onPress={() =>
           navigation.navigate("RegisterProducts", {
             title: TEXTS.homeSeller.ADD_PRODUCT,
+            idSeller: idSeller,
           })
+        }
+      />
+      <OrderAlert
+        visible={state.alertConfig.visible}
+        type={state.alertConfig.type}
+        message={state.alertConfig.message}
+        onClose={() =>
+          setState((prev) => ({
+            ...prev,
+            alertConfig: { ...prev.alertConfig, visible: false },
+          }))
         }
       />
     </View>
   );
 };
 
+const ProductCard = ({ product, onEdit, onSales, onDelete }) => (
+  <View style={styles.card}>
+    <Image
+      source={{
+        uri: getFirstURLFromString(product.urlImage) || " ",
+      }}
+      style={styles.productImage}
+    />
+    <View style={styles.cardContent}>
+      <Text style={styles.productName}>{product.name}</Text>
+      <Text style={styles.productDescription}>{product.description}</Text>
+      <Text style={styles.productData}>
+        Unidad: <Text style={styles.pdtValue}>{product.measurementUnit}</Text>
+      </Text>
+      <Text style={styles.productData}>
+        Precio:{" "}
+        <Text style={styles.pdtValue}>${formatPrice(product.price)}</Text>
+      </Text>
+      <Text style={styles.productData}>
+        Categoria: <Text style={styles.pdtValue}>{product.nameCategory}</Text>
+      </Text>
+      <Text style={styles.productData}>
+        Inventario disponible:{" "}
+        <Text style={styles.pdtValue}>{product.stock} Und</Text>
+      </Text>
+
+      <View style={styles.cardButtons}>
+        <StyledButtonIcon
+          logoutButton
+          nameIcon="delete"
+          iconLibrary={MaterialIcons}
+          onPress={() => onDelete(product.idProduct)}
+        />
+        <StyledButtonIcon
+          nameIcon="edit"
+          iconLibrary={MaterialIcons}
+          onPress={() => onEdit(product)}
+        />
+      </View>
+      <StyledButton green style={styles.btn} title="Ventas" onPress={onSales} />
+    </View>
+  </View>
+);
+
 const styles = StyleSheet.create({
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginTop: 15,
+  btn: {
+    marginHorizontal: 3,
+    marginVertical: 0,
   },
   card: {
-    flexDirection: "row",
     backgroundColor: theme.colors.white,
     borderRadius: 8,
+    elevation: 5,
+    flexDirection: "row",
+    marginBottom: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
     shadowColor: theme.colors.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 6,
-    elevation: 5,
-    marginBottom: 16,
-    padding: 16,
   },
-  productImage: {
-    width: 120,
-    height: 120,
-    alignSelf: "center",
-    borderRadius: 8,
-    marginRight: 16,
+  cardButtons: {
+    flexDirection: "row",
+    justifyContent: "space-around",
   },
   cardContent: {
     flex: 1,
     justifyContent: "space-between",
   },
-  productName: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  productDescription: {
-    fontSize: 14,
-    color: theme.colors.greyBlack,
-    marginVertical: 8,
+  pdtValue: {
+    color: theme.colors.red,
   },
   productData: {
     fontSize: 16,
     fontWeight: "bold",
   },
-  productValue: {
-    color: theme.colors.red,
+  productDescription: {
+    color: theme.colors.greyBlack,
+    fontSize: 14,
+    marginVertical: 8,
   },
-  cardButtons: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 10,
+  productImage: {
+    alignSelf: "center",
+    borderRadius: 8,
+    height: 120,
+    marginRight: 16,
+    width: 120,
+  },
+  productName: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginTop: 15,
+    textAlign: "center",
   },
 });
 
