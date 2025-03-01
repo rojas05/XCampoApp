@@ -36,7 +36,7 @@ const StoreMap = ({ store, initialRegion }) => {
 
 const styles = StyleSheet.create({
   mapa: {
-    height: "50%",
+    height: "100%",
     width: "100%",
   },
 });

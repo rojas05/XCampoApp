@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import Entypo from "@expo/vector-icons/Entypo";
@@ -8,13 +8,7 @@ import StyledButtonIcon from "../styles/StyledButtonIcon";
 import theme from "../theme/theme";
 import { MARGINS } from "../utils/constants";
 
-const ProfileTemplate = ({
-  userName,
-  location,
-  profileImage,
-  bannerImage,
-  role,
-}) => {
+const ProfileTemplate = ({ userName, profileImage, bannerImage, role }) => {
   const getRoleBadge = (role) => {
     switch (role) {
       case "Administrador":
@@ -50,38 +44,39 @@ const ProfileTemplate = ({
 
   return (
     <View style={styles.container}>
-      {/* Banner Image */}
-      <View style={styles.bannerContainer}>
-        <Image source={{ uri: bannerImage }} style={styles.bannerImage} />
+      <View>
+        <Image source={{ uri: bannerImage }} style={styles.banner} />
+        <View style={styles.avatarContainer}>
+          <Image source={{ uri: profileImage }} style={styles.avatar} />
+        </View>
       </View>
 
-      {/* Profile Icon */}
-      <View style={styles.profileIconContainer}>
-        <Image source={{ uri: profileImage }} style={styles.profileIcon} />
-      </View>
+      <View style={styles.contentContainer}>
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.title}>{userName}</Text>
 
-      {/* User Info */}
-      <Text style={styles.userName}>{userName}</Text>
-      <View style={styles.locationContainer}>
-        <Ionicons
-          name="location-outline"
-          size={15}
-          color="#6c757d"
-          style={styles.locationIcon}
-        />
-        <Text style={styles.location}>{location}</Text>
-      </View>
+            <View style={styles.badge}>
+              <View style={[styles.roleBadge, { backgroundColor: color }]}>
+                {React.createElement(iconLibrary, {
+                  name: icon,
+                  size: 20,
+                  color: "#000",
+                  style: styles.roleIcon,
+                })}
+                <Text style={styles.badgeText}>{role}</Text>
+              </View>
+            </View>
+          </View>
 
-      {/* Role Badge */}
-      <View style={[styles.roleBadge, { backgroundColor: color }]}>
-        {React.createElement(iconLibrary, {
-          name: icon,
-          size: 20,
-          color: "#000",
-          style: styles.roleIcon,
-        })}
-        <Text style={{ color: theme.colors.black, fontWeight: "bold" }}>
-          {role}
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Editar Perfil</Text>
+          </TouchableOpacity>
+        </View>
+
+        <Text style={styles.description}>
+          Bienvenidos a nuestra tienda. Ofrecemos productos de alta calidad y un
+          servicio excepcional.
         </Text>
       </View>
     </View>
@@ -122,20 +117,40 @@ const BtnCloseSeson = ({ onLogout }) => {
 };
 
 const styles = StyleSheet.create({
-  bannerContainer: {
-    backgroundColor: theme.colors.grey,
-    height: 180,
-    marginBottom: -70,
-    width: "100%",
+  avatar: {
+    borderColor: theme.colors.white,
+    borderRadius: 48,
+    borderWidth: 4,
+    height: 96,
+    width: 96,
   },
-  bannerImage: {
-    height: "100%",
-    resizeMode: "cover",
-    width: "100%",
+  avatarContainer: { bottom: -48, left: 20, position: "absolute" },
+  badge: {
+    marginTop: 5,
   },
+  badgeText: {
+    color: theme.colors.black,
+    fontWeight: "bold",
+  },
+  banner: { height: 200, width: "100%" },
+  button: {
+    borderColor: theme.colors.greyMedium,
+    borderRadius: 4,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+  },
+  buttonText: { fontSize: 14 },
   container: {
+    backgroundColor: theme.colors.white,
+    flex: 1,
+  },
+  contentContainer: { marginTop: 40, padding: 20 },
+  description: { color: theme.colors.greyBlack, marginTop: 5 },
+  header: {
     alignItems: "center",
-    justifyContent: "flex-start",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   horizontalButtonContainer: {
     alignSelf: "center",
@@ -143,39 +158,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     width: "90%",
   },
-  location: {
-    color: theme.colors.greyBlack,
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  locationContainer: {
-    alignItems: "flex-start",
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  locationIcon: {
-    marginRight: 3,
-    marginTop: 1,
-  },
   logoutButtonContainer: {
     alignSelf: "center",
     marginBottom: MARGINS.basic + 20,
     width: "90%",
-  },
-  profileIcon: {
-    height: "100%",
-    resizeMode: "cover",
-    width: "100%",
-  },
-  profileIconContainer: {
-    backgroundColor: theme.colors.greyBlack,
-    borderColor: theme.colors.grey,
-    borderRadius: 60,
-    borderWidth: 4,
-    height: 120,
-    marginBottom: 10,
-    overflow: "hidden",
-    width: 120,
   },
   roleBadge: {
     alignItems: "center",
@@ -187,9 +173,9 @@ const styles = StyleSheet.create({
   roleIcon: {
     marginRight: 10,
   },
-  userName: {
+  title: {
     color: theme.colors.black,
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "bold",
     textAlign: "center",
   },

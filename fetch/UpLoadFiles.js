@@ -30,8 +30,25 @@ export async function UpLoadFilesPost(images, context, URL, initialIndex = 0) {
 
     const result = await response.text();
 
-    if (!response.ok)
-      throw new Error("Error al subir imagen: " + JSON.stringify(result));
+    if (!response.ok) {
+      let errorMessage = result;
+
+      try {
+        const errorJson = JSON.parse(result);
+        errorMessage = errorJson.message || errorMessage;
+      } catch (e) {
+        console.warn("No se pudo parsear el JSON del error" + e);
+      }
+
+      if (errorMessage.includes("Maximum upload size exceeded")) {
+        Alert.alert(
+          "Error al subir imagen",
+          "La imagen es demasiado grande. Intenta con otra más pequeña.",
+        );
+      }
+
+      throw new Error("Error al subir imagen: " + errorMessage);
+    }
 
     return result;
   } catch (error) {

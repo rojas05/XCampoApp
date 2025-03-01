@@ -29,7 +29,7 @@ const Splash = () => {
 
   const getTokenMain = useCallback(async () => {
     try {
-      const idStorage = getToken("id"); // Espera a que se resuelva el token
+      const idStorage = await getToken("id"); // Espera a que se resuelva el token
       if (idStorage != null) {
         getUserData(idStorage);
         registerForPushNotificationsAsync(idStorage);
@@ -52,6 +52,7 @@ const Splash = () => {
 
       if (response.ok) {
         const data = await response.json();
+
         if (JSON.stringify(data) === "[]") {
           navigation.navigate("TypeUser", {
             idUser: id_user,
@@ -83,6 +84,11 @@ const Splash = () => {
   }
 
   function rolNavigate(rol) {
+    if (!idUser) {
+      console.warn("idUser no está definido");
+      return;
+    }
+
     if (rol === "DELIVERYMAN") {
       navigation.navigate("HomeDelivery", { idUser });
     }

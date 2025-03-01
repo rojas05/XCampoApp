@@ -3,10 +3,8 @@ import API_URL from "./ApiConfig";
 
 export const postData = async (url, requestBody) => {
   try {
-    const response = await fetch(
-      `${API_URL}${url}`,
-      responseHeader(requestBody, "POST"),
-    );
+    const endpoint = `${API_URL}${url}`;
+    const response = await fetch(endpoint, responseHeader(requestBody, "POST"));
 
     if (!response.ok) {
       throw new Error(`Error del servidor: ${response.status}`);
@@ -47,7 +45,8 @@ export const putData = async (url, requestBody) => {
 
 export const getData = async (url) => {
   try {
-    const response = await fetch(url, {
+    const endpoint = `${API_URL}${url}`;
+    const response = await fetch(endpoint, {
       method: "GET",
     });
 
