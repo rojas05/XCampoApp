@@ -47,8 +47,8 @@ const Signup = () => {
     if (!cell) errors.cell = string.Signup.errors.cell;
     if (!password) errors.password = string.Signup.errors.password;
     if (password.length < 8) errors.password = string.Signup.errors.password;
-    if (!mail) errors.mail = string.Signup.errors.mail;
-    if (!city) errors.city = string.Signup.errors.city;
+    //if (!mail) errors.mail = string.Signup.errors.mail;
+    //if (!city) errors.city = string.Signup.errors.city;
 
     setErrors(errors);
 
@@ -57,8 +57,8 @@ const Signup = () => {
       const requestBody = {
         user_id: null,
         name: name,
-        department: department,
-        city: city,
+        //department: department,
+        //city: city,
         cell: cell,
         email: mail,
         password: password,
@@ -75,24 +75,27 @@ const Signup = () => {
           Alert.alert("Upss", "El correo ya existe");
           errors.mail = string.Signup.errors.mail;
         }
+
         if (data.statusCode === "OK") {
           try {
             await saveToken("id", data.body.id_user);
             await saveToken("accessToken", data.body.token);
             await saveToken("refreshToken", data.body.refreshToken);
+
+            navigation.navigate("TypeUser", {
+              idUser: data.body.id_user,
+              roles: [],
+            });
           } catch (e) {
             Alert.alert("No se logro iniciar");
             throw e;
           }
-          navigation.navigate("TypeUser", {
-            idUser: data.body.id_user,
-            roles: [],
-          });
         }
       }
 
       if (error) {
-        Alert.alert("Error", error.message);
+        console.error(error);
+        Alert.alert("Error al registrar", error.message);
       }
     }
   };
@@ -111,7 +114,7 @@ const Signup = () => {
   }
 
   async function InitGetCitys(department) {
-    console.log(department);
+    console.log("Get municipio " + department);
     setDepartment(department.nombre);
     const endpoint = "firebase/municipios/";
     const { data, error } = await getData(endpoint + department.id);

@@ -107,9 +107,9 @@ const MenuItem = ({ item, isActive, onPress }) => (
         size={20}
         color={isActive ? "white" : "grey"}
       />
-      {item.badge && (
+      {item.badge != null && (
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>{item.badge}</Text>
+          <Text style={styles.badgeText}>{String(item.badge)}</Text>
         </View>
       )}
     </View>

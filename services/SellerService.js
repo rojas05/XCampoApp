@@ -38,26 +38,30 @@ export async function getSellerById(id_seller) {
 }
 
 export async function postImageFirebaseSeller(
-  imagen,
+  imagenes,
   id_seller,
   constext = "seller/location",
 ) {
+  if (imagenes.every((file) => file.startsWith("http"))) {
+    return imagenes.join(" ");
+  }
+
   const URL = `storage/${id_seller}`;
-  let url2 = null;
+  const remoteImages = imagenes.filter((file) => file.startsWith("http"));
+  let remoteCount = remoteImages.length;
 
-  const localImages = imagen.reduce((acc, file) => {
-    if (file.startsWith("file://")) {
-      acc.push({ uri: file, isFile: true });
-    } else if (file.startsWith("https://")) {
-      url2 = file;
-      acc.push({ uri: file, isFile: false });
-    }
-    return acc;
-  }, []);
+  const localImages = imagenes
+    .filter((file) => file.startsWith("file://"))
+    .map((file) => file);
 
-  const result = await UpLoadFilesPost(localImages, constext, URL);
+  const result = await UpLoadFilesPost(localImages, constext, URL, remoteCount);
 
-  return url2 ? `${url2} ${result}` : result;
+  const allImages =
+    remoteCount === 1 || remoteCount === 2
+      ? `${remoteImages} ${result}`
+      : `${result}`;
+
+  return allImages;
 }
 
 export async function updateSellerImage(Urlimage, idSeller) {

@@ -8,10 +8,11 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { FontAwesome } from "@expo/vector-icons";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 import theme from "../../src/theme/theme.js";
-import { HOME_STYLES, MARGINS } from "../../src/utils/constants.js";
 /* Componentes */
 import {
   ProfileTemplate,
@@ -23,28 +24,14 @@ import StoreMapPin from "../../src/components/Map/StoreMapPin.jsx";
 import { getSellerById, getSellerID } from "../../services/SellerService.js";
 import { getOtherURLsFromString } from "../../fetch/UseFetch.js";
 import { getCoordinates } from "../../funcions/getCoordinates.js";
-
-const renderStars = (rating) => {
-  let stars = [];
-  for (let i = 1; i <= 5; i++) {
-    stars.push(
-      <AntDesign
-        key={i}
-        name="star"
-        size={20}
-        color={i <= rating ? "#ffc107" : "gray"}
-      />,
-    );
-  }
-  return stars;
-};
+import ProfileCalification from "../../src/components/ProfileCalification.jsx";
 
 const SellerProfile = ({ route }) => {
   const { idUser } = route.params || {};
   const [photos, setPhotos] = useState([]);
   const [initialRegion, setInitialRegion] = useState(null);
   const [sellerData, setSellerData] = useState({
-    name_store: "",
+    name_store: "Tienda Juan",
     location: "Pitalito - Calle Ficticia 123",
     profileImage:
       "https://thumbs.dreamstime.com/b/simple-tienda-online-logo-concepto-vector-210636270.jpg",
@@ -59,67 +46,87 @@ const SellerProfile = ({ route }) => {
   const [loading, setLoading] = useState(null);
 
   useEffect(() => {
-    const fetchSellerData = async () => {
-      setLoading(true);
-      const sellerID = await getSellerID(idUser);
-      const data = await getSellerById(sellerID);
-      setSellerData((prevData) => ({
-        ...prevData,
-        name_store: data.name_store,
-        location: data.location || prevData.location,
-        description: data.location_description,
-      }));
-      setPhotos(getOtherURLsFromString(data.img));
-      setInitialRegion(await getCoordinates(data.coordinates));
-      setLoading(false);
-    };
-    fetchSellerData();
+    (async () => {
+      try {
+        setLoading(true);
+
+        const sellerID = await getSellerID(idUser);
+        if (!sellerID) throw new Error("ID del vendedor no encontrado");
+
+        const data = await getSellerById(sellerID);
+        if (!data) throw new Error("No se encontró información del vendedor");
+
+        const coordinates = await getCoordinates(data.coordinates);
+
+        setSellerData((prevData) => ({
+          ...prevData,
+          name_store: data.name_store || prevData.name_store,
+          location: data.location || prevData.location,
+          description: data.location_description || prevData.description,
+        }));
+
+        setPhotos(getOtherURLsFromString(data.img));
+        setInitialRegion(coordinates);
+      } catch (error) {
+        console.error("Error al obtener datos del vendedor:", error.message);
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, [idUser]);
 
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={theme.colors.primary} />
+        <ActivityIndicator size="large" color={theme.colors.blue} />
         <Text style={styles.loadingText}>Cargando perfil...</Text>
       </View>
     );
   }
 
   return (
-    <View style={HOME_STYLES.container}>
+    <ScrollView style={styles.container}>
       <ProfileTemplate
         userName={sellerData.name_store}
-        location={sellerData.location}
         profileImage={sellerData.profileImage}
         bannerImage={sellerData.bannerImage}
         role={sellerData.role}
       />
-      <View style={styles.ratingContainer}>
-        <Text style={styles.ratingText}>Calificación:</Text>
-        <View style={styles.starsContainer}>
-          {renderStars(sellerData.rating)}
-        </View>
-        <Text style={styles.ratingText}>{sellerData.rating} / 5</Text>
+
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>
+          <Ionicons name="storefront-outline" size={24} color="black" />{" "}
+          Imágenes de la Tienda
+        </Text>
+        <ImageSelector images={photos} />
       </View>
 
-      <Text style={styles.userName}>Como llegar:</Text>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.sellerInfo}>
-          <ImageSelector images={photos} />
-          <Text style={styles.storeName}>{sellerData.description}</Text>
-          <Text style={styles.salesTotal}>
-            Ventas Totales: ${sellerData.salesTotal}
-          </Text>
+      <ProfileCalification />
+
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>
+          <FontAwesome5 name="money-bill-wave-alt" size={24} color="black" />{" "}
+          Ganancias del Mes:
+        </Text>
+        <Text style={styles.amount}>$5,230.50</Text>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>
+          <FontAwesome name="map-pin" size={20} /> Cómo Llegar
+        </Text>
+        <View style={styles.mapImage}>
           <StoreMapPin store={sellerData} initialRegion={initialRegion} />
         </View>
+        <Text style={styles.location}>{sellerData.location}</Text>
+      </View>
 
-        <BtnEdit
-          onEditProfile={() => alert("Editar perfil")}
-          onChangeRole={() => alert("Cambiar rol")}
-        />
-        <BtnCloseSeson onLogout={() => alert("Cerrar sesión")} />
-      </ScrollView>
-    </View>
+      <BtnEdit
+        onEditProfile={() => alert("Editar perfil")}
+        onChangeRole={() => alert("Cambiar rol")}
+      />
+      <BtnCloseSeson onLogout={() => alert("Cerrar sesión")} />
+    </ScrollView>
   );
 };
 
@@ -197,7 +204,29 @@ const ImageSelector = ({ images }) => {
 };
 
 const styles = StyleSheet.create({
-  // eslint-disable-next-line react-native/no-color-literals
+  amount: { fontSize: 24, fontWeight: "bold" },
+  card: {
+    borderColor: theme.colors.greyMedium,
+    borderRadius: 8,
+    borderWidth: 1,
+    marginBottom: 13,
+    marginHorizontal: 16,
+    padding: 16,
+  },
+  cardTitle: {
+    alignSelf: "flex-start",
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  container: { backgroundColor: theme.colors.white, flex: 1 },
+  location: {
+    color: theme.colors.greyBlack,
+    fontSize: 16,
+    marginTop: 8,
+  },
+  mapImage: { height: 250, width: "100%" },
+  // eslint-disable-next-line react-native/sort-styles, react-native/no-color-literals
   errorContainer: {
     alignItems: "center",
     backgroundColor: "rgba(255, 0, 0, 0.1)",
@@ -251,14 +280,13 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   loadingText: {
-    color: theme.colors.primary,
+    color: theme.colors.black,
     fontSize: 16,
     marginTop: 10,
   },
-  // eslint-disable-next-line react-native/no-color-literals
   messageContainer: {
     alignItems: "center",
-    backgroundColor: "#f5f5f5",
+    backgroundColor: theme.colors.grey,
     borderRadius: 10,
     justifyContent: "center",
     marginHorizontal: 10,
@@ -267,51 +295,6 @@ const styles = StyleSheet.create({
   messageText: {
     color: theme.colors.gray,
     fontSize: 16,
-    textAlign: "center",
-  },
-  ratingContainer: {
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 10,
-  },
-  ratingText: {
-    fontSize: 16,
-    marginRight: 10,
-  },
-  salesTotal: {
-    alignSelf: "flex-start",
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 8,
-    paddingStart: 30,
-  },
-  scrollContainer: {
-    paddingBottom: MARGINS.basic + 130,
-    paddingHorizontal: 10,
-  },
-  sellerInfo: {
-    alignItems: "center",
-    padding: 10,
-    width: "100%",
-  },
-  starsContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginRight: 10,
-  },
-  storeName: {
-    fontSize: 15,
-    marginVertical: 8,
-    paddingEnd: 30,
-    paddingStart: 30,
-    textAlign: "justify",
-  },
-  userName: {
-    color: theme.colors.black,
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 8,
     textAlign: "center",
   },
 });
