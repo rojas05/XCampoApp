@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   TouchableOpacity,
@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { CheckCircle, Pin } from "iconoir-react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { Picker } from "@react-native-picker/picker";
 
 import StyledImput from "../styles/StyledImput";
 import StyledText from "../styles/StyledText";
@@ -26,7 +27,10 @@ const RoleForm = ({
   removePhoto,
   imageUploadError,
   handleLocationPress,
+  locations,
 }) => {
+  const [routeDelivery, setRouteDelivery] = useState("");
+
   return (
     <View style={styles.item}>
       <View style={styles.header}>
@@ -37,18 +41,84 @@ const RoleForm = ({
       {fields.map((field, index) => {
         const handleTextChange = (newText) => onChangeText(field.name, newText);
 
+        function addRoute(vereda) {
+          if (!routeDelivery.split(",").includes(vereda)) {
+            const newRoute = routeDelivery
+              ? `${routeDelivery},${vereda}`
+              : vereda;
+            setRouteDelivery(newRoute);
+            onChangeText(field.name, newRoute);
+          }
+        }
+
         return (
           <View key={index} style={styles.centerItem}>
-            {field.name !== "coordinates" && (
-              <CheckCircle color={"grey"} width={30} height={30} />
+            {field.name !== "coordinates" &&
+              field.name !== "routeDelivery" &&
+              field.name !== "location" && (
+                <CheckCircle color={"grey"} width={30} height={30} />
+              )}
+
+            {field.name !== "coordinates" &&
+              field.name !== "routeDelivery" &&
+              field.name !== "location" && (
+                <StyledImput
+                  placeholder={field.placeholder}
+                  onChangeText={handleTextChange}
+                  textError={errors[field.name]}
+                />
+              )}
+
+            {field.name === "routeDelivery" && (
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={routeDelivery}
+                  onValueChange={(itemValue) => addRoute(itemValue)}
+                  style={styles.picker}
+                >
+                  <Picker.Item
+                    label="Seleccione las veredas que transite"
+                    value=""
+                    style={{ color: theme.colors.grey, fontSize: 14 }}
+                  />
+                  {locations.map((vereda) => (
+                    <Picker.Item
+                      key={vereda.id}
+                      label={vereda.nombre}
+                      value={vereda.nombre}
+                    />
+                  ))}
+                </Picker>
+                <Text>veredas: {routeDelivery}</Text>
+              </View>
             )}
 
-            {field.name !== "coordinates" && (
-              <StyledImput
-                placeholder={field.placeholder}
-                onChangeText={handleTextChange}
-                textError={errors[field.name]}
-              />
+            {field.name === "location" && (
+              <>
+                <View style={styles.pickerContainerL}>
+                  <Picker
+                    onValueChange={(itemValue) => {
+                      {
+                        onChangeText(field.name, itemValue);
+                      }
+                    }}
+                    style={styles.picker}
+                  >
+                    <Picker.Item
+                      label="Vereda"
+                      value=""
+                      style={{ color: theme.colors.grey, fontSize: 14 }}
+                    />
+                    {locations.map((vereda) => (
+                      <Picker.Item
+                        key={vereda.id}
+                        label={vereda.nombre}
+                        value={vereda.nombre}
+                      />
+                    ))}
+                  </Picker>
+                </View>
+              </>
             )}
 
             {field.name === "coordinates" && (
@@ -193,6 +263,25 @@ const styles = StyleSheet.create({
   },
   photosContainer: {
     marginVertical: 10,
+  },
+  picker: {
+    height: 50,
+    width: "100%",
+  },
+  pickerContainer: {
+    borderColor: theme.colors.greyMedium,
+    borderRadius: 5,
+    borderWidth: 1,
+    height: 50,
+    marginBottom: 50,
+    width: "90%",
+  },
+  pickerContainerL: {
+    borderColor: theme.colors.greyMedium,
+    borderRadius: 5,
+    borderWidth: 1,
+    height: 50,
+    width: "90%",
   },
   removeButton: {
     marginLeft: 15,

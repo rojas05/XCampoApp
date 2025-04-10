@@ -1,13 +1,13 @@
-/* eslint-disable react-native/no-inline-styles */
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
-  Pressable,
   TextInput,
   FlatList,
   StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import Constants from "expo-constants";
@@ -18,51 +18,153 @@ import {
   FastArrowRight,
   MapPin,
 } from "iconoir-react-native";
+import { useNavigation } from "@react-navigation/native";
 
 import API_URL from "../../fetch/ApiConfig";
+import { getData } from "../../fetch/UseFetch";
+import { fetchWithToken, getToken } from "../../tokenStorage";
+
 import theme from "../../src/theme/theme";
 import string from "../../src/string/string";
-import { fetchWithToken } from "../../tokenStorage";
 import StyledText from "../../src/styles/StyledText";
 import StyledItemProduct from "../../src/styles/StyledItemProduct";
+import ItemProductSearch from "../../src/components/ItemProductSearch";
 
 const HomeClient = () => {
-  const [location] = useState("villanueva");
-
-  const [city, setCity] = useState("Isnos");
-
+  const [locations, setLocations] = useState([]);
+  const [location, setLocation] = useState("");
+  const [city, setCity] = useState();
+  const [citys, setCitys] = useState([]);
   const [allStore, setAllstore] = useState([]);
   const [locationStore, setLocationStore] = useState([]);
-  let response;
+  const [cart, setCart] = useState([]);
+  const [idClient, setIdClient] = useState();
+  const [products, setProducts] = useState();
+  const navigation = useNavigation();
 
   useEffect(() => {
-    getDateAPI(`${API_URL}seller/city/${city}`, setAllstore); // all store
-    getDateAPI(`${API_URL}seller/location/${location}`, setLocationStore); // location
-  }, [city, location]);
+    init();
+  }, []);
 
-  const getDateAPI = useCallback(async (url, setDate) => {
+  async function init() {
+    const idUser = await getToken("id");
+    console.log(idUser);
+    getDateAPI(`${API_URL}client/idUser/${idUser}`, setIdClient);
+    getDateAPI(`${API_URL}ShoppingCart/id/${idUser}`, setCart);
+    getCityUser();
+  }
+
+  async function getCityUser() {
     try {
-      response = await fetchWithToken(url, {
+      const idUser = await getToken("id");
+      const response = await fetchWithToken(`${API_URL}user/${idUser}`, {
         method: "GET",
       });
-
       if (response.ok) {
         const data = await response.json();
+        getDateAPI(`${API_URL}seller/city/${data.city}`, setAllstore);
+        getDateAPINoToken(
+          `firebase/municipios/get/${data.department}`,
+          setCitys,
+        );
+        getDateAPINoToken(
+          `firebase/veredas/municipio?nombreMunicipio=${data.city}`,
+          setLocations,
+        );
+        setCity(data.city);
+      } else {
+        console.warn("Get city user: " + response);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  const getDateAPINoToken = useCallback(async (url, setDate) => {
+    try {
+      const { data, error } = await getData(url);
+      if (data) {
         setDate(data);
+      }
+
+      if (error) {
+        console.warn("[getDateAPINoToken] " + error);
       }
     } catch (error) {
       console.error(error);
     }
   }, []);
 
+  const getDateAPI = useCallback(async (url, setDate) => {
+    try {
+      const response = await fetchWithToken(url, {
+        method: "GET",
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setDate(data);
+      } else {
+        setDate(null);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
+
+  async function search(letter) {
+    if (letter === "") {
+      setProducts();
+      return;
+    }
+    try {
+      const response = await fetchWithToken(
+        `${API_URL}products/search?letter=${letter}&city=${city}`,
+        {
+          method: "GET",
+        },
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setProducts(data);
+      } else {
+        setProducts();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function orders() {
+    navigation.navigate("Orders", {
+      id: idClient,
+    });
+  }
+
+  async function navigateCart() {
+    const idUser = await getToken("id");
+    await getDateAPI(`${API_URL}ShoppingCart/id/${idUser}`, setCart);
+    navigation.navigate("Cart", {
+      idCart: cart,
+      city: city,
+      idClient: idClient,
+    });
+  }
+
+  async function selectLocation(itemValue) {
+    getDateAPI(`${API_URL}seller/location/${itemValue}`, setLocationStore);
+    setLocation(itemValue);
+  }
+
   const renderItem = ({ item }) => {
-    console.log("Elemento de la lista:", item);
-    return <StyledItemProduct item={item} />; // Pasa el objeto completo
+    return <StyledItemProduct item={item} idClient={idClient} />; // Pasa el objeto completo
+  };
+
+  const renderItemProducst = ({ item }) => {
+    return <ItemProductSearch item={item} />; // Pasa el objeto completo
   };
 
   const renderItemLocation = ({ item }) => {
-    console.log("Elemento de la lista:", item);
-    return <StyledItemProduct item={item} store />; // Pasa el objeto completo
+    return <StyledItemProduct item={item} store idClient={idClient} />; // Pasa el objeto completo
   };
 
   return (
@@ -70,107 +172,158 @@ const HomeClient = () => {
       {/* Header */}
       <View style={styles.header}>
         <MapPin width={25} height={25} color="black" style={styles.icon} />
-
         {/* Picker Municipio */}
-        <View style={styles.containerPiker}>
-          <Text style={styles.pickerText}>Municipio</Text>
+        {citys.length > 0 ? (
           <Picker
             selectedValue={city}
-            onValueChange={(itemValue) => setCity(itemValue)}
+            onValueChange={(itemValue) =>
+              getDateAPI(`${API_URL}seller/city/${itemValue}`, setAllstore)
+            }
             style={styles.pickerCity}
-            itemStyle={{ fontSize: 10 }}
           >
-            <Picker.Item label="Municipio" value="" />
+            <Picker.Item
+              label="Municipio"
+              value={city}
+              style={styles.pickerItem}
+            />
+            {citys.map((city) => (
+              <Picker.Item
+                key={city.id}
+                label={city.nombre}
+                value={city.nombre}
+              />
+            ))}
           </Picker>
-        </View>
+        ) : (
+          <ActivityIndicator></ActivityIndicator>
+        )}
 
         {/* Picker Domicilio */}
         <View style={styles.containerPiker}>
           <Text style={styles.pickerText}>Domicilio</Text>
-          <Picker
-            selectedValue={city}
-            onValueChange={(itemValue) => setCity(itemValue)}
-            style={styles.pickerCity}
-            itemStyle={{ fontSize: 10 }}
-          >
-            <Picker.Item label="Municipio" value="" />
-          </Picker>
         </View>
 
-        <Pressable>
+        <TouchableOpacity
+          onPress={() => {
+            orders();
+          }}
+        >
           <BellNotification
             width={30}
             height={30}
             color="black"
             style={styles.icon}
           />
-        </Pressable>
-
-        <Pressable>
-          <CartAlt width={30} height={30} color="black" style={styles.icon} />
-        </Pressable>
+        </TouchableOpacity>
+        {cart ? (
+          <TouchableOpacity
+            onPress={() => {
+              navigateCart();
+            }}
+          >
+            <CartAlt width={30} height={30} color="black" style={styles.icon} />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            onPress={() => {
+              Alert.alert(
+                "Crea tu carrito",
+                "Apoya a los productores de ru region",
+              );
+            }}
+          >
+            <CartAlt width={30} height={30} color="black" style={styles.icon} />
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Subheader */}
       <View style={styles.subHeader}>
         <View style={styles.search}>
           <Search width={28} height={28} color="gray" style={styles.icon} />
-          <TextInput placeholder={string.client.search} />
+          <TextInput
+            style={{ width: 150 }}
+            placeholder={string.client.search}
+            onChangeText={(newText) => {
+              search(newText);
+            }}
+          />
         </View>
       </View>
 
-      {/* Store Section */}
-      <View style={styles.store}>
-        <StyledText title bold>
-          {string.client.near}
-        </StyledText>
-        <FastArrowRight
-          width={28}
-          height={28}
-          color="black"
-          style={styles.icon}
-        />
-      </View>
-
-      {/* Horizontal Scroll */}
-      <View style={styles.scrollHorizontal}>
-        <FlatList
-          data={allStore}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id_seller.toString()}
-          numColumns={1}
-          columnWrapperStyle={styles.columnWrapper}
-          horizontal
-        />
-      </View>
-
-      {/* Location Section */}
-      <View style={styles.titleLocation}>
-        <Text style={styles.subTitle}>{string.client.select}</Text>
-        <View style={styles.containerPiker}>
-          <Text style={styles.pickerTextLocation}>
-            Busca tu vereda favorita
-          </Text>
-          <Picker
-            selectedValue={city}
-            onValueChange={(itemValue) => setCity(itemValue)}
-            style={styles.pickerCity}
-            itemStyle={{ fontSize: 10 }}
-          >
-            <Picker.Item label="Municipio" value="" />
-          </Picker>
+      {products ? (
+        <View>
+          <FlatList
+            data={products}
+            renderItem={renderItemProducst}
+            keyExtractor={(item) => item.id_product}
+            numColumns={1}
+            columnWrapperStyle={styles.columnWrapper}
+          />
         </View>
-      </View>
+      ) : (
+        <View style={{ height: "100%" }}>
+          {/* Store Section */}
+          <View style={styles.store}>
+            <StyledText title bold>
+              {string.client.near}
+            </StyledText>
+            <FastArrowRight
+              width={28}
+              height={28}
+              color="black"
+              style={styles.icon}
+            />
+          </View>
 
-      {/* Vertical Scroll */}
-      <View style={styles.scroll}>
-        <FlatList
-          data={locationStore}
-          renderItem={renderItemLocation}
-          keyExtractor={(item) => item.id_seller.toString()}
-          columnWrapperStyle={styles.columnWrapper}
-        />
-      </View>
+          {/* Horizontal Scroll */}
+          <View style={styles.scrollHorizontal}>
+            <FlatList
+              data={allStore}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.id_seller.toString()}
+              numColumns={1}
+              columnWrapperStyle={styles.columnWrapper}
+              horizontal
+            />
+          </View>
+
+          {/* Location Section */}
+          <View style={styles.titleLocation}>
+            <Text style={styles.subTitle}>{string.client.select}</Text>
+            <View style={styles.containerPiker}>
+              <Picker
+                selectedValue={location}
+                onValueChange={(itemValue) => selectLocation(itemValue)}
+                style={styles.pickerCity}
+              >
+                <Picker.Item
+                  label="Vereda"
+                  value={location}
+                  style={styles.pickerItem}
+                />
+                {locations.map((location) => (
+                  <Picker.Item
+                    key={location.id}
+                    label={location.nombre}
+                    value={location.nombre}
+                  />
+                ))}
+              </Picker>
+            </View>
+          </View>
+
+          {/* Vertical Scroll */}
+          <View style={styles.scroll}>
+            <FlatList
+              data={locationStore}
+              renderItem={renderItemLocation}
+              keyExtractor={(item) => item.id_seller.toString()}
+              columnWrapperStyle={styles.columnWrapper}
+            />
+          </View>
+        </View>
+      )}
     </View>
   );
 };
@@ -182,12 +335,10 @@ const styles = StyleSheet.create({
   },
   containerPiker: {
     backgroundColor: theme.colors.primary,
+    borderRadius: 10,
     flexDirection: "row",
-    height: 30,
     marginEnd: 10,
-    width: "30%",
   },
-  // eslint-disable-next-line react-native/no-unused-styles
   containerPikerDomicilio: {
     backgroundColor: theme.colors.yellow,
     borderRadius: 8,
@@ -195,23 +346,20 @@ const styles = StyleSheet.create({
     height: 30,
     width: "30%",
   },
-  // eslint-disable-next-line react-native/no-unused-styles
   containerPikerLocation: {
     backgroundColor: theme.colors.primary,
     borderColor: theme.colors.black,
     borderRadius: 10,
     borderWidth: 2,
     flexDirection: "row",
-    height: 60,
+    height: 100,
     marginEnd: 10,
     width: "45%",
   },
-  // eslint-disable-next-line react-native/no-unused-styles
   containerScroll: {
     alignItems: "center",
     height: "40%",
   },
-  // eslint-disable-next-line react-native/no-unused-styles
   containerScrollVertical: {
     alignItems: "center",
     height: "40%",
@@ -220,7 +368,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: theme.colors.greenOpacity,
     flexDirection: "row",
-    paddingBottom: 20,
+    justifyContent: "space-evenly",
     paddingTop: 5,
   },
   icon: {
@@ -228,8 +376,12 @@ const styles = StyleSheet.create({
   },
   pickerCity: {
     borderRadius: 5,
-    height: "100%",
-    width: 45,
+    height: 50,
+    width: 120,
+  },
+  pickerItem: {
+    color: theme.colors.grey,
+    fontSize: 14,
   },
   pickerText: {
     fontSize: 16,
@@ -244,20 +396,19 @@ const styles = StyleSheet.create({
     marginStart: 5,
   },
   scroll: {
-    backgroundColor: theme.colors.black,
     height: "40%",
-    marginBottom: 10, // Unificación de estilo
+    marginBottom: 10,
   },
   scrollHorizontal: {
-    marginTop: 20,
+    marginTop: 2,
     padding: "auto",
-    width: 300,
   },
   search: {
     alignItems: "center",
     backgroundColor: theme.colors.grey,
     borderRadius: 15,
     flexDirection: "row",
+    height: 40,
     marginBottom: 10,
     marginStart: 10,
     width: 200,
@@ -267,7 +418,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingBottom: 20,
     paddingTop: 5,
-    width: 1,
   },
   subHeader: {
     backgroundColor: theme.colors.greenOpacity,
@@ -285,6 +435,7 @@ const styles = StyleSheet.create({
   titleLocation: {
     backgroundColor: theme.colors.greenOpacity,
     flexDirection: "row",
+    justifyContent: "space-around",
     paddingBottom: 10,
     paddingTop: 10,
     width: "100%",

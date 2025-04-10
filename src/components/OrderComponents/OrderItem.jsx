@@ -11,15 +11,16 @@ import { Ionicons } from "@expo/vector-icons";
 
 /* Services */
 import { postDeliveryProduct } from "../../../services/DeliveryProduct.js";
+import { generateDeliveryCode } from "../../../funcions/KeyOrder.js";
 
 import theme from "../../theme/theme.js";
 import StyledButton from "../../styles/StyledButton.jsx";
 import { formatPrice } from "../../utils/constants.js";
-import { generateDeliveryCode } from "../../../funcions/KeyOrder.js";
 
 const OrderItem = React.memo(
   ({
     order,
+    idSeller,
     navigation,
     handleAcceptOrder,
     handleCancelOrder,
@@ -28,6 +29,7 @@ const OrderItem = React.memo(
     ...props
   }) => {
     const [fadeAnim] = useState(new Animated.Value(1));
+    console.log("Order: " + JSON.stringify(order));
 
     const productsData = React.useMemo(
       () =>
@@ -38,7 +40,7 @@ const OrderItem = React.memo(
       [order.shoppingCartId.cartItems],
     );
 
-    async function acceptOrder(idOrder) {
+    async function acceptOrder(idOrder, totalEarnings) {
       const stockUpdated = await props.handleUpdateStock(productsData);
       if (stockUpdated === false) {
         console.warn("Stock no actualizado, no se puede aceptar el pedido.");
@@ -54,7 +56,7 @@ const OrderItem = React.memo(
       });
 
       // Ejecutar lógica después de la animación
-      await handleAcceptOrder(idOrder);
+      await handleAcceptOrder(idOrder, totalEarnings);
 
       // Segunda animación: volver a aparecer
       await new Promise((resolve) => {
@@ -65,7 +67,7 @@ const OrderItem = React.memo(
         }).start(resolve);
       });
 
-      await postDeliveryProduct(idOrder); // falta agregar la coordena del cliente o destino
+      await postDeliveryProduct(idOrder);
     }
 
     const showKeyDelivery = (idOrder) => {
@@ -78,7 +80,14 @@ const OrderItem = React.memo(
       <Animated.View style={[styles.orderContainer, { opacity: fadeAnim }]}>
         <OrderHeader
           order={order}
-          onChatPress={() => navigation.navigate("ChatScreen")}
+          onChatPress={() =>
+            navigation.navigate("ChatScreen", {
+              idOrder: order.idOrder,
+              senderId: idSeller,
+              senderContext: "SELLER",
+              orderStatus: order.state,
+            })
+          }
         />
 
         <Text style={styles.sectionTitle}>Productos</Text>
@@ -93,29 +102,35 @@ const OrderItem = React.memo(
           )}
         />
 
-        {order.state === "CANCELADA" ? (
-          <StyledButton red disabled title="Pedido Rechado" />
-        ) : order.state === "ACEPTADA" ? (
+        {order.state === "CANCELADA" && (
+          <StyledButton red disabled title="Pedido Rechazado" />
+        )}
+
+        {order.state === "ACEPTADA" && (
           <View style={styles.buttonsContainer}>
             <StyledButton
-              yellow
+              yellowBorder
               textBlack
               onPress={() => showKeyDelivery(order.idOrder)}
-              title="Entregar Pedido"
+              title={"Entregar\nPedido"}
             />
             <StyledButton
-              green
+              greenMedium
               textBlack
-              onPress={() => console.log("Press")}
-              title="Total a Cobrar"
+              disabled
+              title={`Total a Cobrar\n$${formatPrice(order.shoppingCartId.totalEarnings)}`}
             />
           </View>
-        ) : (
+        )}
+
+        {order.state === "EN_ESPERA" && (
           <>
             <StyledButton
               yellow
               textBlack
-              onPress={() => acceptOrder(order.idOrder)}
+              onPress={() =>
+                acceptOrder(order.idOrder, order.shoppingCartId.totalEarnings)
+              }
               title="Aceptar Pedido"
             />
             <StyledButton
@@ -125,6 +140,15 @@ const OrderItem = React.memo(
             />
           </>
         )}
+
+        {order.state === "LISTA_ENVIAR" ||
+          (order.state === "FINALIZADA" && (
+            <StyledButton
+              green
+              onPress={() => console.log("Ver pedido")}
+              title="Ver Pedido"
+            />
+          ))}
       </Animated.View>
     );
   },
@@ -136,10 +160,16 @@ const OrderHeader = ({ order, onChatPress }) => (
     <View style={styles.headerInfo}>
       <Text style={styles.orderId}>Pedido No.{order.idOrder}</Text>
       <Text style={styles.orderTotal}>
-        Total de artículos: {order.shoppingCartId?.cartItems?.length || 0}
+        <Text style={styles.textBlack}>Total de artículos: </Text>
+        {order.shoppingCartId?.cartItems?.length || 0}
       </Text>
       <Text style={styles.orderTotal}>
-        Precio total: ${formatPrice(order.shoppingCartId.totalEarnings)}
+        <Text style={styles.textBlack}>Cliente: </Text>
+        {order.shoppingCartId?.clientName}
+      </Text>
+      <Text style={styles.orderTotal}>
+        <Text style={styles.textBlack}>Precio total: </Text>$
+        {formatPrice(order.shoppingCartId.totalEarnings)}
       </Text>
       <Text style={styles.orderTotal}>
         <Text style={styles.delivery}>Repartidor: </Text>
@@ -148,6 +178,7 @@ const OrderHeader = ({ order, onChatPress }) => (
           : "A espera de un reaprtidor"}
       </Text>
     </View>
+
     <TouchableOpacity style={styles.chatButton} onPress={onChatPress}>
       <Ionicons
         name="chatbubble-outline"
@@ -183,10 +214,13 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     alignSelf: "center",
     flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 10,
+    width: "100%",
   },
   chatButton: {
     alignItems: "center",
+    backgroundColor: theme.colors.greenOpacity,
     borderBlockColor: theme.colors.black,
     borderRadius: 8,
     borderWidth: 1,
@@ -208,6 +242,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   orderContainer: {
+    alignSelf: "center",
     backgroundColor: theme.colors.greenLiht,
     borderColor: theme.colors.green,
     borderRadius: 8,
@@ -215,7 +250,8 @@ const styles = StyleSheet.create({
     elevation: 3,
     marginBottom: 28,
     marginHorizontal: 15,
-    padding: 15,
+    padding: 12,
+    width: "90%",
   },
   orderId: {
     color: theme.colors.red,
@@ -236,6 +272,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 5,
     marginTop: 10,
+  },
+  textBlack: {
+    color: theme.colors.black,
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 5,
   },
 });
 

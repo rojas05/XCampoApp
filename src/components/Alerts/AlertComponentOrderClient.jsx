@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import theme from "../../theme/theme";
 import StyledButton from "../../styles/StyledButton";
-import { formatPrice } from "../../utils/constants";
+import { formatPrice, GET_COLOR_RUTE } from "../../utils/constants";
 
 const AlertComponentOrderClient = ({ orders, onPress }) => {
   const { totalCostOrder, totalCost } = orders.reduce(
@@ -36,13 +36,18 @@ const AlertComponentOrderClient = ({ orders, onPress }) => {
 
       {orders.map((order, index) => (
         <View key={index} style={styles.stopContainer}>
-          <Text style={styles.stopTitle}>
-            Parada {index + 1}: {order.userName}
-          </Text>
-          <Text style={styles.stopDetails}>
-            Cobras $ {formatPrice(totalCostOrder[index])} /{" "}
-            {order.products.length} productos
-          </Text>
+          <View
+            style={[styles.circle, { backgroundColor: GET_COLOR_RUTE(index) }]}
+          />
+          <View style={styles.textContainer}>
+            <Text style={styles.stopTitle}>
+              Parada {index + 1}: {order.userName}
+            </Text>
+            <Text style={styles.stopDetails}>
+              - Cobras $ {formatPrice(totalCostOrder[index])} /{" "}
+              {order.products.length} productos
+            </Text>
+          </View>
         </View>
       ))}
 
@@ -52,6 +57,13 @@ const AlertComponentOrderClient = ({ orders, onPress }) => {
 };
 
 const styles = StyleSheet.create({
+  circle: {
+    borderRadius: 6,
+    height: 12,
+    marginRight: 8,
+    marginTop: 4,
+    width: 12,
+  },
   container: {
     backgroundColor: theme.colors.whiteMedium,
     borderColor: theme.colors.backgroundColor,
@@ -67,15 +79,20 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   stopContainer: {
+    alignItems: "flex-start",
+    flexDirection: "row",
     marginBottom: 15,
   },
   stopDetails: {
-    color: theme.colors.black,
     fontSize: 18,
+    marginLeft: 5,
   },
   stopTitle: {
     fontSize: 18,
     fontWeight: "bold",
+  },
+  textContainer: {
+    flex: 1,
   },
   totalContainer: {
     backgroundColor: theme.colors.grey,

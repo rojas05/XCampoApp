@@ -7,8 +7,13 @@ import { postCategory } from "./CategoryService";
 
 export async function createProduct(form, sellerId) {
   try {
-    const categoryId = await postCategory(form.categoria);
-    if (!categoryId) return { show: false };
+    let categoryId = form.categoria;
+
+    // Si la categoría es un string, la creamos
+    if (isNaN(categoryId)) {
+      categoryId = await postCategory(form.categoria);
+      if (!categoryId) return { show: false };
+    }
 
     const productData = {
       name: form.productName,
@@ -19,7 +24,7 @@ export async function createProduct(form, sellerId) {
       measurementUnit: form.unidad,
       seller: { id_seller: sellerId },
       category: { id_category: categoryId },
-      UrlImage: "",
+      urlImage: "",
     };
 
     const response = await fetchWithToken(
@@ -30,7 +35,7 @@ export async function createProduct(form, sellerId) {
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error("Error al crear producto: " + data);
+      throw new Error("Error al crear producto: " + JSON.stringify(data));
     }
 
     const idProduct = data.id_product;
@@ -46,6 +51,11 @@ export async function createProduct(form, sellerId) {
 export async function postImageFirebase(imagenes, id_product) {
   if (imagenes.every((file) => file.startsWith("http"))) {
     return imagenes.join(" ");
+  }
+
+  if (!id_product || isNaN(id_product)) {
+    console.error("Error: id_product no es válido:", id_product);
+    return;
   }
 
   const URL = `storage/${id_product}`;
@@ -144,6 +154,7 @@ export async function updateProductId(
         name: form.categoria,
       },
     };
+
     await updateProductImage(imageUrl, id_product, idSeller);
     const { data, error } = await putData(endpoint, requestBody);
 

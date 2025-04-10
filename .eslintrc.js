@@ -24,6 +24,7 @@ module.exports = {
     "no-unused-vars": ["warn"], // Detectar variables no utilizadas
     "react-native/no-inline-styles": "warn", // Detecta estilos en línea
     "react-native/no-unused-styles": "warn", // Detecta estilos que no se usan
+    "max-len": ["warn", { code: 200 }],
     "import/no-unresolved": [
       "error",
       {

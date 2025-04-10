@@ -1,39 +1,83 @@
 import React from "react";
-import { View, StyleSheet, Image } from "react-native";
+import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+
 import theme from "../theme/theme";
 import StyledText from "./StyledText";
 import StyledButton from "./StyledButton";
+import { formatCurrency } from "../../funcions/formatPrice";
+import { getFirstURLFromString } from "../../funcions/getUrlImages";
 
 const StyledItemProductStore = (props) => {
-  const { item } = props;
+  const navigation = useNavigation();
+  const { item, cart, onClick = () => {} } = props;
+
+  function next() {
+    var id;
+    if (item.idProduct) {
+      id = item.idProduct;
+    } else {
+      id = item.id_product;
+    }
+    navigation.navigate("DetailProduct", {
+      idProduct: id,
+    });
+  }
 
   return (
     <View style={styles.gridItem}>
-      <Image
-        source={require("../../assets/background.png")}
-        style={styles.imageItem}
-      ></Image>
+      {item.urlImage ? (
+        <TouchableOpacity
+          style={styles.imgPres}
+          onPress={() => {
+            next();
+          }}
+        >
+          <Image
+            source={{ uri: getFirstURLFromString(item.urlImage) }}
+            style={styles.imageItem}
+          />
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity
+          style={styles.imgPres}
+          onPress={() => {
+            next();
+          }}
+        >
+          <Image
+            source={require("../../assets/shopping.png")}
+            style={styles.imageItem}
+          />
+        </TouchableOpacity>
+      )}
       <View style={styles.containerItemInfo}>
         <StyledText bold lines={1} width="60%">
-          {item}xxxxx
+          {item.name}
         </StyledText>
         <StyledText bold lines={1} width="35%">
-          x uni
+          x {item.measurementUnit}
         </StyledText>
       </View>
       <StyledText red bold lines={1}>
-        price
+        {formatCurrency(item.price)}
       </StyledText>
-      <StyledButton yellow title={"Agregar"} height="15%"></StyledButton>
+      <StyledButton
+        yellow
+        title={"Agregar"}
+        height="15%"
+        onPress={() => {
+          onClick();
+        }}
+      ></StyledButton>
     </View>
   );
 };
 
-// No se estan usando la mayoria de estilos
 const styles = StyleSheet.create({
   columnWrapper: {
-    justifyContent: "space-between", // Espaciado uniforme entre columnas
-    marginBottom: 10, // Espaciado vertical entre filas
+    justifyContent: "space-between",
+    marginBottom: 10,
   },
   containerInfo: {
     alignItems: "center",
@@ -73,13 +117,17 @@ const styles = StyleSheet.create({
   imageItem: {
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-    height: "40%",
+    height: "100%",
     resizeMode: "cover",
     width: "100%",
   },
   imageStore: {
     height: "30%",
     resizeMode: "cover",
+    width: "100%",
+  },
+  imgPres: {
+    height: "40%",
     width: "100%",
   },
   send: {

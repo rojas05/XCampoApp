@@ -6,6 +6,11 @@ const styles = StyleSheet.create({
   green: {
     backgroundColor: theme.colors.green,
   },
+  greenMedium: {
+    backgroundColor: theme.colors.greenOpacity,
+    borderColor: theme.colors.black,
+    borderWidth: 1,
+  },
   primaryButton: {
     alignItems: "center",
     backgroundColor: theme.colors.green,
@@ -33,6 +38,11 @@ const styles = StyleSheet.create({
   yellow: {
     backgroundColor: theme.colors.yellow,
   },
+  yellowBorder: {
+    backgroundColor: theme.colors.yellow,
+    borderColor: theme.colors.black,
+    borderWidth: 1,
+  },
 });
 
 export default function StyledButton(props) {
@@ -40,8 +50,10 @@ export default function StyledButton(props) {
     title,
     onPress,
     yellow,
+    yellowBorder,
     green,
     red,
+    greenMedium,
     disabled,
     textBlack,
     style,
@@ -51,7 +63,9 @@ export default function StyledButton(props) {
   const buttonStyles = [
     styles.primaryButton,
     yellow && styles.yellow,
+    yellowBorder && styles.yellowBorder,
     green && styles.green,
+    greenMedium && styles.greenMedium,
     red && styles.red,
     style,
   ];

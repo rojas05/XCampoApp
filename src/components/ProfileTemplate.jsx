@@ -47,7 +47,15 @@ const ProfileTemplate = ({ userName, profileImage, bannerImage, role }) => {
       <View>
         <Image source={{ uri: bannerImage }} style={styles.banner} />
         <View style={styles.avatarContainer}>
-          <Image source={{ uri: profileImage }} style={styles.avatar} />
+          <Image
+            source={
+              typeof profileImage === "string" &&
+              profileImage.startsWith("https")
+                ? { uri: profileImage }
+                : profileImage
+            }
+            style={styles.avatar}
+          />
         </View>
       </View>
 
@@ -75,23 +83,20 @@ const ProfileTemplate = ({ userName, profileImage, bannerImage, role }) => {
         </View>
 
         <Text style={styles.description}>
-          Bienvenidos a nuestra tienda. Ofrecemos productos de alta calidad y un
-          servicio excepcional.
+          {role === "Vendedor"
+            ? "Bienvenidos a nuestra tienda. Ofrecemos productos de alta calidad y un servicio excepcional."
+            : role === "Repartidor"
+              ? "Comprometidos con entregas rápidas y seguras. Su pedido en buenas manos."
+              : "Bienvenido a tu perfil. Aquí puedes gestionar tu información personal."}
         </Text>
       </View>
     </View>
   );
 };
 
-const BtnEdit = ({ onEditProfile, onChangeRole }) => {
+const BtnEdit = ({ onChangeRole }) => {
   return (
     <View style={styles.horizontalButtonContainer}>
-      <StyledButtonIcon
-        title="Editar Perfil"
-        nameIcon="create-outline"
-        iconLibrary={Ionicons}
-        onPress={onEditProfile}
-      />
       <StyledButtonIcon
         title="Cambiar Rol"
         nameIcon="swap-horizontal-outline"
@@ -164,7 +169,9 @@ const styles = StyleSheet.create({
     width: "90%",
   },
   roleBadge: {
+    alignContent: "center",
     alignItems: "center",
+    alignSelf: "flex-start",
     borderRadius: 20,
     flexDirection: "row",
     paddingHorizontal: 15,

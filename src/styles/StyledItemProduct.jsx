@@ -1,11 +1,13 @@
 import React from "react";
 import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { Heart } from "iconoir-react-native";
+
 import theme from "../theme/theme";
 import StyledText from "./StyledText";
-import { Heart } from "iconoir-react-native";
-import { useNavigation } from "@react-navigation/native";
+import { getFirstURLFromString } from "../../fetch/UseFetch";
 
-const StyledItemProduct = ({ store, item }) => {
+const StyledItemProduct = ({ store, item, idClient }) => {
   const navigation = useNavigation();
   const imageStyles = [styles.image, store && styles.imageStore];
   const containerStyles = [styles.container, store && styles.containerStore];
@@ -15,12 +17,16 @@ const StyledItemProduct = ({ store, item }) => {
       onPress={() => {
         navigation.navigate("DetailStore", {
           idStore: item.id_seller,
+          idClient: idClient,
         });
       }}
     >
       <View style={containerStyles}>
         {item.img ? (
-          <Image source={{ uri: item.img }} style={imageStyles} />
+          <Image
+            source={{ uri: getFirstURLFromString(item.img) }}
+            style={imageStyles}
+          />
         ) : (
           <Image
             source={require("../../assets/store.png")}

@@ -47,7 +47,7 @@ const string = {
     favorite: "Favorito",
     cart: "Ver Carrito",
     Shopping: "Seguir Comprando",
-    add: "Agregar mas productos",
+    add: "Agregar al carrito",
     addCart: "Complementa tu carrito",
     summaey: "Resumen",
     AddCode: "Agrega código \n promocional",
@@ -101,7 +101,7 @@ const string = {
     locationPermission: "Acepta los permisos para poder tu localización",
   },
   MapBtn: {
-    arriveAtStore: "Llegué a la finca",
+    arriveAtStore: "Llegué a la tienda",
     arriveAtClient: "Llegué al Destino",
   },
   ProductList: {

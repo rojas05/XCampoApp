@@ -6,6 +6,7 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 import theme from "../../theme/theme";
 import { GOOGLE_MAPS_KEY } from "@env";
+import { GET_COLOR_RUTE } from "../../utils/constants";
 
 const MarkerComponent = ({
   coordinate,
@@ -15,14 +16,30 @@ const MarkerComponent = ({
   description,
   iconName,
 }) => (
-  <Marker
-    coordinate={coordinate}
-    title={title}
-    description={description}
-    onPress={onPress}
-  >
-    <FontAwesome5 name={iconName} size={25} color={color} />
-  </Marker>
+  <>
+    <Marker
+      coordinate={coordinate}
+      title={title}
+      description={description}
+      onPress={onPress}
+    >
+      <FontAwesome5
+        name={iconName}
+        size={25}
+        color={color}
+        style={styles.iconBorder}
+      />
+    </Marker>
+
+    {iconName !== "truck" && (
+      <Circle
+        center={coordinate}
+        radius={5}
+        strokeColor="rgba(0, 0, 0, 0.8)"
+        fillColor="rgba(255, 0, 0, 0.9)"
+      />
+    )}
+  </>
 );
 
 const MapViewDirection = ({ origin, destination, colorMaker }) => {
@@ -58,6 +75,9 @@ const MapComponent = ({
   mapType,
   colorMaker,
   onPress,
+  showMultipleRoutes = false,
+  stateNotification,
+  destinations = [],
 }) => {
   return (
     <MapView
@@ -78,7 +98,7 @@ const MapComponent = ({
         color={theme.colors.red}
         onPress={() => {}}
         title={"Tu Ubicacion"}
-        iconName="car-side"
+        iconName="truck"
       />
 
       <Circle
@@ -88,17 +108,63 @@ const MapComponent = ({
         fillColor="rgba(39, 245, 223, 0.34)"
       />
 
+      {/* Mostrar múltiples rutas si showMultipleRoutes es true */}
+      {showMultipleRoutes && destinations.length > 0 && (
+        <>
+          {destinations.map((destination, index) => (
+            <React.Fragment key={index}>
+              <MarkerComponent
+                coordinate={destination}
+                color={
+                  stateNotification.phase === "client"
+                    ? GET_COLOR_RUTE(index)
+                    : theme.colors.red
+                }
+                title={
+                  stateNotification.phase === "seller"
+                    ? `Tienda ${stateNotification.pendingSellers[index]?.storageName || index}`
+                    : `Cliente ${stateNotification.pendingClients[index]?.userName || index}`
+                }
+                iconName={
+                  stateNotification.phase === "seller"
+                    ? "store-alt"
+                    : "house-user"
+                }
+              />
+              <MapViewDirections
+                origin={index === 0 ? origin : destinations[index - 1]}
+                destination={destination}
+                apikey={GOOGLE_MAPS_KEY}
+                strokeColor={
+                  stateNotification.phase === "client"
+                    ? GET_COLOR_RUTE(index)
+                    : theme.colors.yellow
+                }
+                strokeWidth={8}
+              />
+            </React.Fragment>
+          ))}
+        </>
+      )}
+
       {/* Mostrar la ruta entre origen y destino */}
-      <MapViewDirection
-        origin={origin}
-        destination={destination}
-        colorMaker={colorMaker}
-      />
+      {!showMultipleRoutes && (
+        <MapViewDirection
+          origin={origin}
+          destination={destination}
+          colorMaker={colorMaker}
+        />
+      )}
     </MapView>
   );
 };
 
 const styles = StyleSheet.create({
+  iconBorder: {
+    textShadowColor: theme.colors.black,
+    textShadowOffset: { width: -1, height: -1 },
+    textShadowRadius: 1,
+  },
   map: {
     height: "100%",
     width: "100%",

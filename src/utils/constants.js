@@ -3,17 +3,22 @@ import { Dimensions } from "react-native";
 import theme from "../theme/theme.js";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("screen");
-const WIDTH_SCREEN = SCREEN_WIDTH * 0.9;
-const STATUSBAR_HEIGHT = Constants.statusBarHeight;
-const MARGINS = {
+export const WIDTH_SCREEN = SCREEN_WIDTH * 0.9;
+export const STATUSBAR_HEIGHT = Constants.statusBarHeight;
+export const MARGINS = {
   default: STATUSBAR_HEIGHT - 10,
   basic: STATUSBAR_HEIGHT,
 };
 
-const ICON_COLORS_MAP = {
+export const ICON_COLORS_MAP = {
   standard: "#000",
   hybrid: "#fff",
   terrain: "#ff6347",
+};
+
+export const GET_COLOR_RUTE = (index) => {
+  const colors = ["#fe857f", "#98d187", "#ff8c42"];
+  return colors[index % colors.length];
 };
 
 /**
@@ -21,13 +26,13 @@ const ICON_COLORS_MAP = {
  * @param {string | number} text - El texto o número a formatear.
  * @returns {string} - Texto formateado.
  */
-const formatPrice = (text) => {
+export const formatPrice = (text) => {
   if (!text) return "0";
   const numericText = String(text).replace(/[^0-9]/g, "");
   return numericText.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
 
-const HOME_STYLES = {
+export const HOME_STYLES = {
   container: {
     flex: 1,
     backgroundColor: theme.colors.grey,
@@ -57,13 +62,4 @@ const HOME_STYLES = {
     justifyContent: "center",
     alignItems: "center",
   },
-};
-
-export {
-  WIDTH_SCREEN,
-  MARGINS,
-  STATUSBAR_HEIGHT,
-  ICON_COLORS_MAP,
-  formatPrice,
-  HOME_STYLES,
 };

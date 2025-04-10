@@ -29,7 +29,7 @@ const OrderItem = ({
 
   return (
     <View style={styles.orderView}>
-      <Text style={styles.titleText}>Pedido ID: {item.id}</Text>
+      <Text style={styles.titleText}>Pedido ID: ORD-{item.idDelivery}</Text>
       <OrderDetails
         item={item}
         totalToPay={totalToPay}
@@ -63,20 +63,19 @@ const OrderItem = ({
 const OrderDetails = ({ item, totalToPay, totalProducts }) => (
   <>
     <Text style={styles.infoText}>
-      Órdenes: <Text style={styles.boldText}>{item.products.length}</Text> |
-      Paradas: <Text style={styles.boldText}>{item.stops}</Text>
+      Órdenes: <Text style={styles.boldText}>{item.products.length}</Text>
     </Text>
     <Text style={styles.infoText}>
       Catidad de productos: <Text style={styles.boldText}>{totalProducts}</Text>
     </Text>
     <Text style={styles.infoText}>
       Costo del envio:{" "}
-      <Text style={styles.boldText}>${formatPrice(item.shippingCost)}</Text>
+      <Text style={styles.boldText}>${formatPrice(item.deliveryCost)}</Text>
     </Text>
     <Text style={styles.infoText}>
       <Text style={styles.boldTextRed}>- Subtotal: </Text>
       <Text style={styles.boldText}>
-        ${formatPrice(totalToPay + item.shippingCost)}
+        ${formatPrice(totalToPay + item.deliveryCost)}
       </Text>
     </Text>
   </>

@@ -2,6 +2,8 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
+import { updateStateDeliveryProducts } from "../../../services/DeliveryProduct";
+
 import theme from "../../theme/theme";
 import { formatPrice } from "../../utils/constants";
 import StyledButton from "../../styles/StyledButton";
@@ -9,12 +11,23 @@ import StyledButton from "../../styles/StyledButton";
 const AlertGoDestinyClient = ({ orders, isVisible, index }) => {
   const navigation = useNavigation();
   const order = orders[index];
+  //console.log("Orders Clients: XD " + JSON.stringify(order));
 
   const calculateTotalCost = () =>
     order.products.reduce((total, product) => total + product.unitPrice, 0);
 
-  const toggleVisibility = () => {
+  const toggleVisibility = async () => {
+    console.log("Actualizando en caminio");
+    await updateStateDeliveryProducts(order.idDelivery, "EN_CAMINO");
+
     isVisible(false);
+  };
+
+  const showInfoDelivery = () => {
+    navigation.navigate("DeliverOrderClient", {
+      orderClient: { order },
+      context: "rute",
+    });
   };
 
   return (
@@ -32,14 +45,7 @@ const AlertGoDestinyClient = ({ orders, isVisible, index }) => {
                 Productos {order.products.length}
               </Text>
             </Text>
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("DeliverOrderClient", {
-                  orderClient: { order },
-                  context: "rute",
-                })
-              }
-            >
+            <TouchableOpacity onPress={() => showInfoDelivery()}>
               <Text style={styles.viewLink}>Ver</Text>
             </TouchableOpacity>
           </View>

@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { STATUSBAR_HEIGHT } from "../../src/utils/constants.js";
-import StyledButtonIcon from "../styles/StyledButtonIcon.jsx";
+import * as SecureStore from "expo-secure-store";
+
 import theme from "../theme/theme.js";
+import StyledButtonIcon from "../styles/StyledButtonIcon.jsx";
+import { STATUSBAR_HEIGHT } from "../../src/utils/constants.js";
 import { getCountDeliveryAvailable } from "../../services/DeliveryProduct.js";
 
 const DrawerContent = ({ navigation, state }) => {
   const activeRouteName = state?.routeNames[state?.index];
   const [orderCount, setOrderCount] = useState(null);
+  const [userName, setUserName] = useState(null);
 
   const menuItems = [
     { icon: "map-marked-alt", label: "Inicio", navigation: "MapScreen" },
@@ -16,7 +19,7 @@ const DrawerContent = ({ navigation, state }) => {
       icon: "box",
       label: "Pedidos disponibles",
       navigation: "OrderAvailableScreen",
-      badge: orderCount, // obtner nuevos pedidos
+      badge: orderCount >= 1 ? orderCount : null,
     },
     {
       icon: "box-open",
@@ -24,8 +27,8 @@ const DrawerContent = ({ navigation, state }) => {
       navigation: "ReservedOrdersScreen",
     },
     {
-      icon: "star",
-      label: "Puntaje de mis servicios",
+      icon: "user-alt",
+      label: "Perfil",
       navigation: "DeliveyProfile",
     },
     {
@@ -33,12 +36,24 @@ const DrawerContent = ({ navigation, state }) => {
       label: "Mis ganancias",
       navigation: "DeliveyProfile",
     },
-    { icon: "exchange-alt", label: "Cambiar rol", navigation: "" },
+    { icon: "exchange-alt", label: "Cambiar rol", navigation: "Splash" },
   ];
 
   useEffect(() => {
+    const getMunicipio = async () => {
+      const userInfo = await SecureStore.getItemAsync("userInfo");
+      if (userInfo) {
+        const { name, city } = JSON.parse(userInfo);
+        setUserName(name);
+
+        return city;
+      }
+    };
+
     const fetchOrderList = async () => {
-      const totalDeliveryAvailable = await getCountDeliveryAvailable();
+      const totalDeliveryAvailable = await getCountDeliveryAvailable(
+        await getMunicipio(),
+      );
 
       setOrderCount(totalDeliveryAvailable);
     };
@@ -47,7 +62,7 @@ const DrawerContent = ({ navigation, state }) => {
 
   return (
     <View style={styles.drawerContent}>
-      <UserProfile />
+      <UserProfile name={userName} />
       <Divider />
       <MenuList
         menuItems={menuItems}
@@ -68,17 +83,16 @@ const DrawerContent = ({ navigation, state }) => {
   );
 };
 
-const UserProfile = () => (
+const UserProfile = ({ name }) => (
   <View style={styles.profileSection}>
     <Image
       style={styles.profileImage}
-      source={{
-        uri: "https://i.pinimg.com/736x/60/23/93/602393bf2e36653ca8f28a4fdd3a4852.jpg",
-      }}
+      source={require("../../assets/profile/icon_perfil_delivery.jpg")}
     />
     <View style={styles.profileTextContainer}>
-      <Text style={styles.greeting}>Buen día, Usuario</Text>
-      <Text style={styles.subText}>ID-Repartidor: #12345</Text>
+      <Text style={styles.greeting}>Buen día, {name}</Text>
+      <Text style={styles.subText}> Bienvenido de nuevo!</Text>
+      <Text style={styles.subText}> Estamos listos para trabajar</Text>
     </View>
   </View>
 );
@@ -105,7 +119,7 @@ const MenuItem = ({ item, isActive, onPress }) => (
       <FontAwesome5
         name={item.icon}
         size={20}
-        color={isActive ? "white" : "grey"}
+        color={isActive ? "white" : "#98d187"}
       />
       {item.badge != null && (
         <View style={styles.badge}>
@@ -123,7 +137,7 @@ const Divider = () => <View style={styles.divider} />;
 
 const styles = StyleSheet.create({
   activeMenuItem: {
-    backgroundColor: theme.colors.blue,
+    backgroundColor: theme.colors.green,
   },
   activeMenuText: {
     color: theme.colors.white,
@@ -145,7 +159,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   divider: {
-    backgroundColor: theme.colors.blue,
+    backgroundColor: theme.colors.greenMedium,
     height: 2,
     marginVertical: 10,
   },
@@ -185,15 +199,18 @@ const styles = StyleSheet.create({
   profileImage: {
     borderColor: theme.colors.black,
     borderRadius: 30,
-    borderWidth: 0.5,
+    borderWidth: 1,
     height: 60,
+    marginRight: 5,
     width: 60,
   },
   profileSection: {
     alignItems: "center",
+    backgroundColor: theme.colors.greenLiht,
+    borderRadius: 10,
     flexDirection: "row",
-    marginBottom: 15,
-    marginLeft: 10,
+    marginBottom: 8,
+    padding: 10,
   },
   profileTextContainer: {
     marginLeft: 10,

@@ -1,21 +1,57 @@
-import React from "react";
-import Constants from "expo-constants";
+import React, { useCallback, useEffect, useState } from "react";
 import { Xmark } from "iconoir-react-native";
-import { View, StyleSheet, FlatList } from "react-native";
-
+import { View, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import Constants from "expo-constants";
 import StyledText from "../../src/styles/StyledText";
 import StyledItemOrder from "../../src/styles/StyledItemOrder";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { fetchWithToken } from "../../tokenStorage";
+import API_URL from "../../fetch/ApiConfig";
 import theme from "../../src/theme/theme";
 
 const Orders = () => {
-  const items = Array.from({ length: 11 }, (_, index) => `Item ${index + 1}`);
+  const route = useRoute();
+  const { id } = route.params;
 
-  const renderItemP = ({ item }) => <StyledItemOrder></StyledItemOrder>;
+  const navigation = useNavigation();
+  const [ordersPending, setOrdersPending] = useState({});
+  const [ordersFinished, setOrdersFinished] = useState({});
+
+  useEffect(() => {
+    getDataAPI(`${API_URL}order/get/${id}/EN_ESPERA`, setOrdersPending);
+    getDataAPI(`${API_URL}order/get/${id}/FINALIZADA`, setOrdersFinished);
+  }, []);
+
+  const getDataAPI = useCallback(async (url, setDate) => {
+    try {
+      const response = await fetchWithToken(url, {
+        method: "GET",
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setDate(data);
+      } else {
+        setDate(null);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
+
+  const renderItemP = ({ item }) => (
+    <StyledItemOrder item={item}></StyledItemOrder>
+  );
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Xmark width={40} height={40} color={"black"} />
+        <TouchableOpacity
+          onPress={() => {
+            navigation.goBack();
+          }}
+        >
+          <Xmark width={40} height={40} color={"black"} />
+        </TouchableOpacity>
         <StyledText title bold>
           Ordenes
         </StyledText>
@@ -28,9 +64,9 @@ const Orders = () => {
         </StyledText>
 
         <FlatList
-          data={items}
+          data={ordersPending}
           renderItem={renderItemP}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item) => item.idOrder}
           numColumns={1} // Especifica el número de columnas
           width="94%"
           marginStart="3%"
@@ -45,9 +81,9 @@ const Orders = () => {
         </StyledText>
 
         <FlatList
-          data={items}
+          data={ordersFinished}
           renderItem={renderItemP}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item) => item.idOrder}
           numColumns={2} // Especifica el número de columnas
           width="94%"
           marginStart="3%"
@@ -65,18 +101,18 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: "center",
-    marginTop: Constants.STATUSBAR_HEIGHTHeight,
+    marginTop: Constants.statusBarHeight,
   },
   containerOrdenes: {
     borderBottomWidth: 1,
-    borderColor: theme.colors.greyMedium,
+    borderColor: theme.colors.grey,
     height: "30%",
     marginEnd: 10,
     width: "95%",
   },
   containerOrdenesReady: {
     borderBottomWidth: 1,
-    borderColor: theme.colors.greyMedium,
+    borderColor: theme.colors.grey,
     height: "70%",
     marginEnd: 10,
     width: "95%",

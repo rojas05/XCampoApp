@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, StyleSheet, ScrollView, Alert } from "react-native";
 import Constants from "expo-constants";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { HomeAlt, Delivery, User } from "iconoir-react-native";
 
-import { fetchWithToken } from "../tokenStorage";
-import { responseHeader } from "../fetch/UseFetch";
+import { fetchWithToken, getToken } from "../tokenStorage";
+import { getData, responseHeader } from "../fetch/UseFetch";
 import API_URL from "../fetch/ApiConfig";
 
 import theme from "../src/theme/theme";
@@ -18,21 +18,11 @@ import RoleForm from "../src/components/RoleForm";
 import { getSavedLocation } from "../funcions/getCoordinates";
 
 const useRoles = (initialRoles) => {
-  const [roles, setRoles] = useState({
-    seller: true,
-    deliveryMan: true,
-    client: true,
-  });
-
-  useEffect(() => {
-    setRoles({
-      seller: !initialRoles.includes("SELLER"),
-      deliveryMan: !initialRoles.includes("DELIVERYMAN"),
-      client: !initialRoles.includes("CLIENT"),
-    });
-  }, [initialRoles]);
-
-  return roles;
+  return {
+    seller: !initialRoles.includes("SELLER"),
+    deliveryMan: !initialRoles.includes("DELIVERYMAN"),
+    client: !initialRoles.includes("CLIENT"),
+  };
 };
 
 const TypeUser = () => {
@@ -54,16 +44,58 @@ const TypeUser = () => {
     nameClient: "",
     indicationsClient: "",
   });
+  const [locations, setLocations] = useState([]);
+  const [city, setCity] = useState();
 
   const navigation = useNavigation();
 
+  const messageError = "Este campo es requerido.";
+
   useEffect(() => {
     const fetchLocation = async () => {
+      getCityUser();
+
       const savedLocation = await getSavedLocation();
       setFormData((prev) => ({ ...prev, coordinates: savedLocation }));
     };
 
     fetchLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function getCityUser() {
+    try {
+      const idUser = await getToken("id");
+      const response = await fetchWithToken(`${API_URL}user/${idUser}`, {
+        method: "GET",
+      });
+      if (response.ok) {
+        const data = await response.json();
+        getDateAPINoToken(
+          `firebase/veredas/municipio?nombreMunicipio=${data.city}`,
+          setLocations,
+        );
+        setCity(data.city);
+      } else {
+        console.log(response);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  const getDateAPINoToken = useCallback(async (url, setDate) => {
+    try {
+      const { data, error } = await getData(url);
+      if (data) {
+        setDate(data);
+      }
+      if (error) {
+        console.log(error);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   }, []);
 
   const handleLocationPress = async () => {
@@ -91,25 +123,21 @@ const TypeUser = () => {
   const roleValidations = {
     SELLER: () => {
       const errors = {};
-      if (!formData.store) errors.store = "Este campo es requerido.";
-      if (!formData.indications)
-        errors.indications = "Este campo es requerido.";
-      if (!formData.coordinates)
-        errors.coordinates = "Este campo es requerido.";
-      if (!formData.location) errors.location = "Este campo es requerido.";
+      if (!formData.store) errors.store = messageError;
+      if (!formData.indications) errors.indications = messageError;
+      if (!formData.coordinates) errors.coordinates = messageError;
+      if (!formData.location) errors.location = messageError;
       return errors;
     },
     DELIVERYMAN: () => {
       const errors = {};
-      if (!formData.routeDelivery)
-        errors.routeDelivery = "Este campo es requerido.";
+      if (!formData.routeDelivery) errors.routeDelivery = messageError;
       return errors;
     },
     CLIENT: () => {
       const errors = {};
-      if (!formData.nameClient) errors.nameClient = "Este campo es requerido.";
-      if (!formData.indicationsClient)
-        errors.indicationsClient = "Este campo es requerido.";
+      if (!formData.nameClient) errors.nameClient = messageError;
+      if (!formData.indicationsClient) errors.indicationsClient = messageError;
       return errors;
     },
   };
@@ -126,7 +154,6 @@ const TypeUser = () => {
       switch (rol) {
         case "SELLER":
           data = {
-            id_seller: null,
             name_store: formData.store,
             coordinates: JSON.stringify(formData.coordinates),
             location: formData.location,
@@ -134,16 +161,19 @@ const TypeUser = () => {
             img: null,
           };
           break;
+
         case "DELIVERYMAN":
-          data = { id_seller: null, rute: formData.routeDelivery };
+          data = { rute: formData.routeDelivery };
           break;
+
         case "CLIENT":
           data = {
-            id_seller: null,
             name: formData.nameClient,
+            location_destiny: JSON.stringify(formData.coordinates),
             location_description: formData.indicationsClient,
           };
           break;
+
         default:
           console.error("Rol no válido.");
           return;
@@ -151,6 +181,7 @@ const TypeUser = () => {
 
       try {
         const idRoles = await setRol(rol, idUser);
+
         if (idRoles) {
           await setRolData(
             rol.toLowerCase(),
@@ -236,6 +267,7 @@ const TypeUser = () => {
               removePhoto={removePhoto}
               imageUploadError={imageUploadError}
               handleLocationPress={() => handleLocationPress()}
+              locations={locations}
             />
           )}
 
@@ -245,13 +277,12 @@ const TypeUser = () => {
                 name: "Repartidor",
                 icon: <Delivery width={25} height={25} color={"black"} />,
               }}
-              fields={[
-                { name: "routeDelivery", placeholder: "Veredas que transite" },
-              ]}
+              fields={[{ name: "routeDelivery", placeholder: locations }]}
               errors={errors}
               loading={loading}
               onSubmit={() => validateForm("DELIVERYMAN")}
               onChangeText={handleChangeText}
+              locations={locations}
             />
           )}
 
@@ -264,11 +295,13 @@ const TypeUser = () => {
               fields={[
                 { name: "nameClient", placeholder: "Nombre de cliente" },
                 { name: "indicationsClient", placeholder: "Indicaciones" },
+                { name: "coordinates", placeholder: "location" },
               ]}
               errors={errors}
               loading={loading}
               onSubmit={() => validateForm("CLIENT")}
               onChangeText={handleChangeText}
+              handleLocationPress={() => handleLocationPress()}
             />
           )}
         </View>

@@ -1,5 +1,4 @@
 import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 
@@ -11,24 +10,33 @@ import Hello from "../screens/Hello";
 import TypeUser from "../screens/TypeUser";
 import DrawerContent from "../src/components/DrawerContent";
 import Splash from "../screens/Splash";
-// client
-// import IndexClient from "../screens/client/IndexClient";
-import BottomTavClient from "./BottomNabClient";
+import UserProfile from "../screens/UserProfile.jsx";
+
+// Client
+import BottomTabClient from "./BottomNabClient.js";
 import DetailStore from "../screens/client/DetailStore";
 import DetailProduct from "../screens/client/DetailProduct";
 import InfoStore from "../screens/client/InfoStore";
-// seller
+import ShoppingCart from "../screens/client/ShoppingCar.js";
+import DetailOrder from "../screens/client/DetailOrder.js";
+import Orders from "../screens/client/Orders.jsx";
+
+// Seller
 import RegisterProducts from "../screens/store/RegisterProducts";
 import HomeSeller from "../screens/store/HomeSeller";
-// delivery
-import MapDeliveryScreen from "../screens/delivery/MapScreenHome.jsx";
-import MapOrderDeliveryScreen from "../screens/delivery/MapOrderDeliveryScreen.jsx";
-import ReservedOrdersScreen from "../screens/delivery/ReservedOrdersScreen.jsx";
-import OrderAvailableScreen from "../screens/delivery/OrderAvailableScreen.jsx";
+
+// Delivery
+import MapDeliveryScreen from "../screens/delivery/Drawer/MapScreenHome.jsx";
+import MapOrderDeliveryScreen from "../screens/delivery/MapRoutes/MapOrderDeliveryScreen.jsx";
+import MapOrderNotificationDeliveryScreen from "../screens/delivery/MapRoutes/MapOrderNotificationDeliveryScreen.jsx";
+import MultipleRoutesScreen from "../screens/delivery/MapRoutes/MapShowMultipleRoutesScreen.jsx";
+import ReservedOrdersScreen from "../screens/delivery/Drawer/ReservedOrdersScreen.jsx";
+import OrderAvailableScreen from "../screens/delivery/Drawer/OrderAvailableScreen.jsx";
 import OrderDetail from "../screens/delivery/OrderDetailScreen.jsx";
-import DeliveyProfile from "../screens/delivery/DeliveryProfileScreen.jsx";
-import DeliverOrderClient from "../screens/delivery/OrderDeliverCustomerScreen.jsx";
-// chats
+import DeliveyProfile from "../screens/delivery/Drawer/DeliveryProfileScreen.jsx";
+import DeliverOrderClient from "../screens/delivery/DeliverOrderClientScreent.jsx";
+
+// Chats
 import ChatScreen from "../screens/chats/ChatScreen";
 import ChatHeader from "../screens/chats/ChatHeader";
 
@@ -40,7 +48,6 @@ const MainDrawer = () => {
     <Drawer.Navigator
       drawerContent={(props) => <DrawerContent {...props} />}
       screenOptions={{
-        headerShown: true,
         drawerStyle: { width: 280 },
         drawerType: "slide",
       }}
@@ -53,10 +60,7 @@ const MainDrawer = () => {
       <Drawer.Screen
         name="OrderAvailableScreen"
         component={OrderAvailableScreen}
-        options={{
-          title: "Pedidos Disponibles",
-          headerTitleAlign: "center",
-        }}
+        options={{ title: "Pedidos Disponibles", headerTitleAlign: "center" }}
       />
       <Drawer.Screen
         name="ReservedOrdersScreen"
@@ -74,61 +78,58 @@ const MainDrawer = () => {
 
 const MainStack = () => {
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="WelcomePage"
-        screenOptions={{ headerShown: false, detachPreviousScreen: true }}
-      >
-        <Stack.Screen name="Splash" component={Splash} />
+    <Stack.Navigator
+      initialRouteName="Splash"
+      screenOptions={{ headerShown: false, detachPreviousScreen: true }}
+    >
+      <Stack.Screen name="Splash" component={Splash} />
+      <Stack.Screen name="WelcomePage" component={WelcomePage} />
+      <Stack.Screen name="Hello" component={Hello} />
+      <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="Signup" component={Signup} />
+      <Stack.Screen name="TypeUser" component={TypeUser} />
+      <Stack.Screen name="UserProfile" component={UserProfile} />
 
-        <Stack.Screen name="WelcomePage" component={WelcomePage} />
+      {/* CLIENT */}
+      <Stack.Screen name="IndexClient" component={BottomTabClient} />
+      <Stack.Screen name="DetailProduct" component={DetailProduct} />
+      <Stack.Screen name="DetailStore" component={DetailStore} />
+      <Stack.Screen name="InfoStore" component={InfoStore} />
+      <Stack.Screen name="Cart" component={ShoppingCart} />
+      <Stack.Screen name="OrderDetailClient" component={DetailOrder} />
+      <Stack.Screen name="Orders" component={Orders} />
 
-        <Stack.Screen name="Hello" component={Hello} />
+      {/* SELLER */}
+      <Stack.Screen name="RegisterProducts" component={RegisterProducts} />
+      <Stack.Screen name="HomeSeller" component={HomeSeller} />
 
-        <Stack.Screen name="Login" component={Login} />
+      {/* DELIVERY */}
+      <Stack.Screen
+        name="MapOrderDeliveryScreen"
+        component={MapOrderDeliveryScreen}
+      />
+      <Stack.Screen
+        name="MapOrderNotificationDeliveryScreen"
+        component={MapOrderNotificationDeliveryScreen}
+      />
+      <Stack.Screen
+        name="MultipleRoutesScreen"
+        component={MultipleRoutesScreen}
+      />
+      <Stack.Screen name="DeliverOrderClient" component={DeliverOrderClient} />
+      <Stack.Screen name="OrderDetail" component={OrderDetail} />
+      <Stack.Screen name="HomeDelivery" component={MainDrawer} />
 
-        <Stack.Screen name="Signup" component={Signup} />
-
-        <Stack.Screen name="TypeUser" component={TypeUser} />
-
-        {/* -------------------------------------------- */}
-
-        <Stack.Screen name="IndexClient" component={BottomTavClient} />
-
-        <Stack.Screen name="DetailProduct" component={DetailProduct} />
-
-        <Stack.Screen name="DetailStore" component={DetailStore} />
-
-        <Stack.Screen name="InfoStore" component={InfoStore} />
-
-        <Stack.Screen name="RegisterProducts" component={RegisterProducts} />
-
-        <Stack.Screen name="HomeSeller" component={HomeSeller} />
-
-        <Stack.Screen
-          name="MapOrderDeliveryScreen"
-          component={MapOrderDeliveryScreen}
-        />
-
-        <Stack.Screen
-          name="DeliverOrderClient"
-          component={DeliverOrderClient}
-        />
-
-        <Stack.Screen name="OrderDetail" component={OrderDetail} />
-
-        <Stack.Screen name="HomeDelivery" component={MainDrawer} />
-
-        <Stack.Screen
-          name="ChatScreen"
-          component={ChatScreen}
-          options={({ navigation }) => ({
-            headerShown: true,
-            header: () => <ChatHeader navigation={navigation} />,
-          })}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+      {/* CHAT */}
+      <Stack.Screen
+        name="ChatScreen"
+        component={ChatScreen}
+        options={({ navigation }) => ({
+          headerShown: true,
+          header: () => <ChatHeader navigation={navigation} />,
+        })}
+      />
+    </Stack.Navigator>
   );
 };
 

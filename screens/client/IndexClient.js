@@ -1,6 +1,6 @@
 import React from "react";
-import BottomTavClient from "../../navigation/BottomNabClient";
 import { NavigationContainer } from "@react-navigation/native";
+import BottomTavClient from "../../navigation/BottomNabClient";
 
 const IndexClient = () => {
   return (

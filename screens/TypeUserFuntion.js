@@ -30,7 +30,7 @@ export const setRolData = async (
     }
 
     if (rol === "seller") {
-      const idSeller = await getSellerID(Number(idUser));
+      const idSeller = await getSellerID(parseInt(idUser));
       const imageUrl = await postImageFirebaseSeller(photos, Number(idSeller));
 
       if (!imageUrl) {

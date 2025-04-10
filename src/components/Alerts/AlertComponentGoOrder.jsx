@@ -1,5 +1,11 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  FlatList,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import theme from "../../theme/theme";
@@ -10,30 +16,38 @@ const AlertComponentGoOrder = ({ orders, totalAmountProducts }) => {
 
   return (
     <View style={styles.stopsContainer}>
-      {orders.map((order, index) => (
-        <View style={styles.orderCard} key={order.idDelivery}>
-          <View style={styles.orderDetails}>
-            <Text style={styles.orderTextBold}>
-              Pedido {index + 1}:
-              <Text style={styles.orderText}>
-                {" "}
-                Productos ( {order.products.length} ){" "}
-                {totalAmountProducts.length <= 0 &&
-                  "/ $" + formatPrice(totalAmountProducts[order.idDelivery])}
+      <FlatList
+        data={orders}
+        keyExtractor={(order) => order.idDelivery.toString()}
+        renderItem={({ item: order, index }) => (
+          <View style={styles.orderCard} key={order.idDelivery}>
+            <View style={styles.orderDetails}>
+              <Text style={styles.orderTextBold}>
+                Pedido {index + 1}:
+                <Text style={styles.orderText}>
+                  {" "}
+                  Productos ( {order.products.length} ){" "}
+                  {totalAmountProducts.length <= 0 &&
+                    "/ $" + formatPrice(totalAmountProducts[order.idDelivery])}
+                </Text>
               </Text>
-            </Text>
-            <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("DeliverOrderClient", {
-                  orderClient: { order },
-                })
-              }
-            >
-              <Text style={styles.viewLink}>Ver</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate("DeliverOrderClient", {
+                    orderClient: { order },
+                    context: " ",
+                  })
+                }
+              >
+                <Text style={styles.viewLink}>Ver</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      ))}
+        )}
+        // ORD58C1
+        // eslint-disable-next-line react-native/no-inline-styles
+        contentContainerStyle={orders.length > 4 && { paddingBottom: 20 }}
+      />
     </View>
   );
 };
@@ -66,6 +80,7 @@ const styles = StyleSheet.create({
   },
   stopsContainer: {
     marginBottom: 15,
+    maxHeight: 300,
     width: "100%",
   },
   viewLink: {

@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
 import * as SecureStore from "expo-secure-store";
 import URL_API from "./fetch/ApiConfig";
 
@@ -58,19 +57,18 @@ export const refreshAccessToken = async () => {
     console.warn(
       "No se encontró un refresh token para actualizar el access token.",
     );
-    return false;
+    throw "error";
   }
 
   try {
-    const response = await fetch(`${API_URL}/refresh`, {
+    const response = await fetch(`${API_URL}refresh`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refreshToken }),
     });
 
     if (!response.ok) {
-      console.warn(refreshToken);
-      console.warn("Error al actualizar el access token:", response.status);
+      console.warn("Error al actualizar el access token:", response);
       return false;
     }
 
