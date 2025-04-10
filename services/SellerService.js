@@ -103,3 +103,22 @@ export async function updateAddEarnings(idSeller, earnings) {
     // throw error;
   }
 }
+
+export async function getNameSeller(id_seller) {
+  const endpoint = `${API_URL}seller/sellerName/${id_seller}`;
+
+  try {
+    const response = await fetchWithToken(endpoint, { method: "GET" });
+
+    if (!response.ok) {
+      throw new Error("No se encontró el vendedor");
+    }
+
+    const rts = await response.text();
+    console.log(rts);
+    return rts;
+  } catch (error) {
+    console.error("Error fetching get name client:", error);
+    throw error;
+  }
+}

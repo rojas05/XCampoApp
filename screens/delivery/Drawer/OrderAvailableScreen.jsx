@@ -71,7 +71,7 @@ const OrderComponent = ({ orders }) => {
   return (
     <FlatList
       data={orders}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => item.idDelivery}
       renderItem={({ item }) => (
         <OrderItem
           item={item}

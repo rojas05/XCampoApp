@@ -11,11 +11,11 @@ import { Ionicons } from "@expo/vector-icons";
 
 /* Services */
 import { postDeliveryProduct } from "../../../services/DeliveryProduct.js";
+import { generateDeliveryCode } from "../../../funcions/KeyOrder.js";
 
 import theme from "../../theme/theme.js";
 import StyledButton from "../../styles/StyledButton.jsx";
 import { formatPrice } from "../../utils/constants.js";
-import { generateDeliveryCode } from "../../../funcions/KeyOrder.js";
 
 const OrderItem = React.memo(
   ({
@@ -29,6 +29,7 @@ const OrderItem = React.memo(
     ...props
   }) => {
     const [fadeAnim] = useState(new Animated.Value(1));
+    console.log("Order: " + JSON.stringify(order));
 
     const productsData = React.useMemo(
       () =>
@@ -83,6 +84,8 @@ const OrderItem = React.memo(
             navigation.navigate("ChatScreen", {
               idOrder: order.idOrder,
               senderId: idSeller,
+              senderContext: "SELLER",
+              orderStatus: order.state,
             })
           }
         />

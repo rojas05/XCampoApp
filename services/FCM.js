@@ -5,6 +5,7 @@ import {
   onChildAdded,
   onValue,
   off,
+  remove,
 } from "firebase/database";
 
 import {
@@ -104,6 +105,22 @@ class ChatFCM {
       }
     } catch (error) {
       console.error("🔥 Error enviando mensaje a Firebase:", error);
+    }
+  }
+
+  /**
+   * Elimina una conversación completa
+   * @param {string} idOrder - ID de la orden
+   */
+  async deleteConversation(idOrder) {
+    try {
+      const chatRef = ref(this.db, `chats/${idOrder}`);
+      await remove(chatRef);
+      console.log(`✅ Conversación ${idOrder} eliminada correctamente`);
+      return true;
+    } catch (error) {
+      console.error("🔥 Error eliminando conversación:", error);
+      return false;
     }
   }
 }

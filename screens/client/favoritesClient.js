@@ -1,11 +1,53 @@
-import React from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
-import StyledText from "../../src/styles/StyledText";
-import string from "../../src/string/string";
-import StyledItemProduct from "../../src/styles/StyledItemProduct";
+import React, { useCallback, useState, useEffect } from "react";
+import { View, StyleSheet, FlatList } from "react-native";
 import Constants from "expo-constants";
 
+import API_URL from "../../fetch/ApiConfig";
+import { fetchWithToken, getToken } from "../../tokenStorage";
+
+import string from "../../src/string/string";
+import StyledText from "../../src/styles/StyledText";
+import StyledItemProduct from "../../src/styles/StyledItemProduct";
+
 const FavoriteClient = () => {
+  const [seller, setSeller] = useState();
+  const [idClient, setIdClient] = useState();
+
+  useEffect(() => {
+    async function init() {
+      const idUser = await getToken("id");
+      getDataAPI(`${API_URL}client/idUser/${idUser}`, setIdClient);
+    }
+
+    init();
+  }, [getFavorites(), getDataAPI]);
+
+  async function getFavorites() {
+    getDataAPI(`${API_URL}order/favorite/${idClient}`, setSeller);
+  }
+
+  const getDataAPI = useCallback(async (url, setDate) => {
+    try {
+      const response = await fetchWithToken(url, {
+        method: "GET",
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setDate(data);
+        console.log(data);
+      } else {
+        setDate(null);
+        console.log(response);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
+
+  const renderItem = ({ item }) => {
+    return <StyledItemProduct item={item} store idClient={idClient} />; // Pasa el objeto completo
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -14,9 +56,11 @@ const FavoriteClient = () => {
         </StyledText>
       </View>
       <View style={styles.containerScroll}>
-        <ScrollView style={styles.scroll}>
-          <StyledItemProduct store></StyledItemProduct>
-        </ScrollView>
+        <FlatList
+          data={seller}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id_seller.toString()}
+        />
       </View>
     </View>
   );

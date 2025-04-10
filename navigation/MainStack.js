@@ -10,12 +10,16 @@ import Hello from "../screens/Hello";
 import TypeUser from "../screens/TypeUser";
 import DrawerContent from "../src/components/DrawerContent";
 import Splash from "../screens/Splash";
+import UserProfile from "../screens/UserProfile.jsx";
 
 // Client
 import BottomTabClient from "./BottomNabClient.js";
 import DetailStore from "../screens/client/DetailStore";
 import DetailProduct from "../screens/client/DetailProduct";
 import InfoStore from "../screens/client/InfoStore";
+import ShoppingCart from "../screens/client/ShoppingCar.js";
+import DetailOrder from "../screens/client/DetailOrder.js";
+import Orders from "../screens/client/Orders.jsx";
 
 // Seller
 import RegisterProducts from "../screens/store/RegisterProducts";
@@ -75,8 +79,8 @@ const MainDrawer = () => {
 const MainStack = () => {
   return (
     <Stack.Navigator
-      initialRouteName="WelcomePage"
-      screenOptions={{ headerShown: false }}
+      initialRouteName="Splash"
+      screenOptions={{ headerShown: false, detachPreviousScreen: true }}
     >
       <Stack.Screen name="Splash" component={Splash} />
       <Stack.Screen name="WelcomePage" component={WelcomePage} />
@@ -84,12 +88,16 @@ const MainStack = () => {
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="Signup" component={Signup} />
       <Stack.Screen name="TypeUser" component={TypeUser} />
+      <Stack.Screen name="UserProfile" component={UserProfile} />
 
       {/* CLIENT */}
       <Stack.Screen name="IndexClient" component={BottomTabClient} />
       <Stack.Screen name="DetailProduct" component={DetailProduct} />
       <Stack.Screen name="DetailStore" component={DetailStore} />
       <Stack.Screen name="InfoStore" component={InfoStore} />
+      <Stack.Screen name="Cart" component={ShoppingCart} />
+      <Stack.Screen name="OrderDetailClient" component={DetailOrder} />
+      <Stack.Screen name="Orders" component={Orders} />
 
       {/* SELLER */}
       <Stack.Screen name="RegisterProducts" component={RegisterProducts} />

@@ -10,7 +10,7 @@ export async function registerForPushNotificationsAsync(id) {
   let token;
 
   if (!Device.isDevice) {
-    console.log("Las notificaciones solo funcionan en dispositivos físicos.");
+    console.warn("Las notificaciones solo funcionan en dispositivos físicos.");
     return null;
   }
 
@@ -28,7 +28,7 @@ export async function registerForPushNotificationsAsync(id) {
   }
 
   token = (await Notifications.getDevicePushTokenAsync()).data;
-  console.log("Token de notificación:", token);
+  //console.log("Token de notificación:", token);
 
   const storedToken = await SecureStore.getItemAsync("pushToken");
 

@@ -50,11 +50,12 @@ export const getData = async (url) => {
       method: "GET",
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      throw new Error(`Error del servidor: ${response.status}`);
+      throw new Error(`Error del servidor: ${JSON.stringify(data)}`);
     }
 
-    const data = await response.json();
     return { data, error: null };
   } catch (error) {
     return { data: null, error };

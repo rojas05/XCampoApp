@@ -47,7 +47,7 @@ const string = {
     favorite: "Favorito",
     cart: "Ver Carrito",
     Shopping: "Seguir Comprando",
-    add: "Agregar mas productos",
+    add: "Agregar al carrito",
     addCart: "Complementa tu carrito",
     summaey: "Resumen",
     AddCode: "Agrega código \n promocional",

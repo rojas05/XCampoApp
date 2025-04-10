@@ -11,20 +11,26 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
 import ChatFCM from "../../services/FCM";
-import { getIdClientByOrderID } from "../../services/OrdersService";
+import {
+  getIdClientByOrderID,
+  getIdSellerByOrderID,
+} from "../../services/OrdersService";
+import { getNameClient } from "../../services/ClientService";
+
+import ChatHeader from "./ChatHeader";
 import MessageBubble from "./ChatMessages";
 import theme from "../../src/theme/theme";
-import ChatHeader from "./ChatHeader";
-import { getNameClient } from "../../services/ClientService";
+import { getNameSeller } from "../../services/SellerService";
 
 const ChatScreen = ({ route }) => {
   const navigation = useNavigation();
-  const { idOrder, senderId } = route.params || {};
+  const { idOrder, senderId, senderContext, orderStatus } = route.params || {};
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [receiverId, setReceiverId] = useState(null);
@@ -60,23 +66,30 @@ const ChatScreen = ({ route }) => {
   );
 
   useEffect(() => {
-    if (!idOrder || !senderId) {
-      console.error("🚨 Falta información clave para iniciar el chat.");
+    if (!idOrder || !senderId || !senderContext) {
+      console.error("🚨 Falta información clave para iniciar el chat (IDs).");
       return;
     }
 
     const initializeChat = async () => {
-      const idClient = await getIdClientByOrderID(idOrder);
-      const clientName = await getNameClient(idClient);
+      let idReceiver, receiverName;
+
+      if (senderContext === "SELLER") {
+        idReceiver = await getIdClientByOrderID(idOrder);
+        receiverName = await getNameClient(idReceiver);
+      } else {
+        idReceiver = await getIdSellerByOrderID(idOrder);
+        receiverName = await getNameSeller(idReceiver);
+      }
 
       navigation.setOptions({
         header: () => (
-          <ChatHeader navigation={navigation} clientName={clientName} />
+          <ChatHeader navigation={navigation} clientName={receiverName} />
         ),
       });
 
-      if (idClient) {
-        setReceiverId(idClient);
+      if (idReceiver) {
+        setReceiverId(idReceiver);
         console.log("✅ Escuchando mensajes en Firebase...");
         ChatFCM.listenToMessages(orderPath, handleNewMessage);
       }
@@ -100,11 +113,11 @@ const ChatScreen = ({ route }) => {
     return [...messages]
       .filter(
         (msg) =>
-          msg.senderId === `SELLER_${senderId}` ||
-          msg.receiverId === `SELLER_${senderId}`,
+          msg.senderId === `${senderContext}_${senderId}` ||
+          msg.receiverId === `${senderContext}_${senderId}`,
       )
       .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-  }, [messages, senderId]);
+  }, [messages, senderId, senderContext]);
 
   const handleSendMessage = useCallback(async () => {
     if (!receiverId || newMessage.trim() === "") return;
@@ -112,8 +125,11 @@ const ChatScreen = ({ route }) => {
     const message = {
       idChat: generateChatId(),
       idOrder: `ORD-${idOrder}`,
-      senderId: `SELLER_${senderId}`,
-      receiverId: `CLIENT_${receiverId}`,
+      senderId: `${senderContext}_${senderId}`,
+      receiverId:
+        senderContext === "SELLER"
+          ? `CLIENT_${receiverId}`
+          : `SELLER_${receiverId}`,
       messageText: newMessage.trim(),
       timestamp: new Date().toISOString(),
     };
@@ -148,12 +164,39 @@ const ChatScreen = ({ route }) => {
             hour: "2-digit",
             minute: "2-digit",
           })}
-          isSender={item.senderId === `SELLER_${senderId}`}
+          isSender={item.senderId === `${senderContext}_${senderId}`}
         />
       );
     },
-    [senderId],
+    [senderContext, senderId],
   );
+
+  useEffect(() => {
+    const checkOrderStatus = () => {
+      if (orderStatus === "FINALIZADA") {
+        Alert.alert(
+          "Conversación Finalizada",
+          "Esta conversación ha sido cerrada porque la orden está finalizada.",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                ChatFCM.stopListening(orderPath);
+                navigation.goBack();
+              },
+            },
+          ],
+        );
+      }
+    };
+
+    // Verificar inmediatamente al montar el componente
+    checkOrderStatus();
+
+    return () => {
+      ChatFCM.stopListening(orderPath);
+    };
+  }, [orderStatus, orderPath, navigation]);
 
   return (
     <View style={styles.container}>

@@ -4,11 +4,11 @@ import { useNavigation } from "@react-navigation/native";
 
 import theme from "../theme/theme";
 import StyledText from "./StyledText";
-import StyledButton from "./StyledButton";
+
 import { formatCurrency } from "../../funcions/formatPrice";
 import { getFirstURLFromString } from "../../funcions/getUrlImages";
 
-const StyledItemProductStore = (props) => {
+const ItemProductCartAdd = (props) => {
   const navigation = useNavigation();
   const { item, cart, onClick = () => {} } = props;
 
@@ -62,14 +62,6 @@ const StyledItemProductStore = (props) => {
       <StyledText red bold lines={1}>
         {formatCurrency(item.price)}
       </StyledText>
-      <StyledButton
-        yellow
-        title={"Agregar"}
-        height="15%"
-        onPress={() => {
-          onClick();
-        }}
-      ></StyledButton>
     </View>
   );
 };
@@ -110,7 +102,7 @@ const styles = StyleSheet.create({
   gridItem: {
     backgroundColor: theme.colors.primary,
     borderRadius: 10,
-    height: 200,
+    height: 150,
     margin: 5,
     width: 150,
   },
@@ -127,7 +119,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   imgPres: {
-    height: "40%",
+    height: "60%",
     width: "100%",
   },
   send: {
@@ -140,4 +132,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default StyledItemProductStore;
+export default ItemProductCartAdd;

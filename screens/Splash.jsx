@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   StyleSheet,
   View,
@@ -7,51 +7,96 @@ import {
   Alert,
   FlatList,
   TouchableOpacity,
+  Text,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
-import { getInfoUserId } from "../services/UserService";
+import * as Notifications from "expo-notifications";
 
 import API_URL from "../fetch/ApiConfig.js";
+import { getInfoUserId } from "../services/UserService";
+import { getToken, fetchWithToken } from "../tokenStorage.js";
+import {
+  getLocationPermission,
+  getSavedLocation,
+} from "../funcions/getCoordinates.js";
+import { registerForPushNotificationsAsync } from "../funcions/registerForPushNotificationsAsync.js";
+
 import theme from "../src/theme/theme.js";
 import StyledText from "../src/styles/StyledText.jsx";
 import StyledButton from "../src/styles/StyledButton.jsx";
-import { getToken, fetchWithToken } from "../tokenStorage.js";
-import { registerForPushNotificationsAsync } from "../funcions/registerForPushNotificationsAsync.js";
 
 const Splash = () => {
   const navigation = useNavigation();
-
+  const responseListener = useRef();
   const [roles, setRoles] = useState([]);
   const [idUser, setIdUser] = useState("");
+  const [setOrigin] = useState(null);
+  const [setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkAndFetchUserInfo = async () => {
       try {
         const userInfo = await SecureStore.getItemAsync("userInfo");
         if (!userInfo) {
-          await getInfoUserId();
+          await getInfoUserId(idUser);
         }
       } catch (error) {
         console.error("Error al verificar/obtener userInfo:", error);
       }
     };
 
+    const fetchLocation = async () => {
+      const savedLocation = await getSavedLocation();
+
+      if (savedLocation) {
+        console.log("Usando ubicación guardada:", savedLocation);
+        setOrigin(savedLocation);
+        setIsLoading(false);
+      } else {
+        console.log("No hay ubicación guardada, obteniendo nueva...");
+        await getLocationPermission(setOrigin, setIsLoading);
+      }
+
+      setIsLoading(false);
+    };
+
     getTokenMain();
     checkAndFetchUserInfo();
-  }, [getTokenMain]);
+    registerNotificationApp();
+    fetchLocation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getTokenMain, setIsLoading, setOrigin]);
+
+  const registerNotificationApp = async () => {
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        const data = response.notification.request.content.data;
+        console.log("🔔 Notificación presionada:", data);
+        if (data.screen) {
+          navigation.navigate(data.screen, {
+            idProduct: data.Id,
+          });
+        }
+      });
+
+    return () => {
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  };
 
   const getTokenMain = useCallback(async () => {
     try {
       const idStorage = await getToken("id"); // Espera a que se resuelva el token
 
-      if (idStorage != null) {
+      if (idStorage !== true) {
         getUserData(idStorage);
         registerForPushNotificationsAsync(idStorage);
       } else {
         navigation.navigate("WelcomePage");
       }
     } catch (error) {
+      navigation.navigate("WelcomePage");
       console.error("Error al obtener el token:", error);
       Alert.alert("Error", "Hubo un problema al obtener el token");
     }
@@ -73,6 +118,8 @@ const Splash = () => {
             idUser: id_user,
             roles: roles,
           });
+        } else if (response === null) {
+          navigation.navigate("WelcomePage");
         } else {
           const jsonObject = JSON.parse(JSON.stringify(data));
           const valuesList = Object.values(jsonObject);
@@ -121,6 +168,13 @@ const Splash = () => {
         style={styles.image}
       >
         <View style={styles.containerComponent}>
+          <TouchableOpacity
+            style={styles.profileButton}
+            onPress={() => navigation.navigate("UserProfile", { idUser })}
+          >
+            <Text style={styles.profileButtonText}>👤 Ver Perfil</Text>
+          </TouchableOpacity>
+
           <StyledText title bold>
             Bienvenido. Como vas a iniciar?
           </StyledText>
@@ -185,6 +239,25 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     marginTop: 20,
     width: 250,
+  },
+  profileButton: {
+    backgroundColor: theme.colors.white,
+    borderBottomStartRadius: 30,
+    borderTopStartRadius: 30,
+    elevation: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    position: "absolute",
+    right: 0,
+    shadowColor: theme.colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    top: 20,
+  },
+  profileButtonText: {
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
 

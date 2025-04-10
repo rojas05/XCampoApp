@@ -2,8 +2,8 @@ import * as SecureStore from "expo-secure-store";
 import { fetchWithToken } from "../tokenStorage";
 import API_URL from "../fetch/ApiConfig";
 
-export async function getInfoUserId() {
-  const idUser = await SecureStore.getItemAsync("id_user");
+export async function getInfoUserId(idUser) {
+  //const idUser = await SecureStore.getItemAsync("id_user");
   const endpoint = `${API_URL}user/${idUser}`;
 
   try {

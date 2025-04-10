@@ -1,68 +1,123 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
   Image,
-  Pressable,
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
 } from "react-native";
 import Constants from "expo-constants";
-// import { YellowBox } from "react-native-web";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { InfoCircle, StarSolid, Xmark } from "iconoir-react-native";
 
+// import { YellowBox } from "react-native-web";
 import API_URL from "../../fetch/ApiConfig";
+import { fetchWithToken } from "../../tokenStorage";
+import { dateTimeFormat } from "../../funcions/date";
+import { getFirstURLFromString } from "../../funcions/getUrlImages";
+
 import theme from "../../src/theme/theme";
 import StyledText from "../../src/styles/StyledText";
 import StyledItemProductStore from "../../src/styles/StyledItemProductStore";
-import { fetchWithToken } from "../../tokenStorage";
 // import { getCoordinates } from "../../funcions/getCoordinates";
 
 const DetailStore = () => {
   const route = useRoute();
 
   const { idStore } = route.params;
-  const [store, setStore] = useState({});
+  const { idClient } = route.params;
 
+  const [store, setStore] = useState({});
+  const [storeProducts, setProductsStore] = useState([]);
+  const [item, setItem] = useState([]);
+  const [cart, setCart] = useState({});
   const [loading, setLoading] = useState(true);
 
   const navigation = useNavigation();
 
   useEffect(() => {
-    getStore();
-  }, [getStore]);
+    setLoading(true);
+    createCart();
+    getDataAPI(`${API_URL}seller/${idStore}`, setStore);
+    getDataAPI(`${API_URL}products/listAll/${idStore}`, setProductsStore);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const items = Array.from({ length: 11 }, (_, index) => `Item ${index + 1}`);
-
-  let response;
-
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  async function getStore() {
+  const getDataAPI = useCallback(async (url, setDate) => {
     try {
-      response = await fetchWithToken(`${API_URL}seller/${idStore}`, {
+      const response = await fetchWithToken(url, {
         method: "GET",
       });
-
       if (response.ok) {
         const data = await response.json();
-        setStore(data);
+        setDate(data);
         setLoading(false);
+      } else {
+        setDate(null);
       }
     } catch (error) {
       console.error(error);
     }
+  }, []);
+
+  const postDataAPI = useCallback(async (url, requestBody, setData) => {
+    try {
+      const response = await fetchWithToken(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setData(data);
+      } else {
+        console.log(response);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
+
+  async function createCart() {
+    const requestBodyCart = {
+      clientId: idClient,
+      dateAdded: dateTimeFormat(),
+    };
+    console.log(requestBodyCart);
+    postDataAPI(`${API_URL}ShoppingCart/add`, requestBodyCart, setCart);
+  }
+
+  async function addProductCart(item) {
+    const requestBody = {
+      cardId: cart.id_cart,
+      productId: item.idProduct,
+      quantity: 1,
+      unitPrice: item.price,
+    };
+    postDataAPI(`${API_URL}cartItem`, requestBody, setItem);
+    createCart();
   }
 
   const renderItem = ({ item }) => (
-    <StyledItemProductStore item={item}></StyledItemProductStore>
+    <StyledItemProductStore
+      item={item}
+      cart={cart.id_cart}
+      onClick={() => {
+        addProductCart(item);
+      }}
+    ></StyledItemProductStore>
   );
 
   return (
     <View style={styles.container}>
       {store.img ? (
-        <Image source={{ uri: store.img }} style={styles.imageStore} />
+        <Image
+          source={{ uri: getFirstURLFromString(store.img) }}
+          style={styles.imageStore}
+        />
       ) : (
         <Image
           source={require("../../assets/store.png")}
@@ -98,60 +153,33 @@ const DetailStore = () => {
       </View>
 
       <FlatList
-        data={items}
+        data={storeProducts}
         renderItem={renderItem}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item) => item.idProduct}
         numColumns={2} // Especifica el número de columnas
         columnWrapperStyle={styles.columnWrapper} // Espaciado entre columnas
         width="95%"
       />
 
-      <TouchableOpacity style={styles.fab}>
+      <TouchableOpacity
+        style={styles.fab}
+        onPress={() => {
+          navigation.replace("Cart", {
+            idCart: cart.id_cart,
+          });
+        }}
+      >
         <StyledText whiteButton bold>
-          Ver carrito ()
+          Ver carrito ({cart.items})
         </StyledText>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.exit}
         onPress={() => {
-          navigation.navigate("IndexClient");
+          navigation.goBack();
         }}
       >
-        <Xmark width={20} height={20} color={"black"} />
-      </TouchableOpacity>
-
-      <View style={styles.containerInfo}>
-        <View>
-          <StyledText title bold>
-            Name finca
-          </StyledText>
-          <View style={styles.containerStar}>
-            <StyledText>star</StyledText>
-            <StarSolid width={20} height={20} color={"black"} />
-          </View>
-        </View>
-        <Pressable style={styles.send}>
-          <InfoCircle width={20} height={20} color={"black"} />
-        </Pressable>
-      </View>
-
-      <FlatList
-        data={items}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => index.toString()}
-        numColumns={2} // Especifica el número de columnas
-        columnWrapperStyle={styles.columnWrapper} // Espaciado entre columnas
-        width="95%"
-      />
-
-      <TouchableOpacity style={styles.fab}>
-        <StyledText whiteButton bold>
-          Ver carrito ()
-        </StyledText>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.exit}>
         <Xmark width={20} height={20} color={"black"} />
       </TouchableOpacity>
     </View>
@@ -177,7 +205,6 @@ const styles = StyleSheet.create({
     padding: 10,
     width: "100%",
   },
-  // eslint-disable-next-line react-native/no-unused-styles
   containerItemInfo: {
     flexDirection: "row",
     width: "100%",
@@ -207,10 +234,9 @@ const styles = StyleSheet.create({
     height: 40,
     justifyContent: "center",
     position: "absolute",
-    right: "30%",
-    width: "40%",
+    right: "25%",
+    width: "50%",
   },
-  // eslint-disable-next-line react-native/no-unused-styles
   gridItem: {
     backgroundColor: theme.colors.primary,
     borderRadius: 10,
@@ -218,7 +244,6 @@ const styles = StyleSheet.create({
     margin: 5,
     width: 150,
   },
-  // eslint-disable-next-line react-native/no-unused-styles
   imageItem: {
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,

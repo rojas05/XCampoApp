@@ -57,7 +57,7 @@ export const refreshAccessToken = async () => {
     console.warn(
       "No se encontró un refresh token para actualizar el access token.",
     );
-    return false;
+    throw "error";
   }
 
   try {
@@ -68,7 +68,6 @@ export const refreshAccessToken = async () => {
     });
 
     if (!response.ok) {
-      console.warn(refreshToken);
       console.warn("Error al actualizar el access token:", response);
       return false;
     }
