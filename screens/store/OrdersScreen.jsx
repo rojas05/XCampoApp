@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -23,6 +23,7 @@ import OrderAlert from "../../src/components/Alerts/OrderAlert.jsx";
 import FilterPopup from "../../src/components/Alerts/OrderAlertFilterPop.jsx";
 import OrderAlertNotStock from "../../src/components/Alerts/OrderAlertNotStock.jsx";
 import OrderAlertCodeDelivey from "../../src/components/Alerts/OrderAlertCodeDelivey.jsx";
+import { updateAddEarnings } from "../../services/SellerService.js";
 
 const OrdersScreen = ({ route, navigation }) => {
   const { idUser } = route.params || {};
@@ -41,8 +42,20 @@ const OrdersScreen = ({ route, navigation }) => {
   const { idSeller, orders, setOrders, loading, error, productDetails } =
     useOrders(idUser, activeTab, setState);
 
-  const handleActionOrder = async (orderId, type, message, newState) => {
+  const handleActionOrder = async (
+    orderId,
+    totalEarnings,
+    type,
+    message,
+    newState,
+  ) => {
     await updateStateOrderID(orderId, newState);
+
+    if (newState === "ACEPTADA") {
+      console.log("Estamos actualizando " + totalEarnings);
+      await updateAddEarnings(idSeller, totalEarnings);
+    }
+
     setState((prev) => ({
       ...prev,
       alertConfig: { visible: true, type, message },
@@ -113,10 +126,12 @@ const OrdersScreen = ({ route, navigation }) => {
       {activeTab === "EN_ESPERA" ? (
         <OrderList
           orders={orders.filter((o) => o.state === activeTab)}
+          idSeller={idSeller}
           navigation={navigation}
-          handleAcceptOrder={(idOrder) =>
+          handleAcceptOrder={(idOrder, totalEarnings) =>
             handleActionOrder(
               idOrder,
+              totalEarnings,
               "success",
               "Pedido aceptado exitosamente",
               "ACEPTADA",
@@ -125,6 +140,7 @@ const OrdersScreen = ({ route, navigation }) => {
           handleCancelOrder={(idOrder) =>
             handleActionOrder(
               idOrder,
+              0,
               "error",
               "Pedido cancelado exitosamente",
               "CANCELADA",
@@ -185,7 +201,13 @@ const OrdersScreen = ({ route, navigation }) => {
   );
 };
 
-const OrderList = ({ orders, setAlertVisible, setDeliveryCode, ...props }) =>
+const OrderList = ({
+  orders,
+  idSeller,
+  setAlertVisible,
+  setDeliveryCode,
+  ...props
+}) =>
   orders.length === 0 ? (
     <NoDataView dataText="órdenes" />
   ) : (
@@ -195,6 +217,7 @@ const OrderList = ({ orders, setAlertVisible, setDeliveryCode, ...props }) =>
       renderItem={({ item }) => (
         <OrderItem
           order={item}
+          idSeller={idSeller}
           {...props}
           setAlertVisible={setAlertVisible}
           setDeliveryCode={setDeliveryCode}

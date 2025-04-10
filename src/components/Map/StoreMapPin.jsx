@@ -26,7 +26,7 @@ const StoreMap = ({ store, initialRegion }) => {
             longitude: initialRegion.longitude,
           }}
           title={store.name_store}
-          description={"Vereda: " + store.location}
+          description={"Municipio o Vereda: " + store.location}
           pinColor={theme.colors.yellow}
         />
       )}

@@ -101,7 +101,7 @@ const string = {
     locationPermission: "Acepta los permisos para poder tu localización",
   },
   MapBtn: {
-    arriveAtStore: "Llegué a la finca",
+    arriveAtStore: "Llegué a la tienda",
     arriveAtClient: "Llegué al Destino",
   },
   ProductList: {

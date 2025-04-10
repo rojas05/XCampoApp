@@ -20,11 +20,12 @@ import {
   BtnCloseSeson,
 } from "../../src/components/ProfileTemplate.jsx";
 import StoreMapPin from "../../src/components/Map/StoreMapPin.jsx";
+import ProfileCalification from "../../src/components/ProfileCalification.jsx";
 /* Funtions */
 import { getSellerById, getSellerID } from "../../services/SellerService.js";
 import { getOtherURLsFromString } from "../../fetch/UseFetch.js";
 import { getCoordinates } from "../../funcions/getCoordinates.js";
-import ProfileCalification from "../../src/components/ProfileCalification.jsx";
+import { formatPrice } from "../../src/utils/constants.js";
 
 const SellerProfile = ({ route }) => {
   const { idUser } = route.params || {};
@@ -42,6 +43,7 @@ const SellerProfile = ({ route }) => {
       "Bienvenidos a Tienda Ejemplo, donde podrás encontrar una variedad de productos de alta calidad a precios accesibles.",
     rating: 4,
     salesTotal: 2500,
+    totalEarnings: 0,
   });
   const [loading, setLoading] = useState(null);
 
@@ -63,6 +65,7 @@ const SellerProfile = ({ route }) => {
           name_store: data.name_store || prevData.name_store,
           location: data.location || prevData.location,
           description: data.location_description || prevData.description,
+          totalEarnings: data.totalEarnings || prevData.totalEarnings,
         }));
 
         setPhotos(getOtherURLsFromString(data.img));
@@ -108,7 +111,9 @@ const SellerProfile = ({ route }) => {
           <FontAwesome5 name="money-bill-wave-alt" size={24} color="black" />{" "}
           Ganancias del Mes:
         </Text>
-        <Text style={styles.amount}>$5,230.50</Text>
+        <Text style={styles.amount}>
+          ${formatPrice(sellerData.totalEarnings)}
+        </Text>
       </View>
 
       <View style={styles.card}>
@@ -245,7 +250,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   image: {
+    borderColor: theme.colors.greyMedium,
     borderRadius: 10,
+    borderWidth: 2,
     height: 100,
     marginHorizontal: 10,
     width: 150,

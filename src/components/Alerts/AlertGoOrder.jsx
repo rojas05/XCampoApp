@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Animated,
-} from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
 import theme from "../../theme/theme";
@@ -16,7 +10,7 @@ const AlertGoOrder = ({ order, isVisible }) => {
   const navigation = useNavigation();
   const starPointDestiny = order.starPointSeller;
   const stops = order.orders;
-  console.log(JSON.stringify(stops));
+  //console.log(JSON.stringify(stops));
 
   const totalAmountProducts = stops.reduce((acc, order) => {
     acc[order.idDelivery] =

@@ -80,8 +80,26 @@ export async function updateSellerImage(Urlimage, idSeller) {
 
     if (response.ok) return result;
     else throw new Error("Error al subir imagen." + result);
+    //
   } catch (error) {
     console.error("Error al subir imagen", error.message);
     return error;
+  }
+}
+
+export async function updateAddEarnings(idSeller, earnings) {
+  const endpoint = `${API_URL}seller/addEarnings/${idSeller}?addTotal=${earnings}`;
+
+  try {
+    const response = await fetchWithToken(endpoint, { method: "PATCH" });
+    let result = await response.json();
+
+    if (!response.ok)
+      throw new Error(
+        "No se puedo actualizar las ganacias: " + JSON.stringify(result),
+      );
+  } catch (error) {
+    console.error("Error fetching update earnings:", error);
+    // throw error;
   }
 }

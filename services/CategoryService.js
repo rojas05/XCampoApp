@@ -28,3 +28,20 @@ export async function postCategory(categoria) {
     console.error("Error fetching category:", error);
   }
 }
+
+export async function searchCategories(query) {
+  const endpoint = `${API_URL}category/search/${query}`;
+
+  try {
+    const response = await fetchWithToken(endpoint, { method: "GET" });
+    if (response.status === 302) {
+      const data = await response.json();
+      return Array.isArray(data) ? data : [data];
+    }
+
+    return [];
+  } catch (error) {
+    console.error("Error searching categories:", error);
+    return [];
+  }
+}

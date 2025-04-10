@@ -14,6 +14,7 @@ const theme = {
     greenMedium: "#98d187",
     green: "#42aa21",
     yellow: "#f9ba00",
+    yellowLight: "#fcd34df9",
     grey: "#f4f5ed",
     greyMedium: "#ccc",
     greyBlack: "#888",

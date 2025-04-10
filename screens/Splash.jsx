@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import * as SecureStore from "expo-secure-store";
+import { getInfoUserId } from "../services/UserService";
 
 import API_URL from "../fetch/ApiConfig.js";
 import theme from "../src/theme/theme.js";
@@ -24,12 +26,25 @@ const Splash = () => {
   const [idUser, setIdUser] = useState("");
 
   useEffect(() => {
+    const checkAndFetchUserInfo = async () => {
+      try {
+        const userInfo = await SecureStore.getItemAsync("userInfo");
+        if (!userInfo) {
+          await getInfoUserId();
+        }
+      } catch (error) {
+        console.error("Error al verificar/obtener userInfo:", error);
+      }
+    };
+
     getTokenMain();
+    checkAndFetchUserInfo();
   }, [getTokenMain]);
 
   const getTokenMain = useCallback(async () => {
     try {
       const idStorage = await getToken("id"); // Espera a que se resuelva el token
+
       if (idStorage != null) {
         getUserData(idStorage);
         registerForPushNotificationsAsync(idStorage);
@@ -61,7 +76,6 @@ const Splash = () => {
         } else {
           const jsonObject = JSON.parse(JSON.stringify(data));
           const valuesList = Object.values(jsonObject);
-          console.log(valuesList);
           setRoles(valuesList);
         }
       }

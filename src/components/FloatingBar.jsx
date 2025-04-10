@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,35 +9,55 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
-import theme from "../theme/theme";
+import * as SecureStore from "expo-secure-store";
 
-const FloatingBar = ({ profileImage, userName }) => {
+import theme from "../theme/theme";
+import { getMunicipioByDepartament } from "../../services/FireBaseService";
+
+const FloatingBar = ({
+  profileImage,
+  userName,
+  onCitiesChange,
+  selectedCities,
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [search, setSearch] = useState("");
-  const [selectedCities, setSelectedCities] = useState([]);
+  const [cities, setCities] = useState([]);
 
-  const cities = [
-    "Bogotá",
-    "Medellín",
-    "Cali",
-    "Barranquilla",
-    "Cartagena",
-    "Bucaramanga",
-    "Manizales",
-    "Pereira",
-  ];
+  useEffect(() => {
+    const fetchCities = async () => {
+      try {
+        const userInfo = await SecureStore.getItemAsync("userInfo");
+        const { department } = JSON.parse(userInfo);
+
+        const cityNames = await getMunicipioByDepartament(department);
+        setCities(cityNames);
+      } catch (error) {
+        console.error("Error fetching al encontar los municipios:", error);
+      }
+    };
+
+    fetchCities();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (onCitiesChange) {
+      onCitiesChange(selectedCities);
+    }
+  }, [selectedCities, onCitiesChange]);
 
   const handleCitySelect = (city) => {
     if (selectedCities.includes(city)) {
-      setSelectedCities(selectedCities.filter((c) => c !== city));
+      onCitiesChange(selectedCities.filter((c) => c !== city));
     } else if (selectedCities.length < 3) {
-      setSelectedCities([...selectedCities, city]);
+      onCitiesChange([...selectedCities, city]);
     }
   };
 
-  const filteredCities = cities.filter((city) =>
-    city.toLowerCase().includes(search.toLowerCase()),
-  );
+  const filteredCities = Array.isArray(cities)
+    ? cities.filter((city) => city.toLowerCase().includes(search.toLowerCase()))
+    : [];
 
   return (
     <View style={styles.container}>
@@ -49,28 +69,36 @@ const FloatingBar = ({ profileImage, userName }) => {
             value={search}
             onChangeText={(text) => setSearch(text)}
           />
-          <FlatList
-            data={filteredCities}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={[
-                  styles.cityItem,
-                  selectedCities.includes(item) && styles.selectedCity,
-                ]}
-                onPress={() => handleCitySelect(item)}
-              >
-                <Text
+          {filteredCities.length === 0 ? (
+            <Text style={styles.notFoundText}>
+              No se encontraron municipios con ese nombre
+            </Text>
+          ) : (
+            <FlatList
+              data={filteredCities}
+              keyExtractor={(item) => item}
+              renderItem={({ item }) => (
+                <TouchableOpacity
                   style={[
-                    styles.cityText,
-                    selectedCities.includes(item) && styles.selectedCityText,
+                    styles.cityItem,
+                    selectedCities.includes(item) && styles.selectedCity,
                   ]}
+                  onPress={() => handleCitySelect(item)}
                 >
-                  {item}
-                </Text>
-              </TouchableOpacity>
-            )}
-          />
+                  <Text
+                    style={[
+                      styles.cityText,
+                      selectedCities.includes(item) && styles.selectedCityText,
+                    ]}
+                  >
+                    {item}
+                  </Text>
+                </TouchableOpacity>
+              )}
+              style={styles.citiesList}
+              contentContainerStyle={styles.listContent}
+            />
+          )}
           <Text style={styles.selectedText}>
             Seleccionadas: {selectedCities.join(", ")}
           </Text>
@@ -78,7 +106,14 @@ const FloatingBar = ({ profileImage, userName }) => {
       )}
 
       <View style={styles.floatingBar}>
-        <Image source={{ uri: profileImage }} style={styles.profileImage} />
+        <Image
+          source={
+            typeof profileImage === "string" && profileImage.startsWith("https")
+              ? { uri: profileImage }
+              : profileImage
+          }
+          style={styles.profileImage}
+        />
         <View style={styles.textContainer}>
           <Text style={styles.welcomeText}>Hola, {userName}</Text>
           <View style={styles.statusContainer}>
@@ -104,6 +139,9 @@ const FloatingBar = ({ profileImage, userName }) => {
 const styles = StyleSheet.create({
   arrowButton: {
     padding: 5,
+  },
+  citiesList: {
+    maxHeight: 240,
   },
   cityItem: {
     borderColor: theme.colors.black,
@@ -136,8 +174,20 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 4,
   },
+  listContent: {
+    paddingBottom: 10,
+  },
+  notFoundText: {
+    color: theme.colors.black,
+    fontSize: 16,
+    fontStyle: "italic",
+    marginVertical: 10,
+    textAlign: "center",
+  },
   profileImage: {
+    borderColor: theme.colors.black,
     borderRadius: 25,
+    borderWidth: 1,
     height: 50,
     marginRight: 10,
     width: 50,
@@ -181,7 +231,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   statusDot: {
-    backgroundColor: theme.colors.green,
+    backgroundColor: theme.colors.greenMedium,
     borderRadius: 7.5,
     height: 15,
     marginRight: 6,

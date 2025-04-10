@@ -34,6 +34,7 @@ import {
   updateProductImage,
   updateProductId,
 } from "../../services/productService";
+import { searchCategories } from "../../services/CategoryService";
 
 import { validateForm } from "./js/ValidationForm";
 import theme from "../../src/theme/theme";
@@ -42,7 +43,7 @@ import { getOtherURLsFromString } from "../../fetch/UseFetch";
 const UNIDADES = [
   { label: "KILOGRAMO", value: "KILOGRAMO" },
   { label: "LITRO", value: "LITRO" },
-  { label: "MetGRAMOro", value: "GRAMO" },
+  { label: "GRAMO", value: "GRAMO" },
   { label: "ARROBA", value: "ARROBA" },
   { label: "LIBRA", value: "LIBRA" },
 ];
@@ -63,6 +64,9 @@ const RegisterProducts = ({ route, navigation }) => {
     stock: "",
   });
   const [loading, setLoading] = useState(false);
+  const [categorySuggestions, setCategorySuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
   useEffect(() => {
     if (product) {
@@ -75,6 +79,7 @@ const RegisterProducts = ({ route, navigation }) => {
         productPrice: product.price,
         stock: product.stock.toString(),
       });
+      setSelectedCategoryId(product.categoryId);
       setImagen(getOtherURLsFromString(product.urlImage));
     } else {
       setIsEditing(false);
@@ -86,12 +91,33 @@ const RegisterProducts = ({ route, navigation }) => {
     setErrors((prev) => ({ ...prev, [field]: null }));
   };
 
-  async function createNewProduct() {
-    const { show, idProduct } = await createProduct(form, idSeller);
+  const handleCategorySearch = async (text) => {
+    handleInputChange("categoria", text);
+    setShowSuggestions(false);
+
+    if (text.length > 2) {
+      const results = await searchCategories(text);
+      if (results.length > 0) {
+        setCategorySuggestions(results);
+        setShowSuggestions(true);
+      }
+    }
+  };
+
+  const selectCategory = (category) => {
+    handleInputChange("categoria", category.name);
+    setSelectedCategoryId(category.id_category);
+    setShowSuggestions(false);
+  };
+
+  async function createNewProduct(formData) {
+    const { show, idProduct } = await createProduct(formData, idSeller);
     const imageUrl = await postImageFirebase(imagen, idProduct);
+
     if (imageUrl) {
       await updateProductImage(imageUrl, idProduct, idSeller);
     }
+
     if (show) {
       setAlertOkVisible(true);
       setImagen([]);
@@ -99,13 +125,13 @@ const RegisterProducts = ({ route, navigation }) => {
     }
   }
 
-  async function updateProduct() {
+  async function updateProduct(categoriaId) {
     const imageUrl = await postImageFirebase(imagen, product.idProduct);
     const show = await updateProductId(
       form,
       product.idProduct,
       idSeller,
-      product.categoryId,
+      categoriaId,
       imageUrl,
     );
     if (show) setAlertOkVisible(true);
@@ -113,12 +139,18 @@ const RegisterProducts = ({ route, navigation }) => {
 
   const handleSubmit = async () => {
     const isValid = await validateForm(form, imagen, setErrors);
+
+    const formData = {
+      ...form,
+      categoria: selectedCategoryId || form.categoria,
+    };
+
     if (isValid) {
       setLoading(true);
       if (isEditing) {
-        await updateProduct();
+        await updateProduct(formData.categoria);
       } else {
-        await createNewProduct();
+        await createNewProduct(formData);
       }
       setLoading(false);
     }
@@ -185,6 +217,10 @@ const RegisterProducts = ({ route, navigation }) => {
         formatPrice={formatPrice}
         incrementarStock={incrementarStock}
         handleAddImage={handleAddImage}
+        handleCategorySearch={handleCategorySearch}
+        showSuggestions={showSuggestions}
+        categorySuggestions={categorySuggestions}
+        selectCategory={selectCategory}
       />
 
       <StyledButton
@@ -246,6 +282,10 @@ const FormInputs = ({
   formatPrice,
   incrementarStock,
   handleAddImage,
+  handleCategorySearch,
+  showSuggestions,
+  categorySuggestions,
+  selectCategory,
 }) => (
   <>
     <View style={styles.inputContainer}>
@@ -256,12 +296,28 @@ const FormInputs = ({
           onChangeText={(value) => handleInputChange("productName", value)}
           errorMessage={errors.productName}
         />
-        <CustomInput
-          value={form.categoria}
-          placeholder="Categoría"
-          onChangeText={(value) => handleInputChange("categoria", value)}
-          errorMessage={errors.categoria}
-        />
+        <View>
+          <CustomInput
+            value={form.categoria}
+            placeholder="Categoría"
+            onChangeText={handleCategorySearch}
+            errorMessage={errors.categoria}
+          />
+
+          {showSuggestions && categorySuggestions.length > 0 && (
+            <View style={styles.suggestionsContainer}>
+              {categorySuggestions.map((category, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.suggestionItem}
+                  onPress={() => selectCategory(category)}
+                >
+                  <Text>{category.name}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+        </View>
       </View>
       <TouchableOpacity style={styles.iconButton} onPress={handleAddImage}>
         <AntDesign name="picture" size={35} color="black" />
@@ -368,6 +424,22 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     flexDirection: "row",
     justifyContent: "center",
+  },
+  suggestionItem: {
+    borderBottomColor: theme.colors.whiteMedium,
+    borderBottomWidth: 1,
+    padding: 10,
+  },
+  suggestionsContainer: {
+    backgroundColor: theme.colors.whiteMedium,
+    borderColor: theme.colors.greyMedium,
+    borderRadius: 5,
+    borderWidth: 1,
+    left: 0,
+    position: "absolute",
+    right: 0,
+    top: 55,
+    zIndex: 100,
   },
   title: {
     fontSize: 30,

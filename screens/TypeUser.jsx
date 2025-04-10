@@ -18,21 +18,11 @@ import RoleForm from "../src/components/RoleForm";
 import { getSavedLocation } from "../funcions/getCoordinates";
 
 const useRoles = (initialRoles) => {
-  const [roles, setRoles] = useState({
-    seller: true,
-    deliveryMan: true,
-    client: true,
-  });
-
-  useEffect(() => {
-    setRoles({
-      seller: !initialRoles.includes("SELLER"),
-      deliveryMan: !initialRoles.includes("DELIVERYMAN"),
-      client: !initialRoles.includes("CLIENT"),
-    });
-  }, [initialRoles]);
-
-  return roles;
+  return {
+    seller: !initialRoles.includes("SELLER"),
+    deliveryMan: !initialRoles.includes("DELIVERYMAN"),
+    client: !initialRoles.includes("CLIENT"),
+  };
 };
 
 const TypeUser = () => {
@@ -135,12 +125,13 @@ const TypeUser = () => {
           };
           break;
         case "DELIVERYMAN":
-          data = { id_seller: null, rute: formData.routeDelivery };
+          data = { id_deliveryMan: null, rute: formData.routeDelivery };
           break;
         case "CLIENT":
           data = {
-            id_seller: null,
+            id_client: null,
             name: formData.nameClient,
+            location_destiny: JSON.stringify(formData.coordinates),
             location_description: formData.indicationsClient,
           };
           break;
@@ -151,6 +142,7 @@ const TypeUser = () => {
 
       try {
         const idRoles = await setRol(rol, idUser);
+
         if (idRoles) {
           await setRolData(
             rol.toLowerCase(),

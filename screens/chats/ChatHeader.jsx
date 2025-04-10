@@ -5,7 +5,7 @@ import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { STATUSBAR_HEIGHT } from "../../src/utils/constants.js";
 import theme from "../../src/theme/theme.js";
 
-const ChatHeader = ({ navigation }) => {
+const ChatHeader = ({ navigation, clientName = "Chat" }) => {
   return (
     <View style={styles.header}>
       <View style={styles.leftSection}>
@@ -18,19 +18,19 @@ const ChatHeader = ({ navigation }) => {
 
         <View style={styles.profileContainer}>
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>G</Text>
+            <Text style={styles.avatarText}>Chat</Text>
           </View>
           <View>
-            <Text style={styles.title}>Granja Campesina</Text>
+            <Text style={styles.title}>{clientName}</Text>
             <Text style={styles.status}>Espera tu mensaje</Text>
             {/* <Text style={styles.status}>En línea</Text> */}
           </View>
         </View>
       </View>
 
-      <TouchableOpacity style={styles.iconButton}>
+      {/* <TouchableOpacity style={styles.iconButton}>
         <MaterialIcons name="more-vert" size={24} />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };

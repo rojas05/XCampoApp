@@ -63,7 +63,7 @@ const MapComponent = ({
         color={theme.colors.red}
         onPress={() => {}}
         title={"Tu Ubicacion"}
-        iconName="car-side"
+        iconName="truck"
       />
 
       <Circle
@@ -98,7 +98,12 @@ const MarkerComponent = ({
     description={description}
     onPress={onPress}
   >
-    <FontAwesome5 name={iconName} size={25} color={color} />
+    <FontAwesome5
+      name={iconName}
+      size={25}
+      color={color}
+      style={styles.iconBorder}
+    />
   </Marker>
 );
 
@@ -124,6 +129,11 @@ const StoreMarkers = ({ data, coordinates, colorMaker, onPress }) => {
 };
 
 const styles = StyleSheet.create({
+  iconBorder: {
+    textShadowColor: theme.colors.black,
+    textShadowOffset: { width: -1.5, height: -1 },
+    textShadowRadius: 1,
+  },
   map: {
     height: "100%",
     width: "100%",

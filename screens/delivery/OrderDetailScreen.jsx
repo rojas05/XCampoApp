@@ -3,11 +3,14 @@ import {
   View,
   StyleSheet,
   FlatList,
-  Alert,
   Text,
+  Alert,
   BackHandler,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+
+import { useRoutes } from "../delivery/context/RoutesContext";
+import { updateStateDeliveryProducts } from "../../services/DeliveryProduct";
 
 import Header from "../../src/components/HeaderCustomer";
 import OrderInfo from "../../src/components/OrderComponents/OrderInfo";
@@ -19,6 +22,7 @@ import theme from "../../src/theme/theme";
 
 const OrderDetailScreen = ({ route }) => {
   const navigation = useNavigation();
+  const { markRouteAsCompleted } = useRoutes();
   const { order, context } = route.params || {};
   const [isPaid, setIsPaid] = useState(false);
   const ordersList = order || [];
@@ -72,25 +76,38 @@ const OrderDetailScreen = ({ route }) => {
     navigation.goBack();
   };
 
-  const handleAcceptOrder = () => {
+  const handleAcceptOrder = async () => {
     if (!isPaid) {
       Alert.alert("Pago pendiente", "No se ha pagado la orden.", [
         { text: "OK" },
       ]);
       return;
     }
-    const destinyClientsStack = [];
 
-    ordersList.forEach((element) => {
-      if (element.destinyClient)
-        destinyClientsStack.push(element.destinyClient);
-    });
+    const destinyClientsStack = ordersList
+      .filter((element) => element.destinyClient)
+      .map((element) => element.destinyClient);
 
-    navigation.navigate("MapOrderDeliveryScreen", {
-      destinyClients: destinyClientsStack,
-      context: "client",
-      orders: ordersList,
-    });
+    if (context === "deliveredNotification") {
+      markRouteAsCompleted(ordersList);
+      handleBackPress();
+    } else {
+      navigation.navigate("MapOrderDeliveryScreen", {
+        destinyClients: destinyClientsStack,
+        context: "client",
+        orders: ordersList,
+      });
+    }
+
+    try {
+      await Promise.all(
+        ordersList.map((stop) =>
+          updateStateDeliveryProducts(stop.idDelivery, "RECOGIDO"),
+        ),
+      );
+    } catch (error) {
+      console.error("Error al actualizar el estado de las órdenes:", error);
+    }
   };
 
   return (

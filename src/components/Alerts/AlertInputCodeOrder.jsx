@@ -37,9 +37,16 @@ const useForm = (initialState) => {
   };
 };
 
-const AlertInputCodeOrder = ({ navigation, isVisible, closeModal }) => {
+const AlertInputCodeOrder = ({
+  navigation,
+  isVisible,
+  closeModal,
+  sellerName,
+  context = "MapOrderDeliveryScreen",
+}) => {
   const [deliveryOrder, setDeliveryOrder] = useState([]);
   const [okMessage, setOkMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Nuevo estado para el loading
   const { form, errors, handleInputChange, validateForm, setErrors, setForm } =
     useForm({
       code: "",
@@ -68,6 +75,8 @@ const AlertInputCodeOrder = ({ navigation, isVisible, closeModal }) => {
         setErrors((prev) => ({ ...prev, code: "Error al obtener la orden" }));
         console.error("Error al obtener la orden: " + error);
         return null;
+      } finally {
+        setIsLoading(false); // Desactivar loading al finalizar
       }
     },
     [deliveryOrder, setErrors],
@@ -77,7 +86,10 @@ const AlertInputCodeOrder = ({ navigation, isVisible, closeModal }) => {
     if (deliveryOrder.length > 0) {
       navigation.navigate("OrderDetail", {
         order: deliveryOrder,
-        context: "MapOrderDeliveryScreen",
+        context:
+          context !== "MapOrderDeliveryScreen"
+            ? "deliveredNotification"
+            : context,
       });
       closeModal();
     } else {
@@ -96,13 +108,18 @@ const AlertInputCodeOrder = ({ navigation, isVisible, closeModal }) => {
 
     if (!validateForm()) return;
 
-    const getIdOrder = deCodeGenerateDelivery(form.code, setErrors);
-    if (!getIdOrder) return;
+    setIsLoading(true); // Activar loading al iniciar
+    try {
+      const getIdOrder = deCodeGenerateDelivery(form.code, setErrors);
+      if (!getIdOrder) return;
 
-    const order = await getOrder(getIdOrder);
-    if (!order) return;
+      const order = await getOrder(getIdOrder);
+      if (!order) return;
 
-    setForm({ code: "" });
+      setForm({ code: "" });
+    } finally {
+      setIsLoading(false); // Desactivar loading al finalizar
+    }
   }, [form.code, getOrder, setErrors, validateForm, setForm]);
 
   return (
@@ -114,7 +131,9 @@ const AlertInputCodeOrder = ({ navigation, isVisible, closeModal }) => {
     >
       <View style={theme.overlay}>
         <View style={styles.modalContainer}>
-          <Text style={styles.text}>Introduce el código de la finca</Text>
+          <Text style={styles.text}>
+            Introduce el código de la tienda {sellerName}
+          </Text>
           <CustomInput
             value={form.code.toUpperCase()}
             placeholder="Ingresa código de verificación"
@@ -137,6 +156,7 @@ const AlertInputCodeOrder = ({ navigation, isVisible, closeModal }) => {
                   : "Confirmar"
             }
             onPress={form.code.trim() ? handleConfirm : handleNavigation}
+            disabled={isLoading}
           />
         </View>
       </View>

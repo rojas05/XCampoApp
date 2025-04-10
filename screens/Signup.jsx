@@ -47,18 +47,17 @@ const Signup = () => {
     if (!cell) errors.cell = string.Signup.errors.cell;
     if (!password) errors.password = string.Signup.errors.password;
     if (password.length < 8) errors.password = string.Signup.errors.password;
-    //if (!mail) errors.mail = string.Signup.errors.mail;
-    //if (!city) errors.city = string.Signup.errors.city;
+    if (!mail) errors.mail = string.Signup.errors.mail;
+    if (!city) errors.city = string.Signup.errors.city;
 
     setErrors(errors);
 
     if (Object.keys(errors).length === 0) {
       const endpoint = "auth/register";
       const requestBody = {
-        user_id: null,
         name: name,
-        //department: department,
-        //city: city,
+        department: department,
+        city: city,
         cell: cell,
         email: mail,
         password: password,
@@ -109,18 +108,16 @@ const Signup = () => {
     }
 
     if (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
   async function InitGetCitys(department) {
-    console.log("Get municipio " + department);
     setDepartment(department.nombre);
     const endpoint = "firebase/municipios/";
     const { data, error } = await getData(endpoint + department.id);
 
     if (data) {
-      console.log(data);
       setCitys(data);
     }
 

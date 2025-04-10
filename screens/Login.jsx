@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
+import * as SecureStore from "expo-secure-store";
 import { useNavigation } from "@react-navigation/native";
 import { Mail, PasswordCheck } from "iconoir-react-native";
 
@@ -54,7 +55,10 @@ const Login = () => {
 
         if (data.statusCode === "OK") {
           try {
-            await saveToken("id", data.body.id_user);
+            await SecureStore.setItemAsync(
+              "id_user",
+              data.body.id_user.toString(),
+            );
             await saveToken("accessToken", data.body.token);
             await saveToken("refreshToken", data.body.refreshToken);
           } catch (e) {

@@ -31,6 +31,10 @@ const OrderAlertCodeDelivery = ({ visible, code, onClose }) => {
           ))}
         </View>
 
+        <Text style={styles.noteText}>
+          Recuerda marcar la orden con su número de pedido y nombre de cliente
+        </Text>
+
         <StyledButton green onPress={onClose} title="Cerrar Orden" />
       </View>
     </View>
@@ -72,6 +76,14 @@ const styles = StyleSheet.create({
     fontSize: 17,
     marginBottom: 15,
     paddingHorizontal: 10,
+    textAlign: "center",
+  },
+  noteText: {
+    color: theme.colors.greyDark,
+    fontSize: 14,
+    fontStyle: "italic",
+    marginBottom: 8,
+    marginTop: 8,
     textAlign: "center",
   },
   overlay: {
