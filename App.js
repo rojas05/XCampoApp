@@ -1,5 +1,6 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
+import { StatusBar } from "expo-status-bar";
 
 import MainStack from "./navigation/MainStack";
 import BottomTabClient from "./navigation/BottomNabClient";
@@ -10,6 +11,7 @@ export default function App() {
   return (
     <RoutesProvider>
       <NavigationContainer ref={navigationRef}>
+        <StatusBar style="light" hidden={true} translucent={true} />
         <MainStack>
           <BottomTabClient></BottomTabClient>
         </MainStack>

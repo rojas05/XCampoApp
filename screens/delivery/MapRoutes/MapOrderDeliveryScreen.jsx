@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { View, StyleSheet, Text, ActivityIndicator } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  ActivityIndicator,
+  BackHandler,
+  Alert,
+} from "react-native";
 import { useRoute, useFocusEffect } from "@react-navigation/native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
@@ -118,6 +125,22 @@ const MapOrderDeliveryScreen = ({ navigation }) => {
       return () => stopTrackingLocation();
     }, []),
   );
+
+  useEffect(() => {
+    const handleBackPress = () => {
+      Alert.alert(
+        "Acción no permitida",
+        "No se puede regresar, ya que esto comprometería los datos.",
+        [{ text: "OK" }],
+      );
+      return true;
+    };
+
+    BackHandler.addEventListener("hardwareBackPress", handleBackPress);
+
+    return () =>
+      BackHandler.removeEventListener("hardwareBackPress", handleBackPress);
+  }, []);
 
   const handleButtonPress = useCallback(async () => {
     if (context === "seller") {

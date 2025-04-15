@@ -41,6 +41,8 @@ export const setRolData = async (
       data = { ...data, img: imageUrl };
     }
 
+    console.log("Data insert rol: ", response);
+
     navigation.navigate("Splash");
   } catch (error) {
     console.error("Error en setRolData:", error);

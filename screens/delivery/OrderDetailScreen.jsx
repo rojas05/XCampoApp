@@ -129,10 +129,12 @@ const OrderDetailScreen = ({ route }) => {
           totalCost={totalCost}
           totalToPay={totalCost + totalDeliveryCost}
         />
+
         {!isPaid && (
           <Text style={styles.warningText}>No se ha pagado la orden</Text>
         )}
         <PaymentSwitch isPaid={isPaid} setIsPaid={setIsPaid} />
+
         <StyledButton
           green
           title="Aceptar pedido"

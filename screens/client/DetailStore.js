@@ -24,9 +24,7 @@ import StyledItemProductStore from "../../src/styles/StyledItemProductStore";
 
 const DetailStore = () => {
   const route = useRoute();
-
-  const { idStore } = route.params;
-  const { idClient } = route.params;
+  const { idStore, idClient } = route.params;
 
   const [store, setStore] = useState({});
   const [storeProducts, setProductsStore] = useState([]);
@@ -70,11 +68,12 @@ const DetailStore = () => {
         },
         body: JSON.stringify(requestBody),
       });
+      const data = await response.json();
+
       if (response.ok) {
-        const data = await response.json();
         setData(data);
       } else {
-        console.log(response);
+        console.warn(data);
       }
     } catch (error) {
       console.error(error);
@@ -86,7 +85,7 @@ const DetailStore = () => {
       clientId: idClient,
       dateAdded: dateTimeFormat(),
     };
-    console.log(requestBodyCart);
+    console.log("[Detail Store] Create cart: ", requestBodyCart);
     postDataAPI(`${API_URL}ShoppingCart/add`, requestBodyCart, setCart);
   }
 
@@ -97,6 +96,7 @@ const DetailStore = () => {
       quantity: 1,
       unitPrice: item.price,
     };
+
     postDataAPI(`${API_URL}cartItem`, requestBody, setItem);
     createCart();
   }

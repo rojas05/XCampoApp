@@ -10,7 +10,6 @@ const AlertGoOrder = ({ order, isVisible }) => {
   const navigation = useNavigation();
   const starPointDestiny = order.starPointSeller;
   const stops = order.orders;
-  //console.log(JSON.stringify(stops));
 
   const totalAmountProducts = stops.reduce((acc, order) => {
     acc[order.idDelivery] =
@@ -20,7 +19,7 @@ const AlertGoOrder = ({ order, isVisible }) => {
   }, {});
 
   const onPressAcept = () => {
-    navigation.navigate("MapOrderDeliveryScreen", {
+    navigation.replace("MapOrderDeliveryScreen", {
       destinySeller: { starPointDestiny },
       context: "seller",
     });

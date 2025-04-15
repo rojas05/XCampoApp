@@ -169,7 +169,7 @@ const TypeUser = () => {
         case "CLIENT":
           data = {
             name: formData.nameClient,
-            location_destiny: JSON.stringify(formData.coordinates),
+            locationDestiny: JSON.stringify(formData.coordinates),
             location_description: formData.indicationsClient,
           };
           break;

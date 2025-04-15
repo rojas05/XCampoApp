@@ -26,9 +26,13 @@ import { getSellerById, getSellerID } from "../../services/SellerService.js";
 import { getOtherURLsFromString } from "../../fetch/UseFetch.js";
 import { getCoordinates } from "../../funcions/getCoordinates.js";
 import { formatPrice } from "../../src/utils/constants.js";
+import { useNavigation } from "@react-navigation/native";
+import { clearData } from "../../tokenStorage.js";
 
 const SellerProfile = ({ route }) => {
   const { idUser } = route.params || {};
+  const navigation = useNavigation();
+
   const [photos, setPhotos] = useState([]);
   const [initialRegion, setInitialRegion] = useState(null);
   const [sellerData, setSellerData] = useState({
@@ -104,7 +108,7 @@ const SellerProfile = ({ route }) => {
         <ImageSelector images={photos} />
       </View>
 
-      <ProfileCalification />
+      {/* <ProfileCalification /> */}
 
       <View style={styles.card}>
         <Text style={styles.cardTitle}>
@@ -127,10 +131,15 @@ const SellerProfile = ({ route }) => {
       </View>
 
       <BtnEdit
-        onEditProfile={() => alert("Editar perfil")}
-        onChangeRole={() => alert("Cambiar rol")}
+        //onEditProfile={() => alert("Editar perfil")}
+        onChangeRole={() => navigation.navigate("Splash")}
       />
-      <BtnCloseSeson onLogout={() => alert("Cerrar sesión")} />
+      <BtnCloseSeson
+        onLogout={() => {
+          clearData();
+          navigation.replace("Hello");
+        }}
+      />
     </ScrollView>
   );
 };

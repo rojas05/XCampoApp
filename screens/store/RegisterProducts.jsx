@@ -331,7 +331,7 @@ const FormInputs = ({
       errorMessage={errors.productDescription}
       multiline
       numberOfLines={4}
-      style={{ height: 100 }}
+      style={{ height: 100, paddingTop: 10 }}
     />
 
     <CustomPicker

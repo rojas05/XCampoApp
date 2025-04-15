@@ -48,7 +48,6 @@ const HomeClient = () => {
 
   async function init() {
     const idUser = await getToken("id");
-    console.log(idUser);
     getDateAPI(`${API_URL}client/idUser/${idUser}`, setIdClient);
     getDateAPI(`${API_URL}ShoppingCart/id/${idUser}`, setCart);
     getCityUser();
@@ -79,6 +78,7 @@ const HomeClient = () => {
       console.error(error);
     }
   }
+
   const getDateAPINoToken = useCallback(async (url, setDate) => {
     try {
       const { data, error } = await getData(url);
@@ -99,11 +99,12 @@ const HomeClient = () => {
       const response = await fetchWithToken(url, {
         method: "GET",
       });
+      const data = await response.json();
 
       if (response.ok) {
-        const data = await response.json();
         setDate(data);
       } else {
+        console.warn(JSON.stringify(response));
         setDate(null);
       }
     } catch (error) {

@@ -1,13 +1,11 @@
 import React from "react";
-import { View, Text, StyleSheet, Alert, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons"; // Asegúrate de tener MaterialIcons instalado
 import theme from "../theme/theme";
 
-const handleSupportPress = () => {
-  Alert.alert("Soporte", "¿Cómo podemos ayudarte?");
-};
-
 const Header = ({ title, onBackPress }) => {
+  const navigation = useNavigation();
   return (
     <View style={styles.headerContainer}>
       {/* Botón de atrás */}
@@ -16,7 +14,7 @@ const Header = ({ title, onBackPress }) => {
       </TouchableOpacity>
       <Text style={styles.headerTitle}>{title}</Text>
       {/* Botón de soporte */}
-      <TouchableOpacity onPress={handleSupportPress}>
+      <TouchableOpacity onPress={() => navigation.navigate("Support")}>
         <MaterialIcons name="support-agent" size={30} color="#000" />
       </TouchableOpacity>
     </View>

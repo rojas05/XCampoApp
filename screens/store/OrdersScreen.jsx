@@ -160,6 +160,7 @@ const OrdersScreen = ({ route, navigation }) => {
 
           <OrderList
             orders={orders.filter((o) => o.state === activeTab)}
+            idSeller={idSeller}
             navigation={navigation}
             productDetails={productDetails}
             setAlertVisible={setAlertVisible}

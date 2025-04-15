@@ -66,12 +66,10 @@ export async function getDeliveryProductsStateMaps(municipio) {
 
   try {
     const response = await fetchWithToken(endpoint, { method: "GET" });
-    let result = await response.json();
+    let result = await response.text();
 
     if (!response.ok)
-      throw new Error(
-        "No se pudo obtener los envios disponbles, " + JSON.stringify(result),
-      );
+      throw new Error("No se pudo obtener los envios disponbles, " + result);
 
     return result;
   } catch (error) {

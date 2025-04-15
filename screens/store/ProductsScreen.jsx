@@ -25,6 +25,8 @@ import {
 } from "../../services/productService.js";
 import { getSellerID } from "../../services/SellerService.js";
 import { getFirstURLFromString } from "../../fetch/UseFetch.js";
+import SalesAlert from "../../src/components/Alerts/SalesAlert.jsx";
+import { getSalesProducts } from "../../services/OrdersService.js";
 
 const ProductsScreen = ({ route, navigation }) => {
   const { idUser } = route.params || {};
@@ -35,6 +37,9 @@ const ProductsScreen = ({ route, navigation }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [idSeller, setIdSeller] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredProducts, setFilteredProducts] = useState(products);
 
   useEffect(() => {
     const fetchSellerID = async () => {
@@ -78,10 +83,6 @@ const ProductsScreen = ({ route, navigation }) => {
     });
   };
 
-  const handleSales = () => {
-    alert("Ver ventas del producto");
-  };
-
   const handleDelete = async (productId) => {
     try {
       await deleteProductId(productId, idSeller);
@@ -103,6 +104,27 @@ const ProductsScreen = ({ route, navigation }) => {
     }
   };
 
+  const handleShowSales = async (product) => {
+    setSelectedProduct({
+      name: product.name,
+      id: product.idProduct,
+      totalSales: await getSalesProducts(product.idProduct),
+    });
+  };
+
+  const handleSearch = (text) => {
+    setSearchTerm(text);
+
+    if (text) {
+      const filtered = products.filter((product) =>
+        product.name.toLowerCase().includes(text.toLowerCase()),
+      );
+      setFilteredProducts(filtered);
+    } else {
+      setFilteredProducts(products);
+    }
+  };
+
   return (
     <View style={HOME_STYLES.container}>
       {loading ? (
@@ -112,16 +134,21 @@ const ProductsScreen = ({ route, navigation }) => {
       ) : (
         <>
           <Text style={styles.title}>Productos</Text>
-          <SearchBar />
+
+          <SearchBar
+            placeholder="Buscar productos..."
+            value={searchTerm}
+            onChangeText={handleSearch}
+          />
+
           {products.length < 1 ? (
             <NoDataView dataText="productos" />
-          ) : (
+          ) : filteredProducts.length > 0 ? (
             <FlatList
-              data={products}
+              data={filteredProducts}
               keyExtractor={(item, index) =>
                 item?.idProduct?.toString() || index.toString()
               }
-              // eslint-disable-next-line react-native/no-inline-styles
               contentContainerStyle={{
                 paddingHorizontal: 10,
                 paddingBottom: 85,
@@ -130,7 +157,28 @@ const ProductsScreen = ({ route, navigation }) => {
                 <ProductCard
                   product={item}
                   onEdit={handleEdit}
-                  onSales={handleSales}
+                  onSales={() => handleShowSales(item)}
+                  onDelete={handleDelete}
+                />
+              )}
+            />
+          ) : searchTerm ? (
+            <NoDataView dataText="productos" />
+          ) : (
+            <FlatList
+              data={products}
+              keyExtractor={(item, index) =>
+                item?.idProduct?.toString() || index.toString()
+              }
+              contentContainerStyle={{
+                paddingHorizontal: 10,
+                paddingBottom: 85,
+              }}
+              renderItem={({ item }) => (
+                <ProductCard
+                  product={item}
+                  onEdit={handleEdit}
+                  onSales={() => handleShowSales(item)}
                   onDelete={handleDelete}
                 />
               )}
@@ -152,6 +200,15 @@ const ProductsScreen = ({ route, navigation }) => {
           })
         }
       />
+
+      <SalesAlert
+        visible={!!selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+        productName={selectedProduct?.name || "Producto"}
+        productId={`PDT-${selectedProduct?.id}` || "PDT-012"}
+        totalSales={selectedProduct?.totalSales || 0}
+      />
+
       <OrderAlert
         visible={state.alertConfig.visible}
         type={state.alertConfig.type}

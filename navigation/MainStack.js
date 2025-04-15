@@ -11,6 +11,7 @@ import TypeUser from "../screens/TypeUser";
 import DrawerContent from "../src/components/DrawerContent";
 import Splash from "../screens/Splash";
 import UserProfile from "../screens/UserProfile.jsx";
+import Support from "../screens/support";
 
 // Client
 import BottomTabClient from "./BottomNabClient.js";
@@ -89,6 +90,7 @@ const MainStack = () => {
       <Stack.Screen name="Signup" component={Signup} />
       <Stack.Screen name="TypeUser" component={TypeUser} />
       <Stack.Screen name="UserProfile" component={UserProfile} />
+      <Stack.Screen name="Support" component={Support} />
 
       {/* CLIENT */}
       <Stack.Screen name="IndexClient" component={BottomTabClient} />
