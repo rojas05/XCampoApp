@@ -12,6 +12,7 @@ import { useRoute } from "@react-navigation/native";
 import API_URL from "../fetch/ApiConfig.js";
 import { getData } from "../fetch/UseFetch.js";
 import { fetchWithToken } from "../tokenStorage.js";
+import { getInfoUserId } from "../services/UserService";
 
 import UpdateUserModal from "../src/components/UpdateUserModal.jsx";
 import theme from "../src/theme/theme.js";
@@ -36,7 +37,6 @@ const UserProfile = () => {
 
     if (data) {
       setDepartments(data);
-      console.log(data);
     } else if (error) {
       console.log(error);
     }
@@ -49,7 +49,6 @@ const UserProfile = () => {
     const { data, error } = await getData(endpoint + department);
 
     if (data) {
-      console.log(data);
       setCitys(data);
     }
 
@@ -65,7 +64,6 @@ const UserProfile = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
         setData(data);
         InitGetCitys(data.department);
       } else {
@@ -77,7 +75,7 @@ const UserProfile = () => {
     }
   }, []);
 
-  const handleUpdateUser = (updatedUser) => {
+  const handleUpdateUser = async (updatedUser) => {
     setUser(updatedUser);
     setModalVisible(false);
     const requestBody = {
@@ -90,20 +88,24 @@ const UserProfile = () => {
     };
 
     try {
-      const response = fetchWithToken(`${API_URL}user`, {
+      const response = await fetchWithToken(`${API_URL}user`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(requestBody),
       });
+
+      const data = await response.text();
+
       if (response.ok) {
-        console.log(response);
+        console.log("Usuario actualizado:", data);
+        await getInfoUserId(updatedUser.user_id);
       } else {
-        console.log(response);
+        console.log("Error al actualizar:", data);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error:", error);
     }
   };
 
@@ -174,13 +176,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "center",
     padding: 20,
-  },
-  header: {
-    alignSelf: "center",
-    color: theme.colors.greyDark,
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
   },
   label: {
     color: theme.colors.greyBlack,

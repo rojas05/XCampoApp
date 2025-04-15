@@ -27,9 +27,17 @@ export const saveToken = async (key, token) => {
 export const getToken = async (key) => {
   try {
     const token = await SecureStore.getItemAsync(key);
+    if (token === null) {
+      throw new Error("Sesión cerrada"); // Lanza un error específico para sesión cerrada
+    }
+
     return token.replace(/"/g, "");
   } catch (error) {
-    console.log("Error al obtener el token:", error);
+    if (error.message === "Sesión cerrada") {
+      console.warn("Sesión cerrada, no se puede obtener el token");
+    } else {
+      console.error("Error al obtener el token:", error);
+    }
     return null;
   }
 };
@@ -94,10 +102,12 @@ export const refreshAccessToken = async () => {
 // Función para hacer solicitudes con un Access Token
 export async function fetchWithToken(url, options = {}) {
   try {
-    // Obtén el Access Token
     let accessToken = await getToken("accessToken");
 
-    // Agrega el token al encabezado de la solicitud
+    if (!accessToken) {
+      throw new Error("Sesión cerrada"); // Lanza un error si no hay token
+    }
+
     const headers = {
       ...options.headers,
       Authorization: `Bearer ${accessToken}`,
@@ -110,6 +120,10 @@ export async function fetchWithToken(url, options = {}) {
       console.log("Access token expired. Attempting to refresh...");
       accessToken = await refreshAccessToken(); // Renueva el access token
 
+      if (!accessToken) {
+        throw new Error("Sesión cerrada"); // Lanza un error si no se pudo refrescar el token
+      }
+
       // Reintenta la solicitud con el nuevo token
       headers.Authorization = `Bearer ${accessToken}`;
       response = await fetch(url, { ...options, headers });
@@ -117,7 +131,33 @@ export async function fetchWithToken(url, options = {}) {
 
     return response; // Devuelve la respuesta de la solicitud
   } catch (error) {
-    console.error("Error in fetchWithToken:", error);
+    if (error.message === "Sesión cerrada") {
+      console.warn("Sesión cerrada, redirigiendo al login...");
+      // Aquí puedes agregar la lógica para redirigir al usuario al login
+    } else {
+      console.error("Error in fetchWithToken:", error);
+    }
     throw error;
+  }
+}
+
+export async function clearData() {
+  try {
+    const keysToDelete = [
+      "accessToken",
+      "refreshToken",
+      "id",
+      "userInfo",
+      "client_id",
+    ]; // 🔑 Ajusta aquí las claves que estás usando
+
+    for (const key of keysToDelete) {
+      await SecureStore.deleteItemAsync(key);
+    }
+
+    console.log("✅ Datos seguros eliminados correctamente.");
+    // Aquí podrías redirigir al login o reiniciar algún estado
+  } catch (e) {
+    console.error("❌ Error al eliminar datos de SecureStore:", e);
   }
 }

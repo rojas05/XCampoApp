@@ -67,7 +67,10 @@ const ChatScreen = ({ route }) => {
 
   useEffect(() => {
     if (!idOrder || !senderId || !senderContext) {
-      console.error("🚨 Falta información clave para iniciar el chat (IDs).");
+      console.error(
+        "🚨 Falta información clave para iniciar el chat (IDs).",
+        senderId,
+      );
       return;
     }
 

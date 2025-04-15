@@ -10,7 +10,6 @@ import {
   Text,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import * as SecureStore from "expo-secure-store";
 import * as Notifications from "expo-notifications";
 
 import API_URL from "../fetch/ApiConfig.js";
@@ -37,9 +36,11 @@ const Splash = () => {
   useEffect(() => {
     const checkAndFetchUserInfo = async () => {
       try {
-        const userInfo = await SecureStore.getItemAsync("userInfo");
+        const idStorage = await getToken("id"); // Espera a que se resuelva el token
+        const userInfo = await getToken("userInfo");
+
         if (!userInfo) {
-          await getInfoUserId(idUser);
+          await getInfoUserId(idStorage);
         }
       } catch (error) {
         console.error("Error al verificar/obtener userInfo:", error);

@@ -88,8 +88,9 @@ const useNotificationHandler = (setSelectedStore, setAlertState) => {
               {
                 text: "Aceptar",
                 onPress: () => {
-                  navigationRef.navigate("MapScreen", {
-                    fromNotification: true,
+                  navigationRef.navigate("HomeDelivery", {
+                    screen: "MapScreen",
+                    params: { fromNotification: true },
                   });
                   setShowNotificationAlert(false);
                 },
@@ -115,8 +116,9 @@ const useNotificationHandler = (setSelectedStore, setAlertState) => {
         handleNotificationData(data);
 
         if (data?.screen === "MapScreen" && data?.id) {
-          navigationRef.navigate("MapScreen", {
-            fromNotification: true,
+          navigationRef.navigate("HomeDelivery", {
+            screen: "MapScreen",
+            params: { fromNotification: true },
           });
         }
       });
@@ -136,8 +138,9 @@ const useNotificationHandler = (setSelectedStore, setAlertState) => {
         handleNotificationData(data);
 
         if (data?.screen === "MapScreen" && data?.id) {
-          navigationRef.navigate("MapScreen", {
-            fromNotification: true,
+          navigationRef.navigate("HomeDelivery", {
+            screen: "MapScreen",
+            params: { fromNotification: true },
           });
         }
       }

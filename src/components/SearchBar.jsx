@@ -4,7 +4,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 import theme from "../theme/theme";
 
-const SearchBar = () => {
+const SearchBar = ({ placeholder, value, onChangeText }) => {
   return (
     <View style={styles.container}>
       <View style={styles.searchSection}>
@@ -16,8 +16,10 @@ const SearchBar = () => {
         />
         <TextInput
           style={styles.input}
-          placeholder="Buscar"
+          placeholder={placeholder}
           placeholderTextColor={theme.colors.greyBlack}
+          value={value}
+          onChangeText={onChangeText}
         />
       </View>
       <TouchableOpacity style={styles.filterButton}>

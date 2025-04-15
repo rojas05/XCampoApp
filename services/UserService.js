@@ -16,6 +16,7 @@ export async function getInfoUserId(idUser) {
     const rts = await response.json();
 
     const userInfo = {
+      id: rts.user_id,
       name: rts.name,
       department: rts.department,
       city: rts.city,

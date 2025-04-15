@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import * as SecureStore from "expo-secure-store";
+import { useNavigation } from "@react-navigation/native";
 
+import { clearData } from "../../tokenStorage.js";
 import theme from "../theme/theme.js";
 import StyledButtonIcon from "../styles/StyledButtonIcon.jsx";
 import { STATUSBAR_HEIGHT } from "../../src/utils/constants.js";
@@ -10,18 +12,19 @@ import { getCountDeliveryAvailable } from "../../services/DeliveryProduct.js";
 
 const DrawerContent = ({ navigation, state }) => {
   const activeRouteName = state?.routeNames[state?.index];
+  const navigationScreen = useNavigation();
   const [orderCount, setOrderCount] = useState(null);
   const [userName, setUserName] = useState(null);
 
   const menuItems = [
-    { icon: "map-marked-alt", label: "Inicio", navigation: "MapScreen" },
+    { icon: "map-marked-alt", label: "Mapa", navigation: "MapScreen" },
     {
       icon: "box",
       label: "Pedidos disponibles",
       navigation: "OrderAvailableScreen",
       badge: orderCount >= 1 ? orderCount : null,
     },
-    {
+    /*  {
       icon: "box-open",
       label: "Pedidos reservados",
       navigation: "ReservedOrdersScreen",
@@ -35,7 +38,7 @@ const DrawerContent = ({ navigation, state }) => {
       icon: "money-bill-wave",
       label: "Mis ganancias",
       navigation: "DeliveyProfile",
-    },
+    }, */
     { icon: "exchange-alt", label: "Cambiar rol", navigation: "Splash" },
   ];
 
@@ -76,7 +79,10 @@ const DrawerContent = ({ navigation, state }) => {
           title="Cerrar sesión"
           iconLibrary={FontAwesome5}
           nameIcon="sign-out-alt"
-          onPress={() => navigation.navigate("WelcomePage")}
+          onPress={() => {
+            clearData();
+            navigationScreen.replace("Hello");
+          }}
         />
       </View>
     </View>

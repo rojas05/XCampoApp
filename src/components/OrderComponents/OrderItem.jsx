@@ -29,7 +29,7 @@ const OrderItem = React.memo(
     ...props
   }) => {
     const [fadeAnim] = useState(new Animated.Value(1));
-    console.log("Order: " + JSON.stringify(order));
+    console.warn(idSeller);
 
     const productsData = React.useMemo(
       () =>

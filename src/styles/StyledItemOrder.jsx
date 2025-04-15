@@ -9,8 +9,6 @@ import theme from "../theme/theme";
 const StyledItemOrder = ({ item }) => {
   const navigation = useNavigation();
 
-  console.log("[StyledItemOrder] item: " + item);
-
   let store = styles.colorN;
   let delivery = styles.colorN;
   let home = styles.colorN;

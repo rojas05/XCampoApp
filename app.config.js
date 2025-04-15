@@ -14,6 +14,11 @@ export default {
       resizeMode: "contain",
       backgroundColor: "#ffffff",
     },
+    androidStatusBar: {
+      hidden: true,
+      translucent: true,
+      barStyle: "light-content",
+    },
     ios: {
       supportsTablet: true,
       bundleIdentifier: "com.rojas.dev.XCampo",

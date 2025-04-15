@@ -92,12 +92,14 @@ export async function updateAddEarnings(idSeller, earnings) {
 
   try {
     const response = await fetchWithToken(endpoint, { method: "PATCH" });
-    let result = await response.json();
+    let result = await response.text();
 
     if (!response.ok)
       throw new Error(
-        "No se puedo actualizar las ganacias: " + JSON.stringify(result),
+        "No se puedo actualizar las ganacias: " + JSON.stringify(response),
       );
+
+    console.log(result);
   } catch (error) {
     console.error("Error fetching update earnings:", error);
     // throw error;

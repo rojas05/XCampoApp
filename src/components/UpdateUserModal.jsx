@@ -98,6 +98,7 @@ const UpdateUserModal = ({
             >
               <Text style={styles.buttonText}>💾 Guardar</Text>
             </TouchableOpacity>
+
             <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
               <Text style={styles.buttonText}>❌ Cancelar</Text>
             </TouchableOpacity>

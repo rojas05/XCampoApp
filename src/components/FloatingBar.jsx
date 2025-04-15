@@ -12,7 +12,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import * as SecureStore from "expo-secure-store";
 
 import theme from "../theme/theme";
-import { getMunicipioByDepartament } from "../../services/FireBaseService";
+import { getVeredasByMunicipio } from "../../services/FireBaseService";
 
 const FloatingBar = ({
   profileImage,
@@ -28,9 +28,8 @@ const FloatingBar = ({
     const fetchCities = async () => {
       try {
         const userInfo = await SecureStore.getItemAsync("userInfo");
-        const { department } = JSON.parse(userInfo);
-
-        const cityNames = await getMunicipioByDepartament(department);
+        const { city } = JSON.parse(userInfo);
+        const cityNames = await getVeredasByMunicipio(city);
         setCities(cityNames);
       } catch (error) {
         console.error("Error fetching al encontar los municipios:", error);
@@ -50,7 +49,7 @@ const FloatingBar = ({
   const handleCitySelect = (city) => {
     if (selectedCities.includes(city)) {
       onCitiesChange(selectedCities.filter((c) => c !== city));
-    } else if (selectedCities.length < 3) {
+    } else if (selectedCities.length < 10) {
       onCitiesChange([...selectedCities, city]);
     }
   };
@@ -65,7 +64,7 @@ const FloatingBar = ({
         <View style={styles.searchContainer}>
           <TextInput
             style={styles.searchInput}
-            placeholder="Seleccione 3 ciudades máximo"
+            placeholder="Seleccione 10 veredas máximo"
             value={search}
             onChangeText={(text) => setSearch(text)}
           />

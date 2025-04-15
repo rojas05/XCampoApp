@@ -8,8 +8,12 @@ import {
   StyleSheet,
 } from "react-native";
 import theme from "../src/theme/theme";
+import { useNavigation } from "@react-navigation/native";
+import { FontAwesome5 } from "@expo/vector-icons";
 
 const Support = () => {
+  const navigation = useNavigation();
+
   const openWhatsApp = () => {
     const phoneNumber = "573154295146"; // tu número con código de país sin "+" (ej: Colombia = 57)
     const message = "¡Hola! Necesito ayuda con la aplicación.";
@@ -37,14 +41,42 @@ const Support = () => {
         </Text>
       </ScrollView>
 
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+      >
+        <Text style={styles.backButtonText}>⬅️ Volver</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity style={styles.whatsappButton} onPress={openWhatsApp}>
-        <Text style={styles.whatsappButtonText}>💬 Chatear por WhatsApp</Text>
+        <FontAwesome5 name="whatsapp" size={24} color="white" />
+        <Text style={styles.whatsappButtonText}>Chatear por WhatsApp</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  backButton: {
+    backgroundColor: theme.colors.blueDark,
+    borderRadius: 30,
+    bottom: 100,
+    elevation: 6,
+    minWidth: 100,
+    paddingHorizontal: 25,
+    paddingVertical: 15,
+    position: "absolute",
+    right: 20,
+    shadowColor: theme.colors.black,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+  },
+  backButtonText: {
+    color: theme.colors.white,
+    fontSize: 16,
+    fontWeight: "bold",
+  },
   card: {
     backgroundColor: theme.colors.white,
     borderRadius: 12,
@@ -88,10 +120,15 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   whatsappButton: {
+    alignItems: "center",
     backgroundColor: theme.colors.greenWhatsapp,
     borderRadius: 30,
     bottom: 30,
     elevation: 6,
+    flexDirection: "row",
+    gap: 10,
+    justifyContent: "center",
+    minWidth: 150,
     paddingHorizontal: 25,
     paddingVertical: 15,
     position: "absolute",
@@ -104,7 +141,7 @@ const styles = StyleSheet.create({
   whatsappButtonText: {
     color: theme.colors.white,
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "600",
   },
 });
 

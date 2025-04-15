@@ -55,10 +55,8 @@ const Login = () => {
 
         if (data.statusCode === "OK") {
           try {
-            await SecureStore.setItemAsync(
-              "id_user",
-              data.body.id_user.toString(),
-            );
+            //id no user_id!! y save() token!!
+            await saveToken("id", data.body.id_user.toString());
             await saveToken("accessToken", data.body.token);
             await saveToken("refreshToken", data.body.refreshToken);
           } catch (e) {

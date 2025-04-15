@@ -103,3 +103,23 @@ export async function getIdSellerByOrderID(idOrder) {
     throw error;
   }
 }
+
+export async function getSalesProducts(id_product) {
+  const endpoint = `${API_URL}order/getSalesProducts/${id_product}`;
+
+  try {
+    const response = await fetchWithToken(endpoint, { method: "GET" });
+    let result = await response.text();
+
+    if (!response.status === 200)
+      throw new Error(
+        "No se pudo obtener el total de ventas: " + JSON.stringify(response),
+      );
+
+    return result;
+  } catch (error) {
+    console.error("Error fetching ventas length:", error);
+    Alert.alert("Error", "Ocurrió un error al obtener el total Ordenes");
+    throw error;
+  }
+}

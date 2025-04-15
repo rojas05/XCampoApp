@@ -1,13 +1,35 @@
-import React from "react";
-import { StyleSheet, View, Image, ImageBackground } from "react-native";
+import React, { useEffect } from "react";
+import {
+  StyleSheet,
+  View,
+  Image,
+  ImageBackground,
+  BackHandler,
+} from "react-native";
 import StyledText from "../src/styles/StyledText.jsx";
 import StyledButton from "../src/styles/StyledButton.jsx";
 import string from "../src/string/string.js";
 import { useNavigation } from "@react-navigation/native";
+import { getCurrentRouteName } from "../src/utils/RootNavigation";
 import theme from "../src/theme/theme.js";
 
 const Hello = () => {
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const handleBackPress = () => {
+      const currentScreen = getCurrentRouteName();
+
+      if (currentScreen === "Hello") return true;
+    };
+
+    BackHandler.addEventListener("hardwareBackPress", handleBackPress);
+
+    return () => {
+      console.log("Componente Hello desmontado, listener eliminado");
+      BackHandler.removeEventListener("hardwareBackPress", handleBackPress);
+    };
+  }, []);
 
   return (
     <View style={styles.container}>

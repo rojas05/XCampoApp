@@ -17,11 +17,20 @@ const MapComponent = ({
   const [coordinates, setCoordinates] = useState({});
 
   useEffect(() => {
-    if (!Array.isArray(data) || data.length === 0) return;
+    let parsedData;
+
+    try {
+      parsedData = typeof data === "string" ? JSON.parse(data) : data;
+    } catch (error) {
+      console.error("Error al hacer JSON.parse de data:", error);
+      return;
+    }
+
+    if (!Array.isArray(parsedData) || parsedData.length === 0) return;
 
     const fetchCoordinates = async () => {
       const coordsArray = await Promise.all(
-        data.map(async (store) => {
+        parsedData.map(async (store) => {
           const coords = await getCoordinates(store.starPointSeller);
           return {
             id: store.sellerId,
@@ -108,9 +117,18 @@ const MarkerComponent = ({
 );
 
 const StoreMarkers = ({ data, coordinates, colorMaker, onPress }) => {
-  if (!Array.isArray(data) || data.length === 0) return null;
+  let parsedData;
 
-  return data.map((store) => {
+  try {
+    parsedData = typeof data === "string" ? JSON.parse(data) : data;
+  } catch (error) {
+    console.error("Error al hacer JSON.parse de data:", error);
+    return;
+  }
+
+  if (!Array.isArray(parsedData) || parsedData.length === 0) return null;
+
+  return parsedData.map((store) => {
     const coordinate = coordinates[store.sellerId];
     if (!coordinate) return null;
 

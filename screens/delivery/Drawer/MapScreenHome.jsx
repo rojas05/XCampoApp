@@ -29,6 +29,7 @@ import AlertGoOrder from "../../../src/components/Alerts/AlertGoOrder";
 import MapComponent from "../../../src/components/Map/MapComponent";
 import { getDeliveryProductsStateMaps } from "../../../services/DeliveryProduct";
 import NotificationAlert from "../../../src/components/Alerts/AlertNotificationOrder";
+import { getDeliveryManByIdUser } from "../../../services/DeliveryManService";
 
 const MAP_TYPES = ["standard", "hybrid", "terrain"];
 
@@ -59,22 +60,26 @@ const MapScreen = ({ navigation }) => {
     setShowNotificationAlert,
   } = useNotificationHandler(setSelectedStore, setAlertState);
 
-  useEffect(() => {
-    if (fromNotification) {
-      setAlertState((prev) => ({ ...prev, showAlertContain: true }));
-    }
-  }, [fromNotification]);
+  useFocusEffect(
+    useCallback(() => {
+      if (fromNotification) {
+        setAlertState((prev) => ({ ...prev, showAlertContain: true }));
+      }
+    }, [fromNotification]),
+  );
 
   useEffect(() => {
     const fetchUserName = async () => {
       try {
         const userInfo = await SecureStore.getItemAsync("userInfo");
         if (userInfo) {
-          const { name, city } = JSON.parse(userInfo);
+          const { name, id } = JSON.parse(userInfo);
           setUserName(name);
 
-          if (city) {
-            setSelectedCities([city]);
+          if (id) {
+            console.log("Ruta id user: " + id);
+            let rute = await getDeliveryManByIdUser(id);
+            setSelectedCities([rute]);
           }
         }
       } catch (error) {
@@ -128,11 +133,23 @@ const MapScreen = ({ navigation }) => {
 
   const handleMarkerPress = useCallback(
     (id) => {
-      const store = stores.find((s) => s.sellerId === id);
+      try {
+        const parsedStores =
+          typeof stores === "string" ? JSON.parse(stores) : stores;
 
-      if (store && store !== selectedStore) {
-        setSelectedStore(store);
-        setAlertState((prev) => ({ ...prev, showAlert: true }));
+        if (!Array.isArray(parsedStores)) {
+          console.warn("Stores no es un array.");
+          return;
+        }
+
+        const store = parsedStores.find((s) => s?.sellerId === id);
+
+        if (store && store !== selectedStore) {
+          setSelectedStore(store);
+          setAlertState((prev) => ({ ...prev, showAlert: true }));
+        }
+      } catch (error) {
+        console.error("Error al procesar stores:", error);
       }
     },
     [stores, selectedStore],
@@ -150,25 +167,7 @@ const MapScreen = ({ navigation }) => {
   }, []);
 
   const handleFaceAgentPress = useCallback(() => {
-    const routePoints = [
-      {
-        idDelivery: 1,
-        destinyClient: "1.858680815581465, -76.04328633073602",
-        startPointSeller: "1.8512903108752117, -76.04659977737008",
-      },
-      {
-        idDelivery: 2,
-        destinyClient: "1.858680815581465, -76.04328633073602",
-        startPointSeller: "1.8529816435541395, -76.03892636136585",
-      },
-      {
-        idDelivery: 3,
-        destinyClient: "1.858680815581465, -76.04328633073602",
-        startPointSeller: "1.856821346473799, -76.0396149284753",
-      },
-    ];
-
-    navigation.navigate("MultipleRoutesScreen", { routes: routePoints });
+    navigation.navigate("Support");
   }, [navigation]);
 
   if (mapState.isLoading || mapState.origin === null) return renderLoading();

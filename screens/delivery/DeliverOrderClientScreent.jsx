@@ -106,6 +106,7 @@ const DeliverOrderClient = ({ navigation }) => {
         title={order?.storageName || "Detalle del pedido"}
         onBackPress={handleBackPress}
       />
+
       <OrderInfo order={order} totalProducts={totalProducts} />
       <ProductList order={order} />
       <OrderTotals
@@ -114,20 +115,25 @@ const DeliverOrderClient = ({ navigation }) => {
         totalProducts={totalProducts}
       />
 
-      {context === "delivered" ||
-        (context === "deliveredNotification" && (
-          <PaymentSwitch isPaid={isPaid} setIsPaid={setIsPaid} />
-        ))}
-
-      {context === "delivered" || context === "deliveredNotification" ? (
-        <StyledButton
-          green
-          title="Continuar Entregando"
-          onPress={() => handleDelivered()}
-        />
-      ) : (
-        <StyledButton green title="Volver" onPress={() => handleBackPress()} />
+      {/* Mostrar switch de pago si el contexto aplica */}
+      {["delivered", "deliveredNotification"].includes(context) && (
+        <PaymentSwitch isPaid={isPaid} setIsPaid={setIsPaid} />
       )}
+
+      {/* Botón principal según el contexto */}
+      <StyledButton
+        green
+        title={
+          ["delivered", "deliveredNotification"].includes(context)
+            ? "Continuar Entregando"
+            : "Volver"
+        }
+        onPress={
+          ["delivered", "deliveredNotification"].includes(context)
+            ? handleDelivered
+            : handleBackPress
+        }
+      />
 
       <CompletedDeliveriesMessage isVisible={showAlert} />
     </View>
